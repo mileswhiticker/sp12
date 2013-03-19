@@ -1,0 +1,7 @@
+this file for reference only
+NORTH 1		//+Z
+SOUTH 2		//-Z
+EAST 4		//+X
+WEST 8		//-X
+UP 16		//+Y
+DOWN 32	//-Y

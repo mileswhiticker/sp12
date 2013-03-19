@@ -1,0 +1,99 @@
+<sf12m>
+	<!--Experimental map format for Space Fortress 12-->
+	<!--Use discrete integers for coordinatess-->
+
+	<station name = "Test Station 13">
+	
+		<cell x="3" y="2" z="1" skeleton="tile_girder">
+			<overlay plating="grey_default" dir="2"></overlay>
+			<overlay plating="grey_default" dir="8"></overlay>
+			<overlay plating="grey_default" dir="32"></overlay>
+			
+			<obj tag="box"></obj>
+			
+			<underlay plating="grey_default" dir="2"></underlay>
+			<underlay plating="grey_default" dir="8"></underlay>
+			<underlay plating="grey_default" dir="32"></underlay>
+		</cell>
+
+		<cell x="3" y="2" z="2" skeleton="tile_girder">
+			<overlay plating="grey_default" dir="8"></overlay>
+			<overlay plating="grey_default" dir="32"></overlay>
+			
+			<obj tag="box"></obj>
+			
+			<underlay plating="grey_default" dir="8"></underlay>
+			<underlay plating="grey_default" dir="32"></underlay>
+		</cell>
+		<cell x="3" y="2" z="3" skeleton="tile_girder" filling="grey_default">
+			<overlay plating="grey_default" dir="8"></overlay>
+			<overlay plating="grey_default" dir="32"></overlay>
+			
+			<obj tag="box"></obj>
+			
+			<underlay plating="grey_default" dir="8"></underlay>
+			<underlay plating="grey_default" dir="32"></underlay>
+		</cell>
+		
+		<cell x="2" y="1" z="1" skeleton="tile_girder">
+			<overlay plating="grey_default" dir="16"></overlay>
+			
+			<underlay plating="grey_default" dir="16"></underlay>
+		</cell>
+		<cell x="2" y="1" z="2" skeleton="tile_girder">
+			<overlay plating="grey_default" dir="16"></overlay>
+			
+			<obj tag="box"></obj>
+			
+			<underlay plating="grey_default" dir="16"></underlay>
+		</cell>
+		<cell x="2" y="1" z="3" skeleton="tile_girder">
+			<overlay plating="grey_default" dir="16"></overlay>
+			
+			<obj tag="box"></obj>
+			
+			<underlay plating="grey_default" dir="16"></underlay>
+		</cell>
+		
+		<cell x="1" y="2" z="1" skeleton="tile_girder" filling="grey_default">
+			<overlay plating="grey_default" dir="4"></overlay>
+			<overlay plating="grey_default" dir="32"></overlay>
+			
+			<obj tag="box"></obj>
+			
+			<underlay plating="grey_default" dir="4"></underlay>
+			<underlay plating="grey_default" dir="32"></underlay>
+		</cell>
+		<cell x="1" y="2" z="2" skeleton="tile_girder">
+			<overlay plating="grey_default" dir="4"></overlay>
+			<overlay plating="grey_default" dir="32"></overlay>
+			
+			<obj tag="box"></obj>
+			
+			<underlay plating="grey_default" dir="4"></underlay>
+			<underlay plating="grey_default" dir="32"></underlay>
+		</cell>
+		<cell x="1" y="2" z="3" skeleton="tile_girder">
+			<overlay plating="grey_default" dir="1"></overlay>
+			<overlay plating="grey_default" dir="4"></overlay>
+			<overlay plating="grey_default" dir="32"></overlay>
+			
+			<obj tag="box"></obj>
+			
+			<underlay plating="grey_default" dir="4"></underlay>
+			<underlay plating="grey_default" dir="1"></underlay>
+			<underlay plating="grey_default" dir="32"></underlay>
+		</cell>
+		
+		<cell x="1" y="4" z="3">
+			<obj tag="box"></obj>
+		</cell>
+		
+		<playerspawn x="2" y="4" z="5" type="observer" dir="2"></playerspawn>
+		<playerspawn x="2" y="4" z="-2" type="observer" dir="1"></playerspawn>
+		<playerspawn x="5" y="4" z="2" type="observer" dir="8"></playerspawn>
+		<playerspawn x="-2" y="4" z="2" type="observer" dir="4"></playerspawn>
+		
+	</station>
+
+</sf12m>
