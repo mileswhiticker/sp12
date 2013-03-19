@@ -1,0 +1,39 @@
+vertex_program madmarxOutline_vp cg
+{
+   source Madmarx_outline.cg
+   entry_point outline_vp
+   profiles vs_1_1 arbvp1
+   default_params
+   {
+      param_named_auto worldViewProj worldviewproj_matrix
+                // this one was when I was projecting the normal in screen space to do the alpha effect. It was working OK, but not on the ears of the ogrehead.
+      param_named_auto worldViewIT inverse_transpose_worldview_matrix 
+   }
+}
+
+// this could have been done with an abstract pass for more clarity, but this is just an example ...
+material madmarxOutLine
+{
+	technique
+	{
+		pass
+		{
+			scene_blend alpha_blend
+			//cull_hardware none
+			//cull_software none
+			//depth_write off
+			//depth_check on
+			vertex_program_ref madmarxOutline_vp
+			{
+			}
+		}
+		
+		pass
+		{
+			texture_unit
+			{
+				texture planet.png
+			}
+		}
+	}
+}
