@@ -1,0 +1,43 @@
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.tlog
+*.obj
+
+# Compiled Dynamic libraries
+*.so
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+
+# Project files
+*.sdf
+*.opensdf
+*.suo
+*.ipch
+*.user
+
+# Misc
+*.exe
+*.ilk
+*.pdb
+*.log
+*.manifest
+*.manifest.res
+*.rc
+*.idp
+*.exp
+*.idb
+bin/debug/*.lib
+bin/release/*.lib
+ogre.cfg
+*.unsuccessfulbuild
+*.lastbuildstate
+
+# Folders
+*ipch/
+*obj/
+*cache/
