@@ -1,0 +1,302 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source Files\GlueScreens">
+      <UniqueIdentifier>{ee789fbe-6653-453f-8be7-938885d636ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\GlueScreens">
+      <UniqueIdentifier>{f73f13dd-7557-4ed6-9339-4fd136a1935d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\MapSuite">
+      <UniqueIdentifier>{596cf12a-41f6-4708-8d5a-6a15bfea32fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\MapSuite">
+      <UniqueIdentifier>{8a379c9a-43fb-4088-ab98-e435333dc411}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Utils and helpers">
+      <UniqueIdentifier>{fbf895ea-18a7-4ec5-9b33-e4976d04d308}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Utils and helpers">
+      <UniqueIdentifier>{a2c62ea4-f7f6-4cd4-b3dc-868eb0a1d2cc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Config">
+      <UniqueIdentifier>{a0baf353-9ea0-419e-be8d-d9cd5c93cd63}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Config">
+      <UniqueIdentifier>{da5bd270-14d6-4087-9322-073005add821}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Atoms">
+      <UniqueIdentifier>{77b08870-cfb5-4dba-87d8-5b52121d00d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Atoms">
+      <UniqueIdentifier>{e8056cc0-1599-4d07-b9a2-07c0eb2df6e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Server">
+      <UniqueIdentifier>{5ca3a6f5-4dfa-47f8-850e-0f1770386053}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Server">
+      <UniqueIdentifier>{163b0f57-1543-47e7-a4e6-0b50ebba60a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Atoms\Mob">
+      <UniqueIdentifier>{8772dffa-1c06-4f74-8728-54dc333ee417}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Atoms\Mob">
+      <UniqueIdentifier>{8acc0423-715e-48cf-9cf3-bb0e38654ac6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\InputModule">
+      <UniqueIdentifier>{23329566-de45-4e25-a4b2-d2c1bc2cb0f5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\InputModule">
+      <UniqueIdentifier>{bcaa1b82-137b-4fa5-9e62-8e528a6d0e1b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Atoms\Object">
+      <UniqueIdentifier>{04cf59a1-0844-47ea-9338-6acba793c286}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Atoms\Object">
+      <UniqueIdentifier>{71ea2d70-bd1b-439b-a413-092cf3e1a55d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Effects">
+      <UniqueIdentifier>{8abf2ea7-0b97-40a8-aaea-6ebdb479aff8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Effects">
+      <UniqueIdentifier>{dd650f0f-d23c-4bbf-9949-cf9c73ee95ca}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Application.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GlueScreen.cpp">
+      <Filter>Source Files\GlueScreens</Filter>
+    </ClCompile>
+    <ClCompile Include="MainMenu.cpp">
+      <Filter>Source Files\GlueScreens</Filter>
+    </ClCompile>
+    <ClCompile Include="Button.cpp">
+      <Filter>Source Files\GlueScreens</Filter>
+    </ClCompile>
+    <ClCompile Include="Application_Setup.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Application_Input.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Application_CreateSphere.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MapSuite.cpp">
+      <Filter>Source Files\MapSuite</Filter>
+    </ClCompile>
+    <ClCompile Include="tinyxml2.cpp">
+      <Filter>Source Files\Utils and helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="guicon.cpp">
+      <Filter>Source Files\Utils and helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="UID.cpp">
+      <Filter>Source Files\Utils and helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="mtrand.cpp">
+      <Filter>Source Files\Utils and helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="RandHelper.cpp">
+      <Filter>Source Files\Utils and helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshStrider.cpp">
+      <Filter>Source Files\Utils and helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="Application_Update.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Server.cpp">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="Mob.cpp">
+      <Filter>Source Files\Atoms\Mob</Filter>
+    </ClCompile>
+    <ClCompile Include="Observer.cpp">
+      <Filter>Source Files\Atoms\Mob</Filter>
+    </ClCompile>
+    <ClCompile Include="GameManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OgreHelper.cpp">
+      <Filter>Source Files\Utils and helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="InputModule.cpp">
+      <Filter>Source Files\InputModule</Filter>
+    </ClCompile>
+    <ClCompile Include="InputModule_ObserverFlight.cpp">
+      <Filter>Source Files\InputModule</Filter>
+    </ClCompile>
+    <ClCompile Include="InputModule_ObserverBuild.cpp">
+      <Filter>Source Files\InputModule</Filter>
+    </ClCompile>
+    <ClCompile Include="Object.cpp">
+      <Filter>Source Files\Atoms\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Client.cpp">
+      <Filter>Source Files\Atoms</Filter>
+    </ClCompile>
+    <ClCompile Include="Atom.cpp">
+      <Filter>Source Files\Atoms</Filter>
+    </ClCompile>
+    <ClCompile Include="AtomManager.cpp">
+      <Filter>Source Files\Atoms</Filter>
+    </ClCompile>
+    <ClCompile Include="DebugDrawer.cpp">
+      <Filter>Source Files\Utils and helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="InputModule_Generic.cpp">
+      <Filter>Source Files\InputModule</Filter>
+    </ClCompile>
+    <ClCompile Include="EffectManager.cpp">
+      <Filter>Source Files\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="Structure.cpp">
+      <Filter>Source Files\Atoms</Filter>
+    </ClCompile>
+    <ClCompile Include="Girder.cpp">
+      <Filter>Source Files\Atoms</Filter>
+    </ClCompile>
+    <ClCompile Include="BuildHighlight.cpp">
+      <Filter>Source Files\Atoms</Filter>
+    </ClCompile>
+    <ClCompile Include="Station.cpp">
+      <Filter>Source Files\MapSuite</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="GlueScreen.hpp">
+      <Filter>Header Files\GlueScreens</Filter>
+    </ClInclude>
+    <ClInclude Include="Button.hpp">
+      <Filter>Header Files\GlueScreens</Filter>
+    </ClInclude>
+    <ClInclude Include="MapSuite.hpp">
+      <Filter>Header Files\MapSuite</Filter>
+    </ClInclude>
+    <ClInclude Include="tinyxml2.h">
+      <Filter>Header Files\Utils and helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="Files.hpp">
+      <Filter>Header Files\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="guicon.h">
+      <Filter>Header Files\Utils and helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="UID.hpp">
+      <Filter>Header Files\Utils and helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="num2string.h">
+      <Filter>Header Files\Utils and helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="mtrand.h">
+      <Filter>Header Files\Utils and helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="RandHelper.h">
+      <Filter>Header Files\Utils and helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="iVector3.h">
+      <Filter>Header Files\Utils and helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshStrider.h">
+      <Filter>Header Files\Utils and helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="Direction.h">
+      <Filter>Header Files\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="Server.hpp">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="Application.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Mob.hpp">
+      <Filter>Header Files\Atoms\Mob</Filter>
+    </ClInclude>
+    <ClInclude Include="GameManager.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OgreHelper.hpp">
+      <Filter>Header Files\Utils and helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="Observer.hpp">
+      <Filter>Header Files\Atoms\Mob</Filter>
+    </ClInclude>
+    <ClInclude Include="InputModule.hpp">
+      <Filter>Header Files\InputModule</Filter>
+    </ClInclude>
+    <ClInclude Include="InputModule_ObserverFlight.hpp">
+      <Filter>Header Files\InputModule</Filter>
+    </ClInclude>
+    <ClInclude Include="InputModule_ObserverBuild.hpp">
+      <Filter>Header Files\InputModule</Filter>
+    </ClInclude>
+    <ClInclude Include="Object.hpp">
+      <Filter>Header Files\Atoms\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Client.hpp">
+      <Filter>Header Files\Atoms</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerSpawn.hpp">
+      <Filter>Header Files\MapSuite</Filter>
+    </ClInclude>
+    <ClInclude Include="BtOgreHelper.hpp">
+      <Filter>Header Files\Utils and helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="Atom.hpp">
+      <Filter>Header Files\Atoms</Filter>
+    </ClInclude>
+    <ClInclude Include="AtomManager.hpp">
+      <Filter>Header Files\Atoms</Filter>
+    </ClInclude>
+    <ClInclude Include="DebugDrawer.h">
+      <Filter>Header Files\Utils and helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="InputModule_Generic.hpp">
+      <Filter>Header Files\InputModule</Filter>
+    </ClInclude>
+    <ClInclude Include="EffectManager.hpp">
+      <Filter>Header Files\Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="Cached.hpp">
+      <Filter>Header Files\Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionDefines.h">
+      <Filter>Header Files\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="Structure.hpp">
+      <Filter>Header Files\Atoms</Filter>
+    </ClInclude>
+    <ClInclude Include="Girder.hpp">
+      <Filter>Header Files\Atoms</Filter>
+    </ClInclude>
+    <ClInclude Include="BuildHighlight.hpp">
+      <Filter>Header Files\Atoms</Filter>
+    </ClInclude>
+    <ClInclude Include="Station.hpp">
+      <Filter>Header Files\MapSuite</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="num2string.inl">
+      <Filter>Source Files\Utils and helpers</Filter>
+    </None>
+  </ItemGroup>
+</Project>

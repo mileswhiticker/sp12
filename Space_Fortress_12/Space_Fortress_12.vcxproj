@@ -1,0 +1,170 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Application.cpp" />
+    <ClCompile Include="Application_CreateSphere.cpp" />
+    <ClCompile Include="Application_Input.cpp" />
+    <ClCompile Include="Application_Setup.cpp" />
+    <ClCompile Include="Application_Update.cpp" />
+    <ClCompile Include="Atom.cpp" />
+    <ClCompile Include="AtomManager.cpp" />
+    <ClCompile Include="BuildHighlight.cpp" />
+    <ClCompile Include="Button.cpp" />
+    <ClCompile Include="Girder.cpp" />
+    <ClCompile Include="Client.cpp" />
+    <ClCompile Include="DebugDrawer.cpp" />
+    <ClCompile Include="EffectManager.cpp" />
+    <ClCompile Include="InputModule_Generic.cpp" />
+    <ClCompile Include="GameManager.cpp" />
+    <ClCompile Include="GlueScreen.cpp" />
+    <ClCompile Include="guicon.cpp" />
+    <ClCompile Include="InputModule.cpp" />
+    <ClCompile Include="InputModule_ObserverFlight.cpp" />
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="MainMenu.cpp" />
+    <ClCompile Include="MapSuite.cpp" />
+    <ClCompile Include="MeshStrider.cpp" />
+    <ClCompile Include="Mob.cpp" />
+    <ClCompile Include="mtrand.cpp" />
+    <ClCompile Include="Object.cpp" />
+    <ClCompile Include="Observer.cpp" />
+    <ClCompile Include="OgreHelper.cpp" />
+    <ClCompile Include="RandHelper.cpp" />
+    <ClCompile Include="Server.cpp" />
+    <ClCompile Include="Station.cpp" />
+    <ClCompile Include="InputModule_ObserverBuild.cpp" />
+    <ClCompile Include="Structure.cpp" />
+    <ClCompile Include="tinyxml2.cpp" />
+    <ClCompile Include="UID.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Application.hpp" />
+    <ClInclude Include="Atom.hpp" />
+    <ClInclude Include="AtomManager.hpp" />
+    <ClInclude Include="BtOgreHelper.hpp" />
+    <ClInclude Include="BuildHighlight.hpp" />
+    <ClInclude Include="Button.hpp" />
+    <ClInclude Include="Cached.hpp" />
+    <ClInclude Include="Girder.hpp" />
+    <ClInclude Include="Client.hpp" />
+    <ClInclude Include="CollisionDefines.h" />
+    <ClInclude Include="DebugDrawer.h" />
+    <ClInclude Include="Direction.h" />
+    <ClInclude Include="EffectManager.hpp" />
+    <ClInclude Include="InputModule_Generic.hpp" />
+    <ClInclude Include="Files.hpp" />
+    <ClInclude Include="GameManager.hpp" />
+    <ClInclude Include="GlueScreen.hpp" />
+    <ClInclude Include="guicon.h" />
+    <ClInclude Include="InputModule.hpp" />
+    <ClInclude Include="InputModule_ObserverFlight.hpp" />
+    <ClInclude Include="iVector3.h" />
+    <ClInclude Include="MapSuite.hpp" />
+    <ClInclude Include="MeshStrider.h" />
+    <ClInclude Include="Mob.hpp" />
+    <ClInclude Include="mtrand.h" />
+    <ClInclude Include="num2string.h" />
+    <ClInclude Include="Object.hpp" />
+    <ClInclude Include="Observer.hpp" />
+    <ClInclude Include="OgreHelper.hpp" />
+    <ClInclude Include="PlayerSpawn.hpp" />
+    <ClInclude Include="RandHelper.h" />
+    <ClInclude Include="Server.hpp" />
+    <ClInclude Include="Station.hpp" />
+    <ClInclude Include="InputModule_ObserverBuild.hpp" />
+    <ClInclude Include="Structure.hpp" />
+    <ClInclude Include="tinyxml2.h" />
+    <ClInclude Include="UID.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="num2string.inl" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{EB27A8C6-8886-4397-B1F0-ACD294436A6E}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>Space Fortress 12</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)/bin/$(Configuration)/</OutDir>
+    <IncludePath>$(SolutionDir)\include;$(SolutionDir)\include\MyGui;$(SolutionDir)\include\OGRE;$(SolutionDir)\include\Common;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)/lib/$(Configuration);$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <IntDir>$(Configuration)/</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)/bin/$(Configuration)/</OutDir>
+    <IncludePath>$(SolutionDir)\include;$(SolutionDir)\include\MyGui;$(SolutionDir)\include\OGRE;$(SolutionDir)\include\Common;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)\lib\$(Configuration);$(LibraryPath)</LibraryPath>
+    <IntDir>$(Configuration)/</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>OgreMain_d.lib;OIS_d.lib;CEGUIOgreRenderer_d.lib;CEGUIBase_d.lib;BulletDynamics_vs2010_debug.lib;BulletCollision_vs2010_debug.lib;LinearMath_vs2010_debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>OgreMain.lib;OIS.lib;CEGUIBase.lib;CEGUIOgreRenderer.lib;BulletDynamics_vs2010.lib;BulletCollision_vs2010.lib;LinearMath_vs2010.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
