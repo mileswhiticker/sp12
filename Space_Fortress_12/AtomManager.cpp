@@ -60,22 +60,12 @@ Atom* AtomManager::CreateAtom(int a_AtomType, Ogre::Vector3 a_Pos, bool a_Instan
 	}
 	if(pOut && a_InstantiateImmediately)
 	{
-		pOut->Instantiate();
+		pOut->InstantiateAtom();
 	}
 
 	if(a_ppAtomLocation)
 	{
 		*a_ppAtomLocation = pOut;
-	}
-	return pOut;
-}
-
-Atom* AtomManager::CreateAtomBuildpoint(int a_AtomType, Ogre::Vector3 a_Pos, bool a_InstantiateImmediately, Atom** a_ppAtomLocation)
-{
-	Atom* pOut = CreateAtom(a_AtomType, a_Pos, false, a_ppAtomLocation);
-	if(pOut && a_InstantiateImmediately)
-	{
-		pOut->Instantiate();
 	}
 	return pOut;
 }
@@ -94,8 +84,8 @@ Structure* AtomManager::CreateStructure(int a_StructureType, Ogre::Vector3 a_Pos
 		}
 	case(Structure::OVERLAYPLATING):
 		{
-			OverlayPlating* pOverlayPlating = new OverlayPlating(a_Pos);
-			m_AtomsInWorld.push_back(pOverlayPlating);
+			pOut = new OverlayPlating(a_Pos);
+			m_AtomsInWorld.push_back(pOut);
 			break;
 		}
 	/*case(Structure::UNDERLAYPLATING):
@@ -110,7 +100,7 @@ Structure* AtomManager::CreateStructure(int a_StructureType, Ogre::Vector3 a_Pos
 	}
 	if(pOut && a_InstantiateImmediately)
 	{
-		pOut->Instantiate();
+		pOut->InstantiateStructure(false);
 	}
 
 	if(a_ppStructureLocation)
@@ -125,8 +115,8 @@ Structure* AtomManager::CreateStructureBuildpoint(int a_StructureType, Ogre::Vec
 	Structure* pOut = CreateStructure(a_StructureType, a_Pos, false, a_ppStructureLocation);
 	if(pOut && a_InstantiateImmediately)
 	{
-		std::cout << "calling Instantiate() on structure build point" << std::endl;
-		pOut->Instantiate(true);
+		//std::cout << "calling Instantiate() on structure build point" << std::endl;
+		pOut->InstantiateStructure(true);
 	}
 	return pOut;
 }

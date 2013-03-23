@@ -54,10 +54,10 @@ Box::Box(Ogre::Vector3 a_Position)
 	m_pAtomSceneNode = rootSceneNode.createChildSceneNode();
 	m_pAtomSceneNode->setPosition(a_Position);
 	
-	Instantiate();
+	InstantiateAtom();
 }
 
-void Box::Instantiate()
+void Box::InstantiateAtom()
 {
 	Ogre::SceneManager& sceneManager = GetSceneManager();
 	m_pAtomEntity = sceneManager.createEntity(num2string(NewUID()) + " obj", "cell_filling.mesh");

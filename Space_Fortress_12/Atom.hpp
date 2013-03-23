@@ -28,7 +28,8 @@ public:
 	//
 	Ogre::SceneNode* m_pAtomSceneNode;
 	virtual void Update(float a_DeltaT);
-	virtual void Instantiate()=0;
+	virtual void InstantiateAtom()=0;
+	virtual bool ChangeDirection(int a_NewDir);
 	//
 	void SetFlashingColour(Ogre::ColourValue a_FlashColour);
 	void StopFlashingColour();

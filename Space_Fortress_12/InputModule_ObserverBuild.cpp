@@ -38,7 +38,7 @@ void ObserverBuild::Update(float a_DeltaT)
 
 		btCollisionWorld::ClosestRayResultCallback rayCallback(startPos, startPos + rayDir * btScalar(m_CellBuildRange));
 		rayCallback.m_collisionFilterGroup = COLLISION_BUILDRAYCAST;
-		rayCallback.m_collisionFilterMask = COLLISION_GIRDER;
+		rayCallback.m_collisionFilterMask = COLLISION_STRUCTURE;
 		if(m_BuildExpansion)
 			rayCallback.m_collisionFilterMask = COLLISION_BUILDPOINT;
 
@@ -64,17 +64,11 @@ void ObserverBuild::SelectNewAtom(Atom* a_pNewAtom)
 	{
 		if(a_pNewAtom != m_pCurrentlyTargettedAtom)
 		{
-			if(m_pCurrentlyTargettedAtom)
-			{
-				if(m_pCurrentlyTargettedAtom->GetAtomType() == Atom::STRUCTURE && ((Structure*)m_pCurrentlyTargettedAtom)->IsBuildPoint())
-				{
-					m_pCurrentlyTargettedAtom->SetEntityVisible(false);
-				}
-				m_pCurrentlyTargettedAtom->StopFlashingColour();
-			}
+			ClearSelectedAtom();
 			a_pNewAtom->SetFlashingColour(Ogre::ColourValue::Green);
 			m_pCurrentlyTargettedAtom = a_pNewAtom;
 			m_pCurrentlyTargettedAtom->SetEntityVisible();
+			//std::cout << "new atom targetted" << std::endl;
 		}
 	}
 	else
@@ -87,6 +81,7 @@ void ObserverBuild::ClearSelectedAtom()
 {
 	if(m_pCurrentlyTargettedAtom)
 	{
+		//std::cout << "clearing selected atom" << std::endl;
 		m_pCurrentlyTargettedAtom->StopFlashingColour();
 		if(m_pCurrentlyTargettedAtom->GetAtomType() == Atom::STRUCTURE && ((Structure*)m_pCurrentlyTargettedAtom)->IsBuildPoint())
 		{

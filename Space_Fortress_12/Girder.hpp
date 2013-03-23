@@ -18,7 +18,8 @@ class Girder
 {
 public:
 	Girder(Ogre::Vector3 a_Pos);
-	virtual void Instantiate(bool a_IsBuildPoint);
+	virtual void InstantiateStructure(bool a_IsBuildPoint);
+	virtual void CreateFromBuildPoint();
 	//virtual void Update(float a_DeltaT);
 	//
 	bool AddOverlay(int a_Dir, std::string a_OverlayID);

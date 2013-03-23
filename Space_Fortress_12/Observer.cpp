@@ -8,10 +8,10 @@
 
 Observer::Observer()
 {
-	Instantiate();
+	InstantiateAtom();
 }
 
-void Observer::Instantiate()
+void Observer::InstantiateAtom()
 {
 	//debug: make all observers able to build
 	m_InputModules.push_back(new Generic(this, NULL));

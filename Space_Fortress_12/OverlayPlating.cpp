@@ -26,21 +26,28 @@ OverlayPlating::OverlayPlating(Ogre::Vector3 a_Pos)
 	m_MyAtomType = Atom::STRUCTURE;
 	m_MyStructureType = Structure::OVERLAYPLATING;
 	//
-	m_pAtomSceneNode = NewSceneNode();
-	m_pAtomSceneNode->setPosition(a_Pos);
+	m_pActualSceneNode = NewSceneNode();
+	m_pActualSceneNode->setPosition(a_Pos);
+	m_pAtomSceneNode = m_pActualSceneNode->createChildSceneNode();
 }
 
-void OverlayPlating::Instantiate(bool a_IsBuildPoint)
+void OverlayPlating::InstantiateStructure(bool a_IsBuildPoint)
 {
-	//an overlay plate is essentially an "outer cover" for the tile in one (of six) directions
+	//an overlay plate is essentially an "outer cover" for the tile in one of the six cardinal directions
+	//system is currently setup to handle any combination of the six, but it probably shouldn't be
+	m_IsBuildPoint = a_IsBuildPoint;
 	Ogre::SceneManager& sceneManager = GetSceneManager();
-	Ogre::SceneNode* pOverlayNode = m_pAtomSceneNode->createChildSceneNode();
+	//std::cout << "instantiating OverlayPlating with direction " << m_Direction << std::endl;
+	
+	//create entity
+	m_pAtomEntity = sceneManager.createEntity("overlayplating_" + num2string(NewUID()), "cell_overlay.mesh");
+	m_pAtomSceneNode->attachObject(m_pAtomEntity);
+	StopFlashingColour();
 
-	//m_IsBuildPoint
+	//set up the directional offsets
 	Ogre::Vector3 offsetPos(0, 0, 0);
 	Ogre::Vector3 lookatPos(0, 0, 0);
 	btVector3 halfExtents(0.5f, 0.5f, 0.5f);
-	//
 	if(m_Direction & NORTH)
 	{
 		offsetPos.z += 0.505f;
@@ -83,14 +90,13 @@ void OverlayPlating::Instantiate(bool a_IsBuildPoint)
 		halfExtents.setY(0.005f);
 		//std::cout << "DOWN " << (isPhysical ? "plating" : "trigger") << std::endl;
 	}
-	//
-	pOverlayNode->setPosition(offsetPos);
-	pOverlayNode->lookAt(lookatPos, Ogre::Node::TS_LOCAL);
-	pOverlayNode->yaw(Ogre::Degree(90));
+	m_pAtomSceneNode->setPosition(offsetPos);
+	m_pAtomSceneNode->lookAt(lookatPos, Ogre::Node::TS_LOCAL);
+	m_pAtomSceneNode->yaw(Ogre::Degree(90));
 
 	//create physics body and initialise to starting position
 	btBoxShape* pBoxShape = new btBoxShape(halfExtents);
-	btDefaultMotionState* groundMotionState = new btDefaultMotionState(btTransform(btQuaternion(0,0,0,1), OGRE2BT(m_pAtomSceneNode->getPosition() + offsetPos)));
+	btDefaultMotionState* groundMotionState = new btDefaultMotionState(btTransform(btQuaternion(0,0,0,1), OGRE2BT(m_pAtomSceneNode->_getDerivedPosition())));
 	btRigidBody::btRigidBodyConstructionInfo groundRigidBodyCI(0, groundMotionState, pBoxShape, btVector3(0,0,0));
 	btRigidBody* pRigidBody = new btRigidBody(groundRigidBodyCI);
 	pRigidBody->setUserPointer(this);
@@ -104,10 +110,18 @@ void OverlayPlating::Instantiate(bool a_IsBuildPoint)
 		dynamicsWorld.addRigidBody(pRigidBody, COLLISION_BUILDPOINT, COLLISION_BUILDRAYCAST);
 
 		//todo: is this working?
-		pRigidBody->setCollisionFlags(pRigidBody->CF_NO_CONTACT_RESPONSE);
+		//pRigidBody->setCollisionFlags(pRigidBody->CF_NO_CONTACT_RESPONSE);
 	}
 	else
 	{
-		dynamicsWorld.addRigidBody(pRigidBody, COLLISION_GIRDER, COLLISION_BUILDRAYCAST);
+		dynamicsWorld.addRigidBody(pRigidBody, COLLISION_STRUCTURE, COLLISION_BUILDRAYCAST);
+	}
+}
+
+void OverlayPlating::CreateFromBuildPoint()
+{
+	if(m_IsBuildPoint)
+	{
+		//
 	}
 }

@@ -8,7 +8,7 @@ class Observer
 {
 public:
 	Observer();
-	virtual void Instantiate();
+	virtual void InstantiateAtom();
 	//
 private:
 	//

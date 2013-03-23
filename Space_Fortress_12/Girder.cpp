@@ -35,7 +35,7 @@ Girder::Girder(Ogre::Vector3 a_Pos)
 	//Instantiate();
 }
 
-void Girder::Instantiate(bool a_IsBuildPoint)
+void Girder::InstantiateStructure(bool a_IsBuildPoint)
 {
 	m_IsBuildPoint = a_IsBuildPoint;
 
@@ -59,16 +59,70 @@ void Girder::Instantiate(bool a_IsBuildPoint)
 	btDiscreteDynamicsWorld& dynamicsWorld = GetDynamicsWorld();
 	if(m_IsBuildPoint)
 	{
-		std::cout << "Instantiate() called on structure build point" << std::endl;
+		//std::cout << "Instantiate() called on structure build point" << std::endl;
 		SetEntityVisible(false);
 		m_pAtomEntity->setMaterialName("cell_highlight_material");
 		dynamicsWorld.addRigidBody(pRigidBody, COLLISION_BUILDPOINT, COLLISION_BUILDRAYCAST);
 	}
 	else
 	{
-		dynamicsWorld.addRigidBody(pRigidBody, COLLISION_GIRDER, COLLISION_BUILDRAYCAST);
+		dynamicsWorld.addRigidBody(pRigidBody, COLLISION_STRUCTURE, COLLISION_BUILDRAYCAST);
+
+		//create overlay buildpoints
+		Structure* pUnusedBuildPoint;
+		for(int curDir = 1; curDir <= 32; curDir *= 2)
+		{
+			//std::cout << "direction: " << curDir << std::endl;
+			pUnusedBuildPoint = AtomManager::GetSingleton().CreateStructureBuildpoint(Structure::OVERLAYPLATING, m_pAtomSceneNode->getPosition(), false);
+			m_UnusedBuildPoints.push_back(pUnusedBuildPoint);
+			pUnusedBuildPoint->ChangeDirection(curDir);
+			pUnusedBuildPoint->InstantiateStructure(true);
+		}
 	}
 }
+
+void Girder::AddFreefloatingObj(std::string a_TypeTag)
+{
+	if(m_pAtomSceneNode)
+	{
+		AtomManager::GetSingleton().CreateAtom(Atom::OBJECT, m_pAtomSceneNode->getPosition());
+	}
+	else
+	{
+		std::cout << "WARNING: Trying to add object of type '" << a_TypeTag << "' to empty (uninitialised?) cell." << std::endl;
+	}
+}
+
+void Girder::CreateFromBuildPoint()
+{
+	if(m_IsBuildPoint)
+	{
+		//
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 void Girder::ResetEmptyOverlays()
 {
@@ -164,7 +218,7 @@ bool Girder::AddOverlay(int a_Dir, std::string a_OverlayID)
 
 	//add new rigid body to world
 	btDiscreteDynamicsWorld& dynamicsWorld = GetDynamicsWorld();
-	dynamicsWorld.addRigidBody(pRigidBody, COLLISION_GIRDER, COLLISION_BUILDRAYCAST);
+	dynamicsWorld.addRigidBody(pRigidBody, COLLISION_STRUCTURE, COLLISION_BUILDRAYCAST);
 
 	m_RigidBodies.push_back(pRigidBody);
 	m_BoxCollisionShapes.push_back(pBoxShape);
@@ -253,16 +307,4 @@ bool Girder::AddUnderlay(int a_Dir, std::string a_UnderlayID)
 		return true;
 	}
 	return false;
-}
-
-void Girder::AddFreefloatingObj(std::string a_TypeTag)
-{
-	if(m_pAtomSceneNode)
-	{
-		AtomManager::GetSingleton().CreateAtom(Atom::OBJECT, m_pAtomSceneNode->getPosition());
-	}
-	else
-	{
-		std::cout << "WARNING: Trying to add object of type '" << a_TypeTag << "' to empty (uninitialised?) cell." << std::endl;
-	}
 }

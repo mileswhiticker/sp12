@@ -157,3 +157,9 @@ void Atom::TargetcastIntercept()
 {
 	//
 }
+
+bool Atom::ChangeDirection(int a_NewDir)
+{
+	m_Direction = a_NewDir;
+	return true;
+}

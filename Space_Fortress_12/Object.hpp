@@ -25,7 +25,7 @@ class Box
 {
 public:
 	Box(Ogre::Vector3 a_Position);
-	virtual void Instantiate();
+	virtual void InstantiateAtom();
 	//
 protected:
 	//
