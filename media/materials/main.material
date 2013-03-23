@@ -143,7 +143,7 @@ material cell_highlight_material
             }
 			texture_unit
 			{
-				texture clear.png
+				texture white.jpg
 			}
 		}
 	}

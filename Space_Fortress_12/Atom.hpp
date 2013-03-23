@@ -21,7 +21,8 @@ public:
 		UNKNOWNTYPE = 0,
 		OBJECT,
 		GIRDER,
-		BUILDHIGHLIGHT,
+		GIRDER_BUILDPOINT,
+		BUILDPOINT,
 		//
 	};
 	Atom();
@@ -41,9 +42,15 @@ public:
 	btCollisionShape* m_pCollisionShape;
 	//
 	AtomType GetAtomType();
+	virtual void TargetcastIntercept();
+	//
+	bool IsBuildPoint();
 	//
 protected:
 	AtomType m_MyAtomType;
+	int m_Direction;
+	//
+	bool m_IsBuildPoint;
 	//
 private:
 	float m_ColourModulateLevel;

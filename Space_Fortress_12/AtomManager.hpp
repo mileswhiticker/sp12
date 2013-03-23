@@ -7,7 +7,6 @@
 class Atom;
 class Object;
 class Girder;
-class BuildHighlight;
 
 class AtomManager
 {
@@ -35,7 +34,6 @@ private:
 	std::vector<Atom*> m_AtomsInWorld;
 	std::vector<Girder*> m_GirdersInWorld;
 	std::vector<Object*> m_ObjectsInWorld;
-	std::vector<BuildHighlight*> m_BuildHighlightsInWorld;
 	//
 };
 

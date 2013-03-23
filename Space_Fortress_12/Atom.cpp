@@ -23,6 +23,8 @@ Atom::Atom()
 ,	m_pRigidBody(NULL)
 ,	m_pCollisionShape(NULL)
 ,	m_MyAtomType(UNKNOWNTYPE)
+,	m_Direction(0)
+,	m_IsBuildPoint(false)
 {
 	//
 }
@@ -150,4 +152,14 @@ void Atom::SetEntityVisible(bool a_Visible)
 Atom::AtomType Atom::GetAtomType()
 {
 	return m_MyAtomType;
+}
+
+void Atom::TargetcastIntercept()
+{
+	//
+}
+
+bool Atom::IsBuildPoint()
+{
+	return m_IsBuildPoint;
 }

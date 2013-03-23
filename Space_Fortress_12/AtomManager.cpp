@@ -3,7 +3,6 @@
 #include "Object.hpp"
 #include "Girder.hpp"
 #include "Structure.hpp"
-#include "BuildHighlight.hpp"
 
 #include "OgreHelper.hpp"
 
@@ -47,8 +46,8 @@ Atom* AtomManager::CreateAtom(int a_AtomType, Ogre::Vector3 a_Pos, Atom** a_ppAt
 	{
 	case(Atom::GIRDER):
 		{
-			m_GirdersInWorld.push_back(new Girder(a_Pos));
-			pOut = m_GirdersInWorld.back();
+			pOut = new Girder(a_Pos);
+			m_GirdersInWorld.push_back((Girder*)pOut);
 			m_AtomsInWorld.push_back(pOut);
 			break;
 		}
@@ -59,10 +58,10 @@ Atom* AtomManager::CreateAtom(int a_AtomType, Ogre::Vector3 a_Pos, Atom** a_ppAt
 			m_AtomsInWorld.push_back(pBox);
 			break;
 		}
-	case(Atom::BUILDHIGHLIGHT):
+	case(Atom::GIRDER_BUILDPOINT):
 		{
-			m_BuildHighlightsInWorld.push_back(new BuildHighlight(a_Pos));
-			pOut = m_BuildHighlightsInWorld.back();
+			pOut = new Girder(a_Pos, true);
+			m_GirdersInWorld.push_back((Girder*)pOut);
 			m_AtomsInWorld.push_back(pOut);
 			break;
 		}

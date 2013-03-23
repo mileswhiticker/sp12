@@ -174,11 +174,14 @@
     <ClCompile Include="Girder.cpp">
       <Filter>Source Files\Atoms</Filter>
     </ClCompile>
-    <ClCompile Include="BuildHighlight.cpp">
-      <Filter>Source Files\Atoms</Filter>
-    </ClCompile>
     <ClCompile Include="Station.cpp">
       <Filter>Source Files\MapSuite</Filter>
+    </ClCompile>
+    <ClCompile Include="OverlayPlating.cpp">
+      <Filter>Source Files\Atoms</Filter>
+    </ClCompile>
+    <ClCompile Include="BuildPoint.cpp">
+      <Filter>Source Files\Atoms</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -287,11 +290,14 @@
     <ClInclude Include="Girder.hpp">
       <Filter>Header Files\Atoms</Filter>
     </ClInclude>
-    <ClInclude Include="BuildHighlight.hpp">
-      <Filter>Header Files\Atoms</Filter>
-    </ClInclude>
     <ClInclude Include="Station.hpp">
       <Filter>Header Files\MapSuite</Filter>
+    </ClInclude>
+    <ClInclude Include="OverlayPlating.hpp">
+      <Filter>Header Files\Atoms</Filter>
+    </ClInclude>
+    <ClInclude Include="BuildPoint.hpp">
+      <Filter>Header Files\Atoms</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

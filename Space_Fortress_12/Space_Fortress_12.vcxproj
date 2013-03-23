@@ -18,7 +18,7 @@
     <ClCompile Include="Application_Update.cpp" />
     <ClCompile Include="Atom.cpp" />
     <ClCompile Include="AtomManager.cpp" />
-    <ClCompile Include="BuildHighlight.cpp" />
+    <ClCompile Include="BuildPoint.cpp" />
     <ClCompile Include="Button.cpp" />
     <ClCompile Include="Girder.cpp" />
     <ClCompile Include="Client.cpp" />
@@ -39,6 +39,7 @@
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="Observer.cpp" />
     <ClCompile Include="OgreHelper.cpp" />
+    <ClCompile Include="OverlayPlating.cpp" />
     <ClCompile Include="RandHelper.cpp" />
     <ClCompile Include="Server.cpp" />
     <ClCompile Include="Station.cpp" />
@@ -48,11 +49,11 @@
     <ClCompile Include="UID.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BuildPoint.hpp" />
     <ClInclude Include="Application.hpp" />
     <ClInclude Include="Atom.hpp" />
     <ClInclude Include="AtomManager.hpp" />
     <ClInclude Include="BtOgreHelper.hpp" />
-    <ClInclude Include="BuildHighlight.hpp" />
     <ClInclude Include="Button.hpp" />
     <ClInclude Include="Cached.hpp" />
     <ClInclude Include="Girder.hpp" />
@@ -77,6 +78,7 @@
     <ClInclude Include="Object.hpp" />
     <ClInclude Include="Observer.hpp" />
     <ClInclude Include="OgreHelper.hpp" />
+    <ClInclude Include="OverlayPlating.hpp" />
     <ClInclude Include="PlayerSpawn.hpp" />
     <ClInclude Include="RandHelper.h" />
     <ClInclude Include="Server.hpp" />

@@ -22,12 +22,13 @@
 #include <BulletDynamics\Dynamics\btRigidBody.h>
 #include <LinearMath\btDefaultMotionState.h>
 
-Girder::Girder(Ogre::Vector3 a_Pos)
+Girder::Girder(Ogre::Vector3 a_Pos, bool a_IsBuildPoint)
 :	Atom()
 ,	m_PlateOverlayDirs(0)
 ,	m_PlateUnderlays(0)
 {
 	m_MyAtomType = Atom::GIRDER;
+	m_IsBuildPoint = a_IsBuildPoint;
 	//
 	m_pAtomSceneNode = NewSceneNode();
 	m_pAtomSceneNode->setPosition(a_Pos);
@@ -38,10 +39,33 @@ void Girder::Instantiate()
 {
 	//a single cuboid girder to cover this cell
 	Ogre::SceneManager& sceneManager = Application::StaticGetSceneManager();
-
 	m_pAtomEntity = sceneManager.createEntity(num2string(NewUID()) + " girder", "girder.mesh");
 	m_pAtomSceneNode->attachObject(m_pAtomEntity);
 	StopFlashingColour();
+	
+	//create physics collider to intercept raycasts
+	btBoxShape* pBoxShape = new btBoxShape(btVector3(0.5f, 0.5f, 0.5f));
+	btDefaultMotionState* groundMotionState = new btDefaultMotionState(btTransform(btQuaternion(0,0,0,1), OGRE2BT(m_pAtomSceneNode->getPosition())));
+	btRigidBody::btRigidBodyConstructionInfo groundRigidBodyCI(0, groundMotionState, pBoxShape, btVector3(0,0,0));
+	btRigidBody* pRigidBody = new btRigidBody(groundRigidBodyCI);
+	pRigidBody->setUserPointer(this);
+	
+	//todo: is this working?
+	pRigidBody->setCollisionFlags(pRigidBody->CF_NO_CONTACT_RESPONSE);
+
+	//add new rigid body to world
+	btDiscreteDynamicsWorld& dynamicsWorld = Application::StaticGetDynamicsWorld();
+	if(m_IsBuildPoint)
+	{
+		m_MyAtomType = Atom::GIRDER_BUILDPOINT;
+		SetEntityVisible(false);
+		m_pAtomEntity->setMaterialName("cell_highlight_material");
+		dynamicsWorld.addRigidBody(pRigidBody, COLLISION_GIRDER_BUILDPOINT, COLLISION_BUILDRAYCAST);
+	}
+	else
+	{
+		dynamicsWorld.addRigidBody(pRigidBody, COLLISION_GIRDER, COLLISION_BUILDRAYCAST);
+	}
 }
 
 void Girder::ResetEmptyOverlays()

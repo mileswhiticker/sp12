@@ -17,7 +17,7 @@ class Girder
 :	public Atom
 {
 public:
-	Girder(Ogre::Vector3 a_Pos);
+	Girder(Ogre::Vector3 a_Pos, bool a_IsBuildPoint = false);
 	virtual void Instantiate();
 	//virtual void Update(float a_DeltaT);
 	//
