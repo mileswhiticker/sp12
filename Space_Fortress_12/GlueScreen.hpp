@@ -2,7 +2,6 @@
 #define	GLUE_SCREEN_HPP
 
 #include "Button.hpp"
-#include <Gwen\Gwen.h>
 
 namespace CEGUI
 {

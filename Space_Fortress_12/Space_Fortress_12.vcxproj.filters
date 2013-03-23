@@ -73,6 +73,12 @@
     <Filter Include="Header Files\Effects">
       <UniqueIdentifier>{dd650f0f-d23c-4bbf-9949-cf9c73ee95ca}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Atoms\Structure">
+      <UniqueIdentifier>{8ba094b0-390e-410f-b202-278718729685}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Atoms\Structure">
+      <UniqueIdentifier>{11e4e69b-6956-4de9-926b-282de6d0c726}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -168,20 +174,20 @@
     <ClCompile Include="EffectManager.cpp">
       <Filter>Source Files\Effects</Filter>
     </ClCompile>
-    <ClCompile Include="Structure.cpp">
-      <Filter>Source Files\Atoms</Filter>
-    </ClCompile>
-    <ClCompile Include="Girder.cpp">
-      <Filter>Source Files\Atoms</Filter>
-    </ClCompile>
     <ClCompile Include="Station.cpp">
       <Filter>Source Files\MapSuite</Filter>
     </ClCompile>
-    <ClCompile Include="OverlayPlating.cpp">
-      <Filter>Source Files\Atoms</Filter>
-    </ClCompile>
     <ClCompile Include="BulletHelper.cpp">
       <Filter>Source Files\Utils and helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="Girder.cpp">
+      <Filter>Source Files\Atoms\Structure</Filter>
+    </ClCompile>
+    <ClCompile Include="OverlayPlating.cpp">
+      <Filter>Source Files\Atoms\Structure</Filter>
+    </ClCompile>
+    <ClCompile Include="Structure.cpp">
+      <Filter>Source Files\Atoms\Structure</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -284,20 +290,20 @@
     <ClInclude Include="CollisionDefines.h">
       <Filter>Header Files\Config</Filter>
     </ClInclude>
-    <ClInclude Include="Structure.hpp">
-      <Filter>Header Files\Atoms</Filter>
-    </ClInclude>
-    <ClInclude Include="Girder.hpp">
-      <Filter>Header Files\Atoms</Filter>
-    </ClInclude>
     <ClInclude Include="Station.hpp">
       <Filter>Header Files\MapSuite</Filter>
     </ClInclude>
-    <ClInclude Include="OverlayPlating.hpp">
-      <Filter>Header Files\Atoms</Filter>
-    </ClInclude>
     <ClInclude Include="BulletHelper.hpp">
       <Filter>Header Files\Utils and helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="Girder.hpp">
+      <Filter>Header Files\Atoms\Structure</Filter>
+    </ClInclude>
+    <ClInclude Include="OverlayPlating.hpp">
+      <Filter>Header Files\Atoms\Structure</Filter>
+    </ClInclude>
+    <ClInclude Include="Structure.hpp">
+      <Filter>Header Files\Atoms\Structure</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
