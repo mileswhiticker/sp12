@@ -180,8 +180,8 @@
     <ClCompile Include="OverlayPlating.cpp">
       <Filter>Source Files\Atoms</Filter>
     </ClCompile>
-    <ClCompile Include="BuildPoint.cpp">
-      <Filter>Source Files\Atoms</Filter>
+    <ClCompile Include="BulletHelper.cpp">
+      <Filter>Source Files\Utils and helpers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -296,8 +296,8 @@
     <ClInclude Include="OverlayPlating.hpp">
       <Filter>Header Files\Atoms</Filter>
     </ClInclude>
-    <ClInclude Include="BuildPoint.hpp">
-      <Filter>Header Files\Atoms</Filter>
+    <ClInclude Include="BulletHelper.hpp">
+      <Filter>Header Files\Utils and helpers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
