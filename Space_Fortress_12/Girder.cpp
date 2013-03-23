@@ -1,17 +1,5 @@
 #include "Girder.hpp"
 
-//#pragma warning(disable:4251)
-#include "Application.hpp"
-#include "num2string.h"
-#include "UID.hpp"
-#include "Direction.h"
-#include "AtomManager.hpp"
-#include "BtOgreHelper.hpp"
-#include "DebugDrawer.h"
-
-#include "CollisionDefines.h"
-#include "OgreHelper.hpp"
-
 #include <OGRE\OgreSceneManager.h>
 #include <OGRE\OgreSceneNode.h>
 #include <OGRE\OgreEntity.h>
@@ -22,23 +10,37 @@
 #include <BulletDynamics\Dynamics\btRigidBody.h>
 #include <LinearMath\btDefaultMotionState.h>
 
-Girder::Girder(Ogre::Vector3 a_Pos, bool a_IsBuildPoint)
-:	Atom()
+#include "AtomManager.hpp"
+
+#include "BtOgreHelper.hpp"
+#include "OgreHelper.hpp"
+#include "BulletHelper.hpp"
+
+#include "num2string.h"
+#include "UID.hpp"
+#include "Direction.h"
+#include "DebugDrawer.h"
+#include "CollisionDefines.h"
+
+Girder::Girder(Ogre::Vector3 a_Pos)
+:	Structure()
 ,	m_PlateOverlayDirs(0)
 ,	m_PlateUnderlays(0)
 {
-	m_MyAtomType = Atom::GIRDER;
-	m_IsBuildPoint = a_IsBuildPoint;
+	m_MyAtomType = Atom::STRUCTURE;
+	m_MyStructureType = Structure::GIRDER;
 	//
 	m_pAtomSceneNode = NewSceneNode();
 	m_pAtomSceneNode->setPosition(a_Pos);
-	Instantiate();
+	//Instantiate();
 }
 
-void Girder::Instantiate()
+void Girder::Instantiate(bool a_IsBuildPoint)
 {
+	m_IsBuildPoint = a_IsBuildPoint;
+
 	//a single cuboid girder to cover this cell
-	Ogre::SceneManager& sceneManager = Application::StaticGetSceneManager();
+	Ogre::SceneManager& sceneManager = GetSceneManager();
 	m_pAtomEntity = sceneManager.createEntity(num2string(NewUID()) + " girder", "girder.mesh");
 	m_pAtomSceneNode->attachObject(m_pAtomEntity);
 	StopFlashingColour();
@@ -54,13 +56,13 @@ void Girder::Instantiate()
 	pRigidBody->setCollisionFlags(pRigidBody->CF_NO_CONTACT_RESPONSE);
 
 	//add new rigid body to world
-	btDiscreteDynamicsWorld& dynamicsWorld = Application::StaticGetDynamicsWorld();
+	btDiscreteDynamicsWorld& dynamicsWorld = GetDynamicsWorld();
 	if(m_IsBuildPoint)
 	{
-		m_MyAtomType = Atom::GIRDER_BUILDPOINT;
+		std::cout << "Instantiate() called on structure build point" << std::endl;
 		SetEntityVisible(false);
 		m_pAtomEntity->setMaterialName("cell_highlight_material");
-		dynamicsWorld.addRigidBody(pRigidBody, COLLISION_GIRDER_BUILDPOINT, COLLISION_BUILDRAYCAST);
+		dynamicsWorld.addRigidBody(pRigidBody, COLLISION_BUILDPOINT, COLLISION_BUILDRAYCAST);
 	}
 	else
 	{
@@ -86,7 +88,7 @@ bool Girder::AddOverlay(int a_Dir, std::string a_OverlayID)
 	bool isPhysical = false;
 	if(a_OverlayID.length())
 		isPhysical = true;
-	Ogre::SceneManager& sceneManager = Application::StaticGetSceneManager();
+	Ogre::SceneManager& sceneManager = GetSceneManager();
 	Ogre::SceneNode* pOverlayNode = m_pAtomSceneNode->createChildSceneNode();
 
 	//only create an entity if it's a valid id
@@ -161,20 +163,8 @@ bool Girder::AddOverlay(int a_Dir, std::string a_OverlayID)
 	pRigidBody->setUserPointer(this);
 
 	//add new rigid body to world
-	btDiscreteDynamicsWorld& dynamicsWorld = Application::StaticGetDynamicsWorld();
-	dynamicsWorld.addRigidBody(pRigidBody, COLLISION_GIRDER, COLLISION_BUILDRAYCAST | COLLISION_ATOM);
-	/*if(m_SkeletonType == GIRDER)
-	{
-		dynamicsWorld.addRigidBody(pRigidBody, COLLISION_GIRDER, COLLISION_BUILDRAYCAST | COLLISION_ATOM);
-	}
-	else if(m_SkeletonType == HIGHLIGHT)
-	{
-		dynamicsWorld.addRigidBody(pRigidBody, COLLISION_HIGHLIGHTGIRDER, COLLISION_BUILDRAYCAST | COLLISION_ATOM);
-	}
-	else
-	{
-		dynamicsWorld.addRigidBody(pRigidBody, COLLISION_ATOM, COLLISION_ATOM);
-	}*/
+	btDiscreteDynamicsWorld& dynamicsWorld = GetDynamicsWorld();
+	dynamicsWorld.addRigidBody(pRigidBody, COLLISION_GIRDER, COLLISION_BUILDRAYCAST);
 
 	m_RigidBodies.push_back(pRigidBody);
 	m_BoxCollisionShapes.push_back(pBoxShape);
@@ -187,7 +177,7 @@ bool Girder::AddUnderlay(int a_Dir, std::string a_UnderlayID)
 	if(!a_UnderlayID.compare("grey_default"))
 	{
 		//an overlay plate is essentially an "outer cover" for the tile in one (of six) directions
-		Ogre::SceneManager& sceneManager = Application::StaticGetSceneManager();
+		Ogre::SceneManager& sceneManager = GetSceneManager();
 		
 		m_Underlays.push_back(sceneManager.createEntity(num2string(NewUID()) + " underlay", "cell_underlay.mesh"));
 		Ogre::SceneNode* pUnderlayNode = m_pAtomSceneNode->createChildSceneNode();
@@ -254,7 +244,7 @@ bool Girder::AddUnderlay(int a_Dir, std::string a_UnderlayID)
 		btRigidBody* pRigidBody = new btRigidBody(groundRigidBodyCI);
 
 		//add new rigid body to world
-		btDiscreteDynamicsWorld& dynamicsWorld = Application::StaticGetDynamicsWorld();
+		btDiscreteDynamicsWorld& dynamicsWorld = GetDynamicsWorld();
 		dynamicsWorld.addRigidBody(pRigidBody);
 
 		m_RigidBodies.push_back(pRigidBody);

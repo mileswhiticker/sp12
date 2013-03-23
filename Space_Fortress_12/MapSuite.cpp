@@ -146,7 +146,7 @@ bool MapSuite::LoadMapFile(std::string a_FileName)
 						const char* filling_type = NULL;
 						if(skeleton_type)
 						{
-							pGirder = (Girder*)AtomManager::GetSingleton().CreateAtom(Atom::GIRDER, coords.OgreVector3Copy());
+							pGirder = (Girder*)AtomManager::GetSingleton().CreateStructure(Structure::GIRDER, coords.OgreVector3Copy());
 							//std::string(pElement->Attribute("skeleton"))
 							instanceGrid[i][j][k] = pGirder;
 						
@@ -224,41 +224,41 @@ bool MapSuite::LoadMapFile(std::string a_FileName)
 					{
 						for(unsigned int z = 0; z < instanceGrid[x][y].size() - 1; z++)
 						{
-							if(instanceGrid[x][y][z] && instanceGrid[x][y][z]->GetAtomType() == Atom::GIRDER)
+							if(instanceGrid[x][y][z] && instanceGrid[x][y][z]->GetAtomType() == Atom::STRUCTURE && !((Structure*)instanceGrid[x][y][z])->IsBuildPoint())
 							{
 								//surround this cell with highlighters
 								if(!instanceGrid[x + 1][y + 0][z + 0])
 								{
-									instanceGrid[x + 1][y + 0][z + 0] = (Girder*)AtomManager::GetSingleton().CreateAtom(Atom::GIRDER_BUILDPOINT, Ogre::Vector3(Ogre::Real(x + 1), Ogre::Real(y + 0), Ogre::Real(z + 0)));
+									instanceGrid[x + 1][y + 0][z + 0] = (Girder*)AtomManager::GetSingleton().CreateStructureBuildpoint(Structure::GIRDER, Ogre::Vector3(Ogre::Real(x + 1), Ogre::Real(y + 0), Ogre::Real(z + 0)));
 									//instanceGrid[x + 1][y + 0][z + 0]->ResetEmptyOverlays();
 								}
 								if(!instanceGrid[x - 1][y + 0][z + 0])
 								{
-									instanceGrid[x - 1][y + 0][z + 0] = (Girder*)AtomManager::GetSingleton().CreateAtom(Atom::GIRDER_BUILDPOINT, Ogre::Vector3(Ogre::Real(x - 1), Ogre::Real(y + 0), Ogre::Real(z + 0)));
+									instanceGrid[x - 1][y + 0][z + 0] = (Girder*)AtomManager::GetSingleton().CreateStructureBuildpoint(Structure::GIRDER, Ogre::Vector3(Ogre::Real(x - 1), Ogre::Real(y + 0), Ogre::Real(z + 0)));
 									//new Girder(pStationSceneNode, Ogre::Vector3(Ogre::Real(x - 1), Ogre::Real(y + 0), Ogre::Real(z + 0)), "highlight_cell");
 									//instanceGrid[x - 1][y + 0][z + 0]->ResetEmptyOverlays();
 								}
 								if(!instanceGrid[x + 0][y + 1][z + 0])
 								{
-									instanceGrid[x + 0][y + 1][z + 0] = (Girder*)AtomManager::GetSingleton().CreateAtom(Atom::GIRDER_BUILDPOINT, Ogre::Vector3(Ogre::Real(x + 0), Ogre::Real(y + 1), Ogre::Real(z + 0)));
+									instanceGrid[x + 0][y + 1][z + 0] = (Girder*)AtomManager::GetSingleton().CreateStructureBuildpoint(Structure::GIRDER, Ogre::Vector3(Ogre::Real(x + 0), Ogre::Real(y + 1), Ogre::Real(z + 0)));
 									//new Girder(pStationSceneNode, Ogre::Vector3(Ogre::Real(x + 0), Ogre::Real(y + 1), Ogre::Real(z + 0)), "highlight_cell");
 									//instanceGrid[x + 0][y + 1][z + 0]->ResetEmptyOverlays();
 								}
 								if(!instanceGrid[x + 0][y - 1][z + 0])
 								{
-									instanceGrid[x + 0][y - 1][z + 0] = (Girder*)AtomManager::GetSingleton().CreateAtom(Atom::GIRDER_BUILDPOINT, Ogre::Vector3(Ogre::Real(x + 0), Ogre::Real(y - 1), Ogre::Real(z + 0)));
+									instanceGrid[x + 0][y - 1][z + 0] = (Girder*)AtomManager::GetSingleton().CreateStructureBuildpoint(Structure::GIRDER, Ogre::Vector3(Ogre::Real(x + 0), Ogre::Real(y - 1), Ogre::Real(z + 0)));
 									//new Girder(pStationSceneNode, Ogre::Vector3(Ogre::Real(x + 0), Ogre::Real(y - 1), Ogre::Real(z + 0)), "highlight_cell");
 									//instanceGrid[x + 0][y - 1][z + 0]->ResetEmptyOverlays();
 								}
 								if(!instanceGrid[x + 0][y + 0][z + 1])
 								{
-									instanceGrid[x + 0][y + 0][z + 1] = (Girder*)AtomManager::GetSingleton().CreateAtom(Atom::GIRDER_BUILDPOINT, Ogre::Vector3(Ogre::Real(x + 0), Ogre::Real(y + 0), Ogre::Real(z + 1)));
+									instanceGrid[x + 0][y + 0][z + 1] = (Girder*)AtomManager::GetSingleton().CreateStructureBuildpoint(Structure::GIRDER, Ogre::Vector3(Ogre::Real(x + 0), Ogre::Real(y + 0), Ogre::Real(z + 1)));
 									//new Girder(pStationSceneNode, Ogre::Vector3(Ogre::Real(x + 0), Ogre::Real(y + 0), Ogre::Real(z + 1)), "highlight_cell");
 									//instanceGrid[x + 0][y + 0][z + 1]->ResetEmptyOverlays();
 								}
 								if(!instanceGrid[x + 0][y + 0][z - 1])
 								{
-									instanceGrid[x + 0][y + 0][z - 1] = (Girder*)AtomManager::GetSingleton().CreateAtom(Atom::GIRDER_BUILDPOINT, Ogre::Vector3(Ogre::Real(x + 0), Ogre::Real(y + 0), Ogre::Real(z - 1)));
+									instanceGrid[x + 0][y + 0][z - 1] = (Girder*)AtomManager::GetSingleton().CreateStructureBuildpoint(Structure::GIRDER, Ogre::Vector3(Ogre::Real(x + 0), Ogre::Real(y + 0), Ogre::Real(z - 1)));
 									//new Girder(pStationSceneNode, Ogre::Vector3(Ogre::Real(x + 0), Ogre::Real(y + 0), Ogre::Real(z - 1)), "highlight_cell");
 									//instanceGrid[x + 0][y + 0][z - 1]->ResetEmptyOverlays();
 								}

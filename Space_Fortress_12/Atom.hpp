@@ -18,11 +18,10 @@ class Atom
 public:
 	enum AtomType
 	{
-		UNKNOWNTYPE = 0,
+		UNKNOWN = 0,
+		STRUCTURE,
 		OBJECT,
-		GIRDER,
-		GIRDER_BUILDPOINT,
-		BUILDPOINT,
+		MOB,
 		//
 	};
 	Atom();
@@ -44,13 +43,9 @@ public:
 	AtomType GetAtomType();
 	virtual void TargetcastIntercept();
 	//
-	bool IsBuildPoint();
-	//
 protected:
 	AtomType m_MyAtomType;
 	int m_Direction;
-	//
-	bool m_IsBuildPoint;
 	//
 private:
 	float m_ColourModulateLevel;

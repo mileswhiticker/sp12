@@ -22,9 +22,8 @@ Atom::Atom()
 ,	m_ModulateChangeDir(0)
 ,	m_pRigidBody(NULL)
 ,	m_pCollisionShape(NULL)
-,	m_MyAtomType(UNKNOWNTYPE)
+,	m_MyAtomType(UNKNOWN)
 ,	m_Direction(0)
-,	m_IsBuildPoint(false)
 {
 	//
 }
@@ -157,9 +156,4 @@ Atom::AtomType Atom::GetAtomType()
 void Atom::TargetcastIntercept()
 {
 	//
-}
-
-bool Atom::IsBuildPoint()
-{
-	return m_IsBuildPoint;
 }

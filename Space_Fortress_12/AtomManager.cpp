@@ -3,6 +3,7 @@
 #include "Object.hpp"
 #include "Girder.hpp"
 #include "Structure.hpp"
+#include "OverlayPlating.hpp"
 
 #include "OgreHelper.hpp"
 
@@ -39,30 +40,16 @@ void AtomManager::Update(float a_DeltaT)
 	}
 }
 
-Atom* AtomManager::CreateAtom(int a_AtomType, Ogre::Vector3 a_Pos, Atom** a_ppAtomLocation)
+Atom* AtomManager::CreateAtom(int a_AtomType, Ogre::Vector3 a_Pos, bool a_InstantiateImmediately, Atom** a_ppAtomLocation)
 {
 	Atom* pOut = NULL;
 	switch(a_AtomType)
 	{
-	case(Atom::GIRDER):
-		{
-			pOut = new Girder(a_Pos);
-			m_GirdersInWorld.push_back((Girder*)pOut);
-			m_AtomsInWorld.push_back(pOut);
-			break;
-		}
 	case(Atom::OBJECT):
 		{
 			Box* pBox = new Box(a_Pos);
 			m_ObjectsInWorld.push_back(pBox);
 			m_AtomsInWorld.push_back(pBox);
-			break;
-		}
-	case(Atom::GIRDER_BUILDPOINT):
-		{
-			pOut = new Girder(a_Pos, true);
-			m_GirdersInWorld.push_back((Girder*)pOut);
-			m_AtomsInWorld.push_back(pOut);
 			break;
 		}
 	default:
@@ -71,9 +58,75 @@ Atom* AtomManager::CreateAtom(int a_AtomType, Ogre::Vector3 a_Pos, Atom** a_ppAt
 			break;
 		}
 	}
+	if(pOut && a_InstantiateImmediately)
+	{
+		pOut->Instantiate();
+	}
+
 	if(a_ppAtomLocation)
 	{
 		*a_ppAtomLocation = pOut;
+	}
+	return pOut;
+}
+
+Atom* AtomManager::CreateAtomBuildpoint(int a_AtomType, Ogre::Vector3 a_Pos, bool a_InstantiateImmediately, Atom** a_ppAtomLocation)
+{
+	Atom* pOut = CreateAtom(a_AtomType, a_Pos, false, a_ppAtomLocation);
+	if(pOut && a_InstantiateImmediately)
+	{
+		pOut->Instantiate();
+	}
+	return pOut;
+}
+
+Structure* AtomManager::CreateStructure(int a_StructureType, Ogre::Vector3 a_Pos, bool a_InstantiateImmediately, Structure** a_ppStructureLocation)
+{
+	Structure* pOut = NULL;
+	switch(a_StructureType)
+	{
+	case(Structure::GIRDER):
+		{
+			pOut = new Girder(a_Pos);
+			m_GirdersInWorld.push_back((Girder*)pOut);
+			m_AtomsInWorld.push_back(pOut);
+			break;
+		}
+	case(Structure::OVERLAYPLATING):
+		{
+			OverlayPlating* pOverlayPlating = new OverlayPlating(a_Pos);
+			m_AtomsInWorld.push_back(pOverlayPlating);
+			break;
+		}
+	/*case(Structure::UNDERLAYPLATING):
+		{
+			break;
+		}*/
+	default:
+		{
+			std::cout << "Unknown structure type: " << a_StructureType << std::endl;
+			break;
+		}
+	}
+	if(pOut && a_InstantiateImmediately)
+	{
+		pOut->Instantiate();
+	}
+
+	if(a_ppStructureLocation)
+	{
+		*a_ppStructureLocation = pOut;
+	}
+	return pOut;
+}
+
+Structure* AtomManager::CreateStructureBuildpoint(int a_StructureType, Ogre::Vector3 a_Pos, bool a_InstantiateImmediately, Structure** a_ppStructureLocation)
+{
+	Structure* pOut = CreateStructure(a_StructureType, a_Pos, false, a_ppStructureLocation);
+	if(pOut && a_InstantiateImmediately)
+	{
+		std::cout << "calling Instantiate() on structure build point" << std::endl;
+		pOut->Instantiate(true);
 	}
 	return pOut;
 }

@@ -38,10 +38,9 @@ void ObserverBuild::Update(float a_DeltaT)
 
 		btCollisionWorld::ClosestRayResultCallback rayCallback(startPos, startPos + rayDir * btScalar(m_CellBuildRange));
 		rayCallback.m_collisionFilterGroup = COLLISION_BUILDRAYCAST;
+		rayCallback.m_collisionFilterMask = COLLISION_GIRDER;
 		if(m_BuildExpansion)
-			rayCallback.m_collisionFilterMask = COLLISION_GIRDER_BUILDPOINT;
-		else
-			rayCallback.m_collisionFilterMask = COLLISION_GIRDER;
+			rayCallback.m_collisionFilterMask = COLLISION_BUILDPOINT;
 
 		btDiscreteDynamicsWorld& bulletWorld = Application::StaticGetDynamicsWorld();
 		bulletWorld.rayTest(startPos, startPos + rayDir * btScalar(m_CellBuildRange), rayCallback);
@@ -67,7 +66,7 @@ void ObserverBuild::SelectNewAtom(Atom* a_pNewAtom)
 		{
 			if(m_pCurrentlyTargettedAtom)
 			{
-				if(m_pCurrentlyTargettedAtom->IsBuildPoint())
+				if(m_pCurrentlyTargettedAtom->GetAtomType() == Atom::STRUCTURE && ((Structure*)m_pCurrentlyTargettedAtom)->IsBuildPoint())
 				{
 					m_pCurrentlyTargettedAtom->SetEntityVisible(false);
 				}
@@ -89,7 +88,7 @@ void ObserverBuild::ClearSelectedAtom()
 	if(m_pCurrentlyTargettedAtom)
 	{
 		m_pCurrentlyTargettedAtom->StopFlashingColour();
-		if(m_pCurrentlyTargettedAtom->IsBuildPoint())
+		if(m_pCurrentlyTargettedAtom->GetAtomType() == Atom::STRUCTURE && ((Structure*)m_pCurrentlyTargettedAtom)->IsBuildPoint())
 		{
 			m_pCurrentlyTargettedAtom->SetEntityVisible(false);
 		}

@@ -2,7 +2,7 @@
 #define GIRDER_HPP
 
 #include <OGRE\OgreVector3.h>
-#include "Atom.hpp"
+#include "Structure.hpp"
 
 class Obj;
 class btRigidBody;
@@ -14,11 +14,11 @@ namespace Ogre
 }
 
 class Girder
-:	public Atom
+:	public Structure
 {
 public:
-	Girder(Ogre::Vector3 a_Pos, bool a_IsBuildPoint = false);
-	virtual void Instantiate();
+	Girder(Ogre::Vector3 a_Pos);
+	virtual void Instantiate(bool a_IsBuildPoint);
 	//virtual void Update(float a_DeltaT);
 	//
 	bool AddOverlay(int a_Dir, std::string a_OverlayID);
