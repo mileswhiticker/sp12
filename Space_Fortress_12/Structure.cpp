@@ -30,3 +30,8 @@ void Structure::OwnedBuildPointCreated(Structure* a_pChild)
 		}
 	}
 }
+
+Structure::StructureType Structure::GetStructureType()
+{
+	return m_MyStructureType;
+}

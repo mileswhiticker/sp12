@@ -18,6 +18,7 @@ ObserverBuild::ObserverBuild(Mob* a_pOwnedMob, Client* a_pOwnedClient)
 ,	m_pCurrentlyTargettedAtom(NULL)
 ,	m_CellBuildRange(1)
 ,	m_BuildExpansion(true)
+,	m_TargetStructureTypes(0)
 {
 	m_pOwnedMob = a_pOwnedMob;
 }
@@ -36,23 +37,37 @@ void ObserverBuild::Update(float a_DeltaT)
 		EffectManager::GetSingleton().CacheLine(new CachedLine(camPos, camPos + camDir, Ogre::ColourValue::Blue));
 		//DebugDrawer::getSingleton().drawLine(Ogre::Vector3::ZERO, Ogre::Vector3::UNIT_X * 10, Ogre::ColourValue::Green);
 
-		btCollisionWorld::ClosestRayResultCallback rayCallback(startPos, startPos + rayDir * btScalar(m_CellBuildRange));
+		btCollisionWorld::AllHitsRayResultCallback rayCallback(startPos, startPos + rayDir * btScalar(m_CellBuildRange));
 		rayCallback.m_collisionFilterGroup = COLLISION_BUILDRAYCAST;
-		rayCallback.m_collisionFilterMask = COLLISION_STRUCTURE;
 		if(m_BuildExpansion)
 			rayCallback.m_collisionFilterMask = COLLISION_BUILDPOINT;
+		else
+			rayCallback.m_collisionFilterMask = COLLISION_STRUCTURE;
 
 		btDiscreteDynamicsWorld& bulletWorld = Application::StaticGetDynamicsWorld();
 		bulletWorld.rayTest(startPos, startPos + rayDir * btScalar(m_CellBuildRange), rayCallback);
 		Atom* pHitAtom = NULL;
 		if(rayCallback.hasHit())
 		{
-			Ogre::Vector3 drawPos = camPos + camDir * Ogre::Real(m_CellBuildRange) * rayCallback.m_closestHitFraction;
-			//DebugDrawer::getSingleton().drawSphere(drawPos, 0.1f, Ogre::ColourValue::Red);
-			EffectManager::GetSingleton().CacheSphere(new CachedSphere(drawPos, 0.01f, Ogre::ColourValue::Red));
-			
-			const btCollisionObject* pHitObj = rayCallback.m_collisionObject;
-			pHitAtom = (Atom*)pHitObj->getUserPointer();
+			//rayCallback.m_collisionObjects.quickSort();
+			for(int index=0;index<rayCallback.m_collisionObjects.size();index++)
+			{
+				const btCollisionObject* pHitObj = rayCallback.m_collisionObjects.at(index);
+				pHitAtom = (Atom*)pHitObj->getUserPointer();
+				//std::cout << index << "/" << rayCallback.m_collisionObjects.size() << " " << pHitAtom << std::endl;
+				if(pHitAtom && pHitAtom->GetAtomType() == Atom::STRUCTURE && (!m_TargetStructureTypes || ((Structure*)pHitAtom)->GetStructureType() == m_TargetStructureTypes))
+				{
+					//m_TargetStructureTypes
+					Ogre::Vector3 drawPos = camPos + camDir * Ogre::Real(m_CellBuildRange) * rayCallback.m_closestHitFraction;
+					//DebugDrawer::getSingleton().drawSphere(drawPos, 0.1f, Ogre::ColourValue::Red);
+					EffectManager::GetSingleton().CacheSphere(new CachedSphere(drawPos, 0.01f, Ogre::ColourValue::Red));
+					
+					break;
+				}
+
+				//reset it, so that if we don't find a matching structure at all the user's selection is reset
+				pHitAtom = NULL;
+			}
 		}
 		SelectNewAtom(pHitAtom);
 	}
@@ -98,6 +113,42 @@ bool ObserverBuild::keyPressed( const OIS::KeyEvent &arg )
 	case(OIS::KC_B):
 		{
 			m_BuildExpansion = !m_BuildExpansion;
+			m_BuildExpansion ? std::cout << "buildpoints" << std::endl : std::cout << "existing structures" << std::endl;
+			return true;
+		}
+	case(OIS::KC_1):
+		{
+			m_TargetStructureTypes = 0;
+			std::cout << "targetting all structures" << std::endl;
+			return true;
+		}
+	case(OIS::KC_2):
+		{
+			m_TargetStructureTypes = Structure::GIRDER;
+			std::cout << "targetting GIRDER" << std::endl;
+			return true;
+		}
+	case(OIS::KC_3):
+		{
+			m_TargetStructureTypes = Structure::OVERLAYPLATING;
+			std::cout << "targetting OVERLAYPLATING" << std::endl;
+			return true;
+		}
+	case(OIS::KC_4):
+		{
+			m_TargetStructureTypes = Structure::UNDERLAYPLATING;
+			std::cout << "targetting UNDERLAYPLATING" << std::endl;
+			return true;
+		}
+	case(OIS::KC_I):
+		{
+			if(m_pCurrentlyTargettedAtom && m_pCurrentlyTargettedAtom->GetAtomType() == Atom::STRUCTURE)
+			{
+				if(((Structure*)m_pCurrentlyTargettedAtom)->IsBuildPoint())
+					((Structure*)m_pCurrentlyTargettedAtom)->CreateFromBuildPoint();
+				else
+					((Structure*)m_pCurrentlyTargettedAtom)->DestroyToBuildPoint();
+			}
 			return true;
 		}
 	}

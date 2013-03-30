@@ -125,3 +125,11 @@ void OverlayPlating::CreateFromBuildPoint()
 		//
 	}
 }
+
+void OverlayPlating::DestroyToBuildPoint()
+{
+	if(!m_IsBuildPoint)
+	{
+		//
+	}
+}

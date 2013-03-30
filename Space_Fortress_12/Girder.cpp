@@ -11,27 +11,33 @@
 #include <LinearMath\btDefaultMotionState.h>
 
 #include "AtomManager.hpp"
+#include "MapSuite.hpp"
 
 #include "BtOgreHelper.hpp"
 #include "OgreHelper.hpp"
 #include "BulletHelper.hpp"
 
+#include "MapCell.hpp"
 #include "num2string.h"
 #include "UID.hpp"
 #include "Direction.h"
 #include "DebugDrawer.h"
 #include "CollisionDefines.h"
 
-Girder::Girder(Ogre::Vector3 a_Pos)
+Girder::Girder(MapCell* a_pSourceMapCell)
 :	Structure()
+,	Turf()
 ,	m_PlateOverlayDirs(0)
 ,	m_PlateUnderlays(0)
+,	m_pSourceMapCell(a_pSourceMapCell)
 {
+	m_pMyStructure = this;
 	m_MyAtomType = Atom::STRUCTURE;
 	m_MyStructureType = Structure::GIRDER;
 	//
 	m_pAtomSceneNode = NewSceneNode();
-	m_pAtomSceneNode->setPosition(a_Pos);
+	if(m_pSourceMapCell)
+		m_pAtomSceneNode->setPosition(m_pSourceMapCell->m_Position);
 	//Instantiate();
 }
 
@@ -46,14 +52,14 @@ void Girder::InstantiateStructure(bool a_IsBuildPoint)
 	StopFlashingColour();
 	
 	//create physics collider to intercept raycasts
-	btBoxShape* pBoxShape = new btBoxShape(btVector3(0.5f, 0.5f, 0.5f));
+	btBoxShape* m_pCollisionShape = new btBoxShape(btVector3(0.5f, 0.5f, 0.5f));
 	btDefaultMotionState* groundMotionState = new btDefaultMotionState(btTransform(btQuaternion(0,0,0,1), OGRE2BT(m_pAtomSceneNode->getPosition())));
-	btRigidBody::btRigidBodyConstructionInfo groundRigidBodyCI(0, groundMotionState, pBoxShape, btVector3(0,0,0));
-	btRigidBody* pRigidBody = new btRigidBody(groundRigidBodyCI);
-	pRigidBody->setUserPointer(this);
+	btRigidBody::btRigidBodyConstructionInfo groundRigidBodyCI(0, groundMotionState, m_pCollisionShape, btVector3(0,0,0));
+	m_pRigidBody = new btRigidBody(groundRigidBodyCI);
+	m_pRigidBody->setUserPointer(this);
 	
 	//todo: is this working?
-	pRigidBody->setCollisionFlags(pRigidBody->CF_NO_CONTACT_RESPONSE);
+	m_pRigidBody->setCollisionFlags(m_pRigidBody->CF_NO_CONTACT_RESPONSE);
 
 	//add new rigid body to world
 	btDiscreteDynamicsWorld& dynamicsWorld = GetDynamicsWorld();
@@ -62,18 +68,18 @@ void Girder::InstantiateStructure(bool a_IsBuildPoint)
 		//std::cout << "Instantiate() called on structure build point" << std::endl;
 		SetEntityVisible(false);
 		m_pAtomEntity->setMaterialName("cell_highlight_material");
-		dynamicsWorld.addRigidBody(pRigidBody, COLLISION_BUILDPOINT, COLLISION_BUILDRAYCAST);
+		dynamicsWorld.addRigidBody(m_pRigidBody, COLLISION_BUILDPOINT, COLLISION_BUILDRAYCAST);
 	}
 	else
 	{
-		dynamicsWorld.addRigidBody(pRigidBody, COLLISION_STRUCTURE, COLLISION_BUILDRAYCAST);
+		dynamicsWorld.addRigidBody(m_pRigidBody, COLLISION_STRUCTURE, COLLISION_BUILDRAYCAST);
 
 		//create overlay buildpoints
 		Structure* pUnusedBuildPoint;
 		for(int curDir = 1; curDir <= 32; curDir *= 2)
 		{
 			//std::cout << "direction: " << curDir << std::endl;
-			pUnusedBuildPoint = AtomManager::GetSingleton().CreateStructureBuildpoint(Structure::OVERLAYPLATING, m_pAtomSceneNode->getPosition(), false);
+			pUnusedBuildPoint = AtomManager::GetSingleton().CreateStructureBuildpoint(Structure::OVERLAYPLATING, m_pSourceMapCell, false);
 			m_UnusedBuildPoints.push_back(pUnusedBuildPoint);
 			pUnusedBuildPoint->ChangeDirection(curDir);
 			pUnusedBuildPoint->InstantiateStructure(true);
@@ -97,7 +103,41 @@ void Girder::CreateFromBuildPoint()
 {
 	if(m_IsBuildPoint)
 	{
-		//
+		//std::cout << "Girder::CreateFromBuildPoint()" << std::endl;
+
+		//update the collision flags
+		btDiscreteDynamicsWorld& dynamicsWorld = GetDynamicsWorld();
+		dynamicsWorld.removeRigidBody(m_pRigidBody);
+		dynamicsWorld.addRigidBody(m_pRigidBody, COLLISION_STRUCTURE, COLLISION_BUILDRAYCAST);
+
+		//create overlay buildpoints
+		Structure* pUnusedBuildPoint;
+		for(int curDir = 1; curDir <= 32; curDir *= 2)
+		{
+			//std::cout << "direction: " << curDir << std::endl;
+			pUnusedBuildPoint = AtomManager::GetSingleton().CreateStructureBuildpoint(Structure::OVERLAYPLATING, m_pSourceMapCell, false);
+			m_UnusedBuildPoints.push_back(pUnusedBuildPoint);
+			pUnusedBuildPoint->ChangeDirection(curDir);
+			pUnusedBuildPoint->InstantiateStructure(true);
+		}
+
+		//miscellaneous
+		m_pAtomEntity->setMaterialName("girder_material");
+		SetEntityVisible(true);
+		m_IsBuildPoint = false;
+		
+		//create girder buildpoints in adjacent cells
+		Ogre::Vector3 pos = m_pAtomSceneNode->getPosition();
+		MapSuite::GetInstance().CreateAdjacentGirderBuildpoints(m_pSourceMapCell->m_Position.x, m_pSourceMapCell->m_Position.y, m_pSourceMapCell->m_Position.z);
+
+	}
+}
+
+void Girder::DestroyToBuildPoint()
+{
+	if(!m_IsBuildPoint)
+	{
+		//std::cout << "Girder::DestroyToBuildPoint()" << std::endl;
 	}
 }
 

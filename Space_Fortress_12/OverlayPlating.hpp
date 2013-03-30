@@ -16,6 +16,7 @@ public:
 	OverlayPlating(Ogre::Vector3 a_Pos);
 	virtual void InstantiateStructure(bool a_IsBuildPoint);
 	virtual void CreateFromBuildPoint();
+	virtual void DestroyToBuildPoint();
 	//
 private:
 	Ogre::SceneNode* m_pActualSceneNode;

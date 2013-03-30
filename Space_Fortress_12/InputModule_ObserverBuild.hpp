@@ -19,6 +19,7 @@ public:
 	//
 	int m_CellBuildRange;
 	bool m_BuildExpansion;
+	int m_TargetStructureTypes;
 	//
 private:
 	void SelectNewAtom(Atom* a_pNewAtom);

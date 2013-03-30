@@ -23,7 +23,10 @@ public:
 	//
 	bool IsBuildPoint();
 	virtual void CreateFromBuildPoint()=0;
+	virtual void DestroyToBuildPoint()=0;
 	void OwnedBuildPointCreated(Structure* a_pChild);
+	//
+	StructureType GetStructureType();
 	//
 protected:
 	StructureType m_MyStructureType;

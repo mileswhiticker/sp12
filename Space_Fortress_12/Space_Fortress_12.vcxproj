@@ -32,6 +32,7 @@
     <ClCompile Include="InputModule_ObserverFlight.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MainMenu.cpp" />
+    <ClCompile Include="MapCell.cpp" />
     <ClCompile Include="MapSuite.cpp" />
     <ClCompile Include="MeshStrider.cpp" />
     <ClCompile Include="Mob.cpp" />
@@ -46,6 +47,7 @@
     <ClCompile Include="InputModule_ObserverBuild.cpp" />
     <ClCompile Include="Structure.cpp" />
     <ClCompile Include="tinyxml2.cpp" />
+    <ClCompile Include="Turf.cpp" />
     <ClCompile Include="UID.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -70,8 +72,10 @@
     <ClInclude Include="InputModule.hpp" />
     <ClInclude Include="InputModule_ObserverFlight.hpp" />
     <ClInclude Include="iVector3.h" />
+    <ClInclude Include="MapCell.hpp" />
     <ClInclude Include="MapSuite.hpp" />
     <ClInclude Include="MeshStrider.h" />
+    <ClInclude Include="MapDefines.h" />
     <ClInclude Include="Mob.hpp" />
     <ClInclude Include="mtrand.h" />
     <ClInclude Include="num2string.h" />
@@ -86,6 +90,7 @@
     <ClInclude Include="InputModule_ObserverBuild.hpp" />
     <ClInclude Include="Structure.hpp" />
     <ClInclude Include="tinyxml2.h" />
+    <ClInclude Include="Turf.hpp" />
     <ClInclude Include="UID.hpp" />
   </ItemGroup>
   <ItemGroup>

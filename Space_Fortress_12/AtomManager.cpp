@@ -4,6 +4,7 @@
 #include "Girder.hpp"
 #include "Structure.hpp"
 #include "OverlayPlating.hpp"
+#include "MapCell.hpp"
 
 #include "OgreHelper.hpp"
 
@@ -70,21 +71,24 @@ Atom* AtomManager::CreateAtom(int a_AtomType, Ogre::Vector3 a_Pos, bool a_Instan
 	return pOut;
 }
 
-Structure* AtomManager::CreateStructure(int a_StructureType, Ogre::Vector3 a_Pos, bool a_InstantiateImmediately, Structure** a_ppStructureLocation)
+Structure* AtomManager::CreateStructure(int a_StructureType, MapCell* a_pLocMapCell, int a_MountedDir, bool a_InstantiateImmediately, Structure** a_ppStructureLocation)
 {
 	Structure* pOut = NULL;
 	switch(a_StructureType)
 	{
 	case(Structure::GIRDER):
 		{
-			pOut = new Girder(a_Pos);
+			pOut = new Girder(a_pLocMapCell);
 			m_GirdersInWorld.push_back((Girder*)pOut);
+			pOut->ChangeDirection(a_MountedDir);
 			m_AtomsInWorld.push_back(pOut);
 			break;
 		}
 	case(Structure::OVERLAYPLATING):
 		{
-			pOut = new OverlayPlating(a_Pos);
+			//todo
+			pOut = new OverlayPlating(a_pLocMapCell->m_Position);
+			pOut->ChangeDirection(a_MountedDir);
 			m_AtomsInWorld.push_back(pOut);
 			break;
 		}
@@ -110,9 +114,9 @@ Structure* AtomManager::CreateStructure(int a_StructureType, Ogre::Vector3 a_Pos
 	return pOut;
 }
 
-Structure* AtomManager::CreateStructureBuildpoint(int a_StructureType, Ogre::Vector3 a_Pos, bool a_InstantiateImmediately, Structure** a_ppStructureLocation)
+Structure* AtomManager::CreateStructureBuildpoint(int a_StructureType, MapCell* a_pLocMapCell, int a_MountedDir, bool a_InstantiateImmediately, Structure** a_ppStructureLocation)
 {
-	Structure* pOut = CreateStructure(a_StructureType, a_Pos, false, a_ppStructureLocation);
+	Structure* pOut = CreateStructure(a_StructureType, a_pLocMapCell, a_MountedDir, false, a_ppStructureLocation);
 	if(pOut && a_InstantiateImmediately)
 	{
 		//std::cout << "calling Instantiate() on structure build point" << std::endl;

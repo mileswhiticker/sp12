@@ -4,6 +4,8 @@
 #include <OGRE\OgreVector3.h>
 #include "Structure.hpp"
 
+#include "Turf.hpp"
+
 class Obj;
 class btRigidBody;
 class btBoxShape;
@@ -12,14 +14,17 @@ namespace Ogre
 	class SceneNode;
 	class Entity;
 }
+class MapCell;
 
 class Girder
 :	public Structure
+,	public Turf
 {
 public:
-	Girder(Ogre::Vector3 a_Pos);
+	Girder(MapCell* a_pSourceMapCell);
 	virtual void InstantiateStructure(bool a_IsBuildPoint);
 	virtual void CreateFromBuildPoint();
+	virtual void DestroyToBuildPoint();
 	//virtual void Update(float a_DeltaT);
 	//
 	bool AddOverlay(int a_Dir, std::string a_OverlayID);
@@ -31,6 +36,8 @@ public:
 	//todo: make overlays and underlays into atoms
 	std::vector<btRigidBody*> m_RigidBodies;
 	std::vector<btBoxShape*> m_BoxCollisionShapes;
+	//
+	MapCell* m_pSourceMapCell;
 	//
 private:
 	std::vector<Ogre::Entity*> m_QuarterGirderGirders;
