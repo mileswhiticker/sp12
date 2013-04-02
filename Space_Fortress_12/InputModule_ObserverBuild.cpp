@@ -37,36 +37,61 @@ void ObserverBuild::Update(float a_DeltaT)
 		EffectManager::GetSingleton().CacheLine(new CachedLine(camPos, camPos + camDir, Ogre::ColourValue::Blue));
 		//DebugDrawer::getSingleton().drawLine(Ogre::Vector3::ZERO, Ogre::Vector3::UNIT_X * 10, Ogre::ColourValue::Green);
 
-		btCollisionWorld::AllHitsRayResultCallback rayCallback(startPos, startPos + rayDir * btScalar(m_CellBuildRange));
-		rayCallback.m_collisionFilterGroup = COLLISION_BUILDRAYCAST;
+		btCollisionWorld::ClosestRayResultCallback closestHitRayCallback(startPos, startPos + rayDir * btScalar(m_CellBuildRange));
+		closestHitRayCallback.m_collisionFilterGroup = COLLISION_BUILDRAYCAST;
 		if(m_BuildExpansion)
-			rayCallback.m_collisionFilterMask = COLLISION_BUILDPOINT;
+			closestHitRayCallback.m_collisionFilterMask = COLLISION_BUILDPOINT;
 		else
-			rayCallback.m_collisionFilterMask = COLLISION_STRUCTURE;
+			closestHitRayCallback.m_collisionFilterMask = COLLISION_STRUCTURE;
 
 		btDiscreteDynamicsWorld& bulletWorld = Application::StaticGetDynamicsWorld();
-		bulletWorld.rayTest(startPos, startPos + rayDir * btScalar(m_CellBuildRange), rayCallback);
+		bulletWorld.rayTest(startPos, startPos + rayDir * btScalar(m_CellBuildRange), closestHitRayCallback);
 		Atom* pHitAtom = NULL;
-		if(rayCallback.hasHit())
+		
+		if(closestHitRayCallback.hasHit())
 		{
-			//rayCallback.m_collisionObjects.quickSort();
-			for(int index=0;index<rayCallback.m_collisionObjects.size();index++)
+			const btCollisionObject* pHitObj = closestHitRayCallback.m_collisionObject;
+			pHitAtom = (Atom*)pHitObj->getUserPointer();
+			//std::cout << index << "/" << rayCallback.m_collisionObjects.size() << " " << pHitAtom << std::endl;
+			if(pHitAtom && pHitAtom->GetAtomType() == Atom::STRUCTURE && (!m_TargetStructureTypes || ((Structure*)pHitAtom)->GetStructureType() == m_TargetStructureTypes))
 			{
-				const btCollisionObject* pHitObj = rayCallback.m_collisionObjects.at(index);
-				pHitAtom = (Atom*)pHitObj->getUserPointer();
-				//std::cout << index << "/" << rayCallback.m_collisionObjects.size() << " " << pHitAtom << std::endl;
-				if(pHitAtom && pHitAtom->GetAtomType() == Atom::STRUCTURE && (!m_TargetStructureTypes || ((Structure*)pHitAtom)->GetStructureType() == m_TargetStructureTypes))
-				{
-					//m_TargetStructureTypes
-					Ogre::Vector3 drawPos = camPos + camDir * Ogre::Real(m_CellBuildRange) * rayCallback.m_closestHitFraction;
-					//DebugDrawer::getSingleton().drawSphere(drawPos, 0.1f, Ogre::ColourValue::Red);
-					EffectManager::GetSingleton().CacheSphere(new CachedSphere(drawPos, 0.01f, Ogre::ColourValue::Red));
-					
-					break;
-				}
-
+				//m_TargetStructureTypes
+				Ogre::Vector3 drawPos = camPos + camDir * Ogre::Real(m_CellBuildRange) * closestHitRayCallback.m_closestHitFraction;
+				//DebugDrawer::getSingleton().drawSphere(drawPos, 0.1f, Ogre::ColourValue::Red);
+				EffectManager::GetSingleton().CacheSphere(new CachedSphere(drawPos, 0.01f, Ogre::ColourValue::Red));
+			}
+			else
+			{
 				//reset it, so that if we don't find a matching structure at all the user's selection is reset
 				pHitAtom = NULL;
+			}
+		}
+
+		//if the closest result didn't work, raycast again but grab all results
+		if(!pHitAtom)
+		{
+			btCollisionWorld::AllHitsRayResultCallback allHitsRayCallback(startPos, startPos + rayDir * btScalar(m_CellBuildRange));
+			if(allHitsRayCallback.hasHit())
+			{
+				//rayCallback.m_collisionObjects.quickSort();
+				for(int index=0;index<allHitsRayCallback.m_collisionObjects.size();index++)
+				{
+					const btCollisionObject* pHitObj = allHitsRayCallback.m_collisionObjects.at(index);
+					pHitAtom = (Atom*)pHitObj->getUserPointer();
+					//std::cout << index << "/" << rayCallback.m_collisionObjects.size() << " " << pHitAtom << std::endl;
+					if(pHitAtom && pHitAtom->GetAtomType() == Atom::STRUCTURE && (!m_TargetStructureTypes || ((Structure*)pHitAtom)->GetStructureType() == m_TargetStructureTypes))
+					{
+						//m_TargetStructureTypes
+						Ogre::Vector3 drawPos = camPos + camDir * Ogre::Real(m_CellBuildRange) * allHitsRayCallback.m_closestHitFraction;
+						//DebugDrawer::getSingleton().drawSphere(drawPos, 0.1f, Ogre::ColourValue::Red);
+						EffectManager::GetSingleton().CacheSphere(new CachedSphere(drawPos, 0.01f, Ogre::ColourValue::Red));
+					
+						break;
+					}
+
+					//reset it, so that if we don't find a matching structure at all the user's selection is reset
+					pHitAtom = NULL;
+				}
 			}
 		}
 		SelectNewAtom(pHitAtom);
