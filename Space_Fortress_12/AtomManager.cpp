@@ -1,5 +1,7 @@
 #include "AtomManager.hpp"
 
+#include "Direction.h"
+#include "MapSuite.hpp"
 #include "Object.hpp"
 #include "Girder.hpp"
 #include "Structure.hpp"
@@ -71,7 +73,7 @@ Atom* AtomManager::CreateAtom(int a_AtomType, Ogre::Vector3 a_Pos, bool a_Instan
 	return pOut;
 }
 
-Structure* AtomManager::CreateStructure(int a_StructureType, MapCell* a_pLocMapCell, int a_MountedDir, bool a_InstantiateImmediately, Structure** a_ppStructureLocation)
+Structure* AtomManager::CreateStructure(int a_StructureType, MapCell* a_pLocMapCell, Structure** a_ppStructureLocation, int a_AdditionalFlags)
 {
 	Structure* pOut = NULL;
 	switch(a_StructureType)
@@ -80,15 +82,19 @@ Structure* AtomManager::CreateStructure(int a_StructureType, MapCell* a_pLocMapC
 		{
 			pOut = new Girder(a_pLocMapCell);
 			m_GirdersInWorld.push_back((Girder*)pOut);
-			pOut->ChangeDirection(a_MountedDir);
 			m_AtomsInWorld.push_back(pOut);
+			
+			if( !(a_AdditionalFlags&BUILD_POINT) )
+			{
+				MapSuite::GetInstance().CreateAdjacentGirderBuildpoints(a_pLocMapCell);
+			}
 			break;
 		}
 	case(Structure::OVERLAYPLATING):
 		{
 			//todo
 			pOut = new OverlayPlating(a_pLocMapCell->m_Position);
-			pOut->ChangeDirection(a_MountedDir);
+			
 			m_AtomsInWorld.push_back(pOut);
 			break;
 		}
@@ -102,25 +108,24 @@ Structure* AtomManager::CreateStructure(int a_StructureType, MapCell* a_pLocMapC
 			break;
 		}
 	}
-	if(pOut && a_InstantiateImmediately)
+
+	//if creation was successful, deal with any extra flags
+	if(pOut)
 	{
-		pOut->InstantiateStructure(false);
+		//only grab the direction flags, so we don't pass in unused extra bits
+		pOut->ChangeDirection(a_AdditionalFlags & ALLDIRS);
+		std::cout << "direction set to " << (a_AdditionalFlags & ALLDIRS) << " " << a_AdditionalFlags << "/" << ALLDIRS << std::endl;
+		
+		if(a_AdditionalFlags & INSTANTIATE_IMMEDIATELY)
+		{
+			pOut->InstantiateStructure(a_AdditionalFlags & BUILD_POINT ? true : false);
+		}
 	}
 
+	//update the passed in memaddress, regardless of whether creation was successful or not
 	if(a_ppStructureLocation)
 	{
 		*a_ppStructureLocation = pOut;
-	}
-	return pOut;
-}
-
-Structure* AtomManager::CreateStructureBuildpoint(int a_StructureType, MapCell* a_pLocMapCell, int a_MountedDir, bool a_InstantiateImmediately, Structure** a_ppStructureLocation)
-{
-	Structure* pOut = CreateStructure(a_StructureType, a_pLocMapCell, a_MountedDir, false, a_ppStructureLocation);
-	if(pOut && a_InstantiateImmediately)
-	{
-		//std::cout << "calling Instantiate() on structure build point" << std::endl;
-		pOut->InstantiateStructure(true);
 	}
 	return pOut;
 }

@@ -3,7 +3,8 @@
 
 #include <string>
 #include <vector>
-#include <list>
+#include <unordered_map>
+#include <OGRE\OgreVector3.h>
 
 class Station;
 class Atom;
@@ -18,17 +19,21 @@ public:
 	static Station* GetStartingStation();
 	//
 	//void CreateAdjacentGirderBuildpoints(int a_X, int a_Y, int a_Z);
-	int CreateAdjacentGirderBuildpoints(unsigned int a_X, unsigned int a_Y, unsigned int a_Z);
-	MapCell* CreateNewMapCell(unsigned int a_X, unsigned int a_Y, unsigned int a_Z);
+	int CreateAdjacentGirderBuildpoints(MapCell* a_pLocMapCell);	//unsigned int a_X, unsigned int a_Y, unsigned int a_Z
+	MapCell* CreateNewMapCell(int a_X, int a_Y, int a_Z);
+	MapCell* CreateNewMapCell(Ogre::Vector3 a_Coords);
+
+	MapCell* GetCellInDirOrNull(MapCell* a_pSourceMapCell, int a_Direction);
+	MapCell* GetCellAtCoordsOrCreate(int a_X, int a_Y, int a_Z);
+	MapCell* GetCellAtCoordsOrCreate(Ogre::Vector3 a_Coords);
 	//
 private:
 	MapSuite();
 	std::vector<Station*> m_MapStations;
+	std::unordered_map<std::string, MapCell*> m_MapCellGrid;
 	bool LoadMapFile(std::string a_FileName);
 	//
-	std::vector< std::vector< std::vector<MapCell*> > > m_MapCellGrid;
 	//std::vector< std::vector< std::vector<Atom*> > > m_InstanceGrid;	//3d matrix, each containing either a girder or a build highlight
-	std::list<MapCell*> m_MapCells;	//vector of all cells, this should only be used for cleanup
 	std::vector<PlayerSpawn*> m_LoadedSpawns;	//list of all player spawns successfully loaded
 	//
 };

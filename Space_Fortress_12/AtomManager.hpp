@@ -10,6 +10,9 @@ class Girder;
 class Structure;
 class MapCell;
 
+#define INSTANTIATE_IMMEDIATELY 64
+#define BUILD_POINT 128
+
 class AtomManager
 {
 public:
@@ -22,13 +25,13 @@ public:
 	{
 		return &AtomManager::GetSingleton();
 	}
-	Atom* CreateAtom(int a_AtomType, Ogre::Vector3 a_Pos, bool a_InstantiateImmediately = true, Atom** a_ppAtomLocation = NULL);
-	Structure* CreateStructure(int a_StructureType, MapCell* a_pLocMapCell, int a_MountedDir = 0, bool a_InstantiateImmediately = true, Structure** a_ppAtomLocation = NULL);
-	Structure* CreateStructureBuildpoint(int a_StructureType, MapCell* a_pLocMapCell, int a_MountedDir = 0, bool a_InstantiateImmediately = true, Structure** a_ppAtomLocation = NULL);
-	//bool CreateObject(std::string a_TypeTag, Ogre::Vector3 a_Position);
-	//Cell* CreateCell(Ogre::SceneNode* a_pSceneNode, Ogre::Vector3 a_Pos, std::string a_SkeletonType);
 	void Update(float a_DeltaT);
-	//
+
+	Atom* CreateAtom(int a_AtomType, Ogre::Vector3 a_Pos, bool a_InstantiateImmediately = true, Atom** a_ppAtomLocation = NULL);
+
+	//the first 6 bits of a_AdditionalFlags are directions
+	Structure* CreateStructure(int a_StructureType, MapCell* a_pLocMapCell, Structure** a_ppAtomLocation = NULL, int a_AdditionalFlags = INSTANTIATE_IMMEDIATELY);
+
 	void ToggleCellFlashing();
 	//
 private:

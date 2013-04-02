@@ -37,8 +37,10 @@ Girder::Girder(MapCell* a_pSourceMapCell)
 	//
 	m_pAtomSceneNode = NewSceneNode();
 	if(m_pSourceMapCell)
+	{
 		m_pAtomSceneNode->setPosition(m_pSourceMapCell->m_Position);
-	//Instantiate();
+		a_pSourceMapCell->m_pMyCellTurf = this;
+	}
 }
 
 void Girder::InstantiateStructure(bool a_IsBuildPoint)
@@ -79,7 +81,7 @@ void Girder::InstantiateStructure(bool a_IsBuildPoint)
 		for(int curDir = 1; curDir <= 32; curDir *= 2)
 		{
 			//std::cout << "direction: " << curDir << std::endl;
-			pUnusedBuildPoint = AtomManager::GetSingleton().CreateStructureBuildpoint(Structure::OVERLAYPLATING, m_pSourceMapCell, false);
+			pUnusedBuildPoint = AtomManager::GetSingleton().CreateStructure(Structure::OVERLAYPLATING, m_pSourceMapCell, NULL, curDir|INSTANTIATE_IMMEDIATELY);
 			m_UnusedBuildPoints.push_back(pUnusedBuildPoint);
 			pUnusedBuildPoint->ChangeDirection(curDir);
 			pUnusedBuildPoint->InstantiateStructure(true);
@@ -115,7 +117,7 @@ void Girder::CreateFromBuildPoint()
 		for(int curDir = 1; curDir <= 32; curDir *= 2)
 		{
 			//std::cout << "direction: " << curDir << std::endl;
-			pUnusedBuildPoint = AtomManager::GetSingleton().CreateStructureBuildpoint(Structure::OVERLAYPLATING, m_pSourceMapCell, false);
+			pUnusedBuildPoint = AtomManager::GetSingleton().CreateStructure(Structure::OVERLAYPLATING, m_pSourceMapCell, NULL, INSTANTIATE_IMMEDIATELY|BUILD_POINT);
 			m_UnusedBuildPoints.push_back(pUnusedBuildPoint);
 			pUnusedBuildPoint->ChangeDirection(curDir);
 			pUnusedBuildPoint->InstantiateStructure(true);
@@ -128,7 +130,7 @@ void Girder::CreateFromBuildPoint()
 		
 		//create girder buildpoints in adjacent cells
 		Ogre::Vector3 pos = m_pAtomSceneNode->getPosition();
-		MapSuite::GetInstance().CreateAdjacentGirderBuildpoints(m_pSourceMapCell->m_Position.x, m_pSourceMapCell->m_Position.y, m_pSourceMapCell->m_Position.z);
+		MapSuite::GetInstance().CreateAdjacentGirderBuildpoints(m_pSourceMapCell);
 
 	}
 }
@@ -240,8 +242,8 @@ bool Girder::AddOverlay(int a_Dir, std::string a_OverlayID)
 	}
 	m_PlateOverlayDirs &= a_Dir;
 	//
-	pOverlayNode->setPosition(offsetPos);
 	pOverlayNode->lookAt(lookatPos, Ogre::Node::TS_LOCAL);
+	pOverlayNode->setPosition(offsetPos);
 	pOverlayNode->yaw(Ogre::Degree(90));
 
 	//create physics body and initialise to starting position
