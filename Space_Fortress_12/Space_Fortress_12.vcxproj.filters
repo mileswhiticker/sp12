@@ -189,11 +189,14 @@
     <ClCompile Include="Structure.cpp">
       <Filter>Source Files\Atoms\Structure</Filter>
     </ClCompile>
-    <ClCompile Include="MapCell.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Turf.cpp">
       <Filter>Source Files\Atoms</Filter>
+    </ClCompile>
+    <ClCompile Include="MapHelper.cpp">
+      <Filter>Source Files\Utils and helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="MapCell.cpp">
+      <Filter>Source Files\MapSuite</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -314,11 +317,14 @@
     <ClInclude Include="MapDefines.h">
       <Filter>Header Files\Config</Filter>
     </ClInclude>
-    <ClInclude Include="MapCell.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Turf.hpp">
       <Filter>Header Files\Atoms</Filter>
+    </ClInclude>
+    <ClInclude Include="MapHelper.hpp">
+      <Filter>Header Files\Utils and helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="MapCell.hpp">
+      <Filter>Header Files\MapSuite</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
