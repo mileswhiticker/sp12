@@ -48,3 +48,38 @@ Ogre::Vector3 GetCoordsInDir(Ogre::Vector3 a_Coords, int a_Direction)
 	}
 	return a_Coords;
 }
+
+int ReverseDir(int a_SourceDir)
+{
+	if(a_SourceDir & NORTH)
+	{
+		a_SourceDir &= ~NORTH;
+		a_SourceDir |= SOUTH;
+	}
+	else if(a_SourceDir & SOUTH)
+	{
+		a_SourceDir &= ~SOUTH;
+		a_SourceDir |= NORTH;
+	}
+	if(a_SourceDir & EAST)
+	{
+		a_SourceDir &= ~EAST;
+		a_SourceDir |= WEST;
+	}
+	else if(a_SourceDir & WEST)
+	{
+		a_SourceDir &= ~WEST;
+		a_SourceDir |= EAST;
+	}
+	if(a_SourceDir & UP)
+	{
+		a_SourceDir &= ~UP;
+		a_SourceDir |= DOWN;
+	}
+	else if(a_SourceDir & DOWN)
+	{
+		a_SourceDir &= ~DOWN;
+		a_SourceDir |= UP;
+	}
+	return a_SourceDir;
+}
