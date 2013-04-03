@@ -48,6 +48,7 @@ void ObserverBuild::Update(float a_DeltaT)
 		bulletWorld.rayTest(startPos, startPos + rayDir * btScalar(m_CellBuildRange), closestHitRayCallback);
 		Atom* pHitAtom = NULL;
 		
+		float hitDistScalar = 999;
 		if(closestHitRayCallback.hasHit())
 		{
 			const btCollisionObject* pHitObj = closestHitRayCallback.m_collisionObject;
@@ -55,10 +56,8 @@ void ObserverBuild::Update(float a_DeltaT)
 			//std::cout << index << "/" << rayCallback.m_collisionObjects.size() << " " << pHitAtom << std::endl;
 			if(pHitAtom && pHitAtom->GetAtomType() == Atom::STRUCTURE && (!m_TargetStructureTypes || ((Structure*)pHitAtom)->GetStructureType() == m_TargetStructureTypes))
 			{
-				//m_TargetStructureTypes
-				Ogre::Vector3 drawPos = camPos + camDir * Ogre::Real(m_CellBuildRange) * closestHitRayCallback.m_closestHitFraction;
-				//DebugDrawer::getSingleton().drawSphere(drawPos, 0.1f, Ogre::ColourValue::Red);
-				EffectManager::GetSingleton().CacheSphere(new CachedSphere(drawPos, 0.01f, Ogre::ColourValue::Red));
+				//grab the hit dist fraction, so we can draw a sphere there later
+				hitDistScalar = closestHitRayCallback.m_closestHitFraction;
 			}
 			else
 			{
@@ -67,32 +66,44 @@ void ObserverBuild::Update(float a_DeltaT)
 			}
 		}
 
-		//if the closest result didn't work, raycast again but grab all results
+		//if the closest result didn't work, raycast again but grab all results and sort through them
 		if(!pHitAtom)
 		{
 			btCollisionWorld::AllHitsRayResultCallback allHitsRayCallback(startPos, startPos + rayDir * btScalar(m_CellBuildRange));
+			allHitsRayCallback.m_collisionFilterGroup = COLLISION_BUILDRAYCAST;
+			if(m_BuildExpansion)
+				allHitsRayCallback.m_collisionFilterMask = COLLISION_BUILDPOINT;
+			else
+				allHitsRayCallback.m_collisionFilterMask = COLLISION_STRUCTURE;
+			bulletWorld.rayTest(startPos, startPos + rayDir * btScalar(m_CellBuildRange), allHitsRayCallback);
 			if(allHitsRayCallback.hasHit())
 			{
-				//rayCallback.m_collisionObjects.quickSort();
 				for(int index=0;index<allHitsRayCallback.m_collisionObjects.size();index++)
 				{
 					const btCollisionObject* pHitObj = allHitsRayCallback.m_collisionObjects.at(index);
-					pHitAtom = (Atom*)pHitObj->getUserPointer();
-					//std::cout << index << "/" << rayCallback.m_collisionObjects.size() << " " << pHitAtom << std::endl;
-					if(pHitAtom && pHitAtom->GetAtomType() == Atom::STRUCTURE && (!m_TargetStructureTypes || ((Structure*)pHitAtom)->GetStructureType() == m_TargetStructureTypes))
-					{
-						//m_TargetStructureTypes
-						Ogre::Vector3 drawPos = camPos + camDir * Ogre::Real(m_CellBuildRange) * allHitsRayCallback.m_closestHitFraction;
-						//DebugDrawer::getSingleton().drawSphere(drawPos, 0.1f, Ogre::ColourValue::Red);
-						EffectManager::GetSingleton().CacheSphere(new CachedSphere(drawPos, 0.01f, Ogre::ColourValue::Red));
-					
-						break;
-					}
+					Atom* pTestAtom = (Atom*)pHitObj->getUserPointer();
 
-					//reset it, so that if we don't find a matching structure at all the user's selection is reset
-					pHitAtom = NULL;
+					//check if we've hit a valid target
+					if(pTestAtom && pTestAtom->GetAtomType() == Atom::STRUCTURE && (!m_TargetStructureTypes || ((Structure*)pTestAtom)->GetStructureType() == m_TargetStructureTypes))
+					{
+						//it is, now check if it's closer than the previous valid target
+						float curDist = allHitsRayCallback.m_hitFractions[index];
+						if(curDist < hitDistScalar)
+						{
+							//if it is, select it then keep checking the rest
+							hitDistScalar = curDist;
+							pHitAtom = pTestAtom;
+						}	
+					}
 				}
 			}
+		}
+
+		if(pHitAtom)
+		{
+			//draw a sphere at the hit point
+			Ogre::Vector3 drawPos = camPos + camDir * Ogre::Real(m_CellBuildRange) * hitDistScalar;
+			EffectManager::GetSingleton().CacheSphere(new CachedSphere(drawPos, 0.01f, Ogre::ColourValue::Red));
 		}
 		SelectNewAtom(pHitAtom);
 	}
