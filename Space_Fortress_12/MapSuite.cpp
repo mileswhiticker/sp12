@@ -135,64 +135,66 @@ bool MapSuite::LoadMapFile(std::string a_FileName)
 							if(filling_type)
 							{
 								//add underlay plating in every direction
-								pGirder->AddUnderlay(1, filling_type);
+								/*pGirder->AddUnderlay(1, filling_type);
 								pGirder->AddUnderlay(2, filling_type);
 								pGirder->AddUnderlay(4, filling_type);
 								pGirder->AddUnderlay(8, filling_type);
 								pGirder->AddUnderlay(16, filling_type);
-								pGirder->AddUnderlay(32, filling_type);
+								pGirder->AddUnderlay(32, filling_type);*/
 							}
-						}
 
-						//loop through cell nodes
-						for(tinyxml2::XMLNode* pGirderAttributeNode = pGirderNode->FirstChild(); pGirderAttributeNode; pGirderAttributeNode = pGirderAttributeNode->NextSibling())
-						{
-							if(pGirder && !std::string("overlay").compare(pGirderAttributeNode->Value()))
+							//loop through cell nodes
+							for(tinyxml2::XMLNode* pGirderAttributeNode = pGirderNode->FirstChild(); pGirderAttributeNode; pGirderAttributeNode = pGirderAttributeNode->NextSibling())
 							{
-								//overlay plating
-								tinyxml2::XMLElement* pElement = pGirderAttributeNode->ToElement();
-								if(pElement)
+								continue;
+								if(pGirder && !std::string("overlay").compare(pGirderAttributeNode->Value()))
 								{
-									int dir = 0;
-									if(pElement->QueryIntAttribute("dir", &dir))
-										continue;
-									const char* plating = pElement->Attribute("plating");
-									if(plating)
-										pGirder->AddOverlay(dir, plating);
-								}
-							}
-							else if(pGirder && !filling_type && !std::string("underlay").compare(pGirderAttributeNode->Value()))
-							{
-								//underlay plating
-								tinyxml2::XMLElement* pElement = pGirderAttributeNode->ToElement();
-								if(pElement)
-								{
-									int dir = 0;
-									if(pElement->QueryIntAttribute("dir", &dir))
-										continue;
-									const char* plating = pElement->Attribute("plating");
-									if(plating)
-										pGirder->AddUnderlay(dir, plating);
-								}
-							}
-							else if(!std::string("obj").compare(pGirderAttributeNode->Value()))
-							{
-								//free floating object
-								tinyxml2::XMLElement* pElement = pGirderAttributeNode->ToElement();
-								if(pElement)
-								{
-									std::string objTag = pElement->Attribute("tag");
-									if(!objTag.compare("box"))
+									//overlay plating
+									tinyxml2::XMLElement* pElement = pGirderAttributeNode->ToElement();
+									if(pElement)
 									{
-										AtomManager::GetSingleton().CreateAtom(Atom::OBJECT, Ogre::Vector3(Ogre::Real(i),Ogre::Real(j),Ogre::Real(k)));
+										int dir = 0;
+										if(pElement->QueryIntAttribute("dir", &dir))
+											continue;
+										const char* plating = pElement->Attribute("plating");
+									}
+								}
+								else if(pGirder && !filling_type && !std::string("underlay").compare(pGirderAttributeNode->Value()))
+								{
+									//underlay plating
+									tinyxml2::XMLElement* pElement = pGirderAttributeNode->ToElement();
+									if(pElement)
+									{
+										int dir = 0;
+										if(pElement->QueryIntAttribute("dir", &dir))
+											continue;
+										const char* plating = pElement->Attribute("plating");
+										if(plating)
+										{
+											//pGirder->AddUnderlay(dir, plating);
+											Structure* pUnusedBuildPoint = AtomManager::GetSingleton().CreateStructure(Structure::UNDERLAYPLATING, pLocMapCell, NULL, dir|INSTANTIATE_IMMEDIATELY);
+										}
+									}
+								}
+								else if(!std::string("obj").compare(pGirderAttributeNode->Value()))
+								{
+									//free floating object
+									tinyxml2::XMLElement* pElement = pGirderAttributeNode->ToElement();
+									if(pElement)
+									{
+										std::string objTag = pElement->Attribute("tag");
+										if(!objTag.compare("box"))
+										{
+											AtomManager::GetSingleton().CreateAtom(Atom::OBJECT, Ogre::Vector3(Ogre::Real(i),Ogre::Real(j),Ogre::Real(k)));
+										}
 									}
 								}
 							}
-						}
 
-						if(pGirder)
-						{
-							pGirder->ResetEmptyOverlays();
+							/*if(pGirder)
+							{
+								pGirder->ResetEmptyOverlays();
+							}*/
 						}
 					}
 				}

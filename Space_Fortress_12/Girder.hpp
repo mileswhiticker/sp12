@@ -27,9 +27,9 @@ public:
 	virtual void DestroyToBuildPoint();
 	//virtual void Update(float a_DeltaT);
 	//
-	bool AddOverlay(int a_Dir, std::string a_OverlayID);
-	void ResetEmptyOverlays();
-	bool AddUnderlay(int a_Dir, std::string a_UnderlayID);
+	//bool AddOverlay(int a_Dir, std::string a_OverlayID);
+	//void ResetEmptyOverlays();
+	//bool AddUnderlay(int a_Dir, std::string a_UnderlayID);
 	//bool AddFilling(std::string a_UnderlayID);
 	void AddFreefloatingObj(std::string a_TypeTag);
 

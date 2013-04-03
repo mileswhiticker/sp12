@@ -77,14 +77,11 @@ void Girder::InstantiateStructure(bool a_IsBuildPoint)
 		dynamicsWorld.addRigidBody(m_pRigidBody, COLLISION_STRUCTURE, COLLISION_BUILDRAYCAST);
 
 		//create overlay buildpoints
-		Structure* pUnusedBuildPoint;
 		for(int curDir = 1; curDir <= 32; curDir *= 2)
 		{
 			//std::cout << "direction: " << curDir << std::endl;
-			pUnusedBuildPoint = AtomManager::GetSingleton().CreateStructure(Structure::OVERLAYPLATING, m_pSourceMapCell, NULL, curDir|INSTANTIATE_IMMEDIATELY);
+			Structure* pUnusedBuildPoint = AtomManager::GetSingleton().CreateStructure(Structure::OVERLAYPLATING, m_pSourceMapCell, NULL, curDir|BUILD_POINT|INSTANTIATE_IMMEDIATELY);
 			m_UnusedBuildPoints.push_back(pUnusedBuildPoint);
-			pUnusedBuildPoint->ChangeDirection(curDir);
-			pUnusedBuildPoint->InstantiateStructure(true);
 		}
 	}
 }
@@ -143,30 +140,7 @@ void Girder::DestroyToBuildPoint()
 	}
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-void Girder::ResetEmptyOverlays()
+/*void Girder::ResetEmptyOverlays()
 {
 	for(int i=1; i<=32; i*=2)
 	{
@@ -176,9 +150,9 @@ void Girder::ResetEmptyOverlays()
 		}
 	}
 	//m_PlateOverlayDirs
-}
+}*/
 
-bool Girder::AddOverlay(int a_Dir, std::string a_OverlayID)
+/*bool Girder::AddOverlay(int a_Dir, std::string a_OverlayID)
 {
 	//an overlay plate is essentially an "outer cover" for the tile in one (of six) directions
 	bool isPhysical = false;
@@ -200,14 +174,14 @@ bool Girder::AddOverlay(int a_Dir, std::string a_OverlayID)
 	//
 	if(a_Dir & NORTH)
 	{
-		offsetPos.z += 0.505f;
+		//offsetPos.z += 0.505f;
 		lookatPos.z += 1;
 		halfExtents.setZ(0.005f);
 		//std::cout << "NORTH " << (isPhysical ? "plating" : "trigger") << std::endl;
 	}
 	if(a_Dir & SOUTH)
 	{
-		offsetPos.z -= 0.505f;
+		//offsetPos.z -= 0.505f;
 		lookatPos.z -= 1;
 		halfExtents.setZ(0.005f);
 		//std::cout << "SOUTH " << (isPhysical ? "plating" : "trigger") << std::endl;
@@ -265,9 +239,9 @@ bool Girder::AddOverlay(int a_Dir, std::string a_OverlayID)
 	m_RigidBodies.push_back(pRigidBody);
 	m_BoxCollisionShapes.push_back(pBoxShape);
 	return true;
-}
+}*/
 
-bool Girder::AddUnderlay(int a_Dir, std::string a_UnderlayID)
+/*bool Girder::AddUnderlay(int a_Dir, std::string a_UnderlayID)
 {
 	//return false if one already exists, or the specified type doesn't exist
 	if(!a_UnderlayID.compare("grey_default"))
@@ -349,4 +323,4 @@ bool Girder::AddUnderlay(int a_Dir, std::string a_UnderlayID)
 		return true;
 	}
 	return false;
-}
+}*/

@@ -48,6 +48,7 @@ void OverlayPlating::InstantiateStructure(bool a_IsBuildPoint)
 	Ogre::Vector3 offsetPos(0, 0, 0);
 	Ogre::Vector3 lookatPos(0, 0, 0);
 	btVector3 halfExtents(0.5f, 0.5f, 0.5f);
+	//std::cout << "	new overlay plating" << std::endl;
 	if(m_Direction & NORTH)
 	{
 		offsetPos.z += 0.505f;

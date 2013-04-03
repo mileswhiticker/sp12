@@ -114,7 +114,7 @@ Structure* AtomManager::CreateStructure(int a_StructureType, MapCell* a_pLocMapC
 	{
 		//only grab the direction flags, so we don't pass in unused extra bits
 		pOut->ChangeDirection(a_AdditionalFlags & ALLDIRS);
-		std::cout << "direction set to " << (a_AdditionalFlags & ALLDIRS) << " " << a_AdditionalFlags << "/" << ALLDIRS << std::endl;
+		//std::cout << "direction set to " << (a_AdditionalFlags & ALLDIRS) << " " << a_AdditionalFlags << "/" << ALLDIRS << std::endl;
 		
 		if(a_AdditionalFlags & INSTANTIATE_IMMEDIATELY)
 		{
