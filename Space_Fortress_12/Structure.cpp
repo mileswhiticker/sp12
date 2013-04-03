@@ -6,7 +6,7 @@ Structure::Structure()
 ,	m_MyStructureType(UNKNOWN)
 ,	m_pMountedOnStructure(NULL)
 {
-	//
+	m_UseRigidbodyPosition = false;
 }
 
 void Structure::InstantiateAtom()

@@ -24,6 +24,7 @@ Atom::Atom()
 ,	m_pCollisionShape(NULL)
 ,	m_MyAtomType(UNKNOWN)
 ,	m_Direction(0)
+,	m_UseRigidbodyPosition(true)
 {
 	//
 }
@@ -31,7 +32,7 @@ Atom::Atom()
 void Atom::Update(float a_DeltaT)
 {
 	//phys updates
-	if(m_pRigidBody && m_pAtomSceneNode)
+	if(m_UseRigidbodyPosition && m_pRigidBody && m_pAtomSceneNode)
 	{
 		btTransform& transform = m_pRigidBody->getWorldTransform();
 		btVector3& origin = transform.getOrigin();

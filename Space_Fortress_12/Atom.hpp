@@ -47,6 +47,7 @@ public:
 protected:
 	AtomType m_MyAtomType;
 	int m_Direction;
+	bool m_UseRigidbodyPosition;
 	//
 private:
 	float m_ColourModulateLevel;

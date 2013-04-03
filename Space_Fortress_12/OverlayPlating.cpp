@@ -94,13 +94,13 @@ void OverlayPlating::InstantiateStructure(bool a_IsBuildPoint)
 	m_pAtomSceneNode->setPosition(offsetPos);
 	m_pAtomSceneNode->lookAt(lookatPos, Ogre::Node::TS_LOCAL);
 	m_pAtomSceneNode->yaw(Ogre::Degree(90));
-
+	
 	//create physics body and initialise to starting position
-	btBoxShape* pBoxShape = new btBoxShape(halfExtents);
+	m_pCollisionShape = new btBoxShape(halfExtents);
 	btDefaultMotionState* groundMotionState = new btDefaultMotionState(btTransform(btQuaternion(0,0,0,1), OGRE2BT(m_pAtomSceneNode->_getDerivedPosition())));
-	btRigidBody::btRigidBodyConstructionInfo groundRigidBodyCI(0, groundMotionState, pBoxShape, btVector3(0,0,0));
-	btRigidBody* pRigidBody = new btRigidBody(groundRigidBodyCI);
-	pRigidBody->setUserPointer(this);
+	btRigidBody::btRigidBodyConstructionInfo groundRigidBodyCI(0, groundMotionState, m_pCollisionShape, btVector3(0,0,0));
+	m_pRigidBody = new btRigidBody(groundRigidBodyCI);
+	m_pRigidBody->setUserPointer(this);
 
 	//add new rigid body to world
 	btDiscreteDynamicsWorld& dynamicsWorld = GetDynamicsWorld();
@@ -108,14 +108,14 @@ void OverlayPlating::InstantiateStructure(bool a_IsBuildPoint)
 	{
 		SetEntityVisible(false);
 		m_pAtomEntity->setMaterialName("cell_highlight_material");
-		dynamicsWorld.addRigidBody(pRigidBody, COLLISION_BUILDPOINT, COLLISION_BUILDRAYCAST);
+		dynamicsWorld.addRigidBody(m_pRigidBody, COLLISION_BUILDPOINT, COLLISION_BUILDRAYCAST);
 
 		//todo: is this working?
-		//pRigidBody->setCollisionFlags(pRigidBody->CF_NO_CONTACT_RESPONSE);
+		m_pRigidBody->setCollisionFlags(m_pRigidBody->CF_NO_CONTACT_RESPONSE);
 	}
 	else
 	{
-		dynamicsWorld.addRigidBody(pRigidBody, COLLISION_STRUCTURE, COLLISION_BUILDRAYCAST);
+		dynamicsWorld.addRigidBody(m_pRigidBody, COLLISION_STRUCTURE, COLLISION_BUILDRAYCAST);
 	}
 }
 
@@ -123,7 +123,18 @@ void OverlayPlating::CreateFromBuildPoint()
 {
 	if(m_IsBuildPoint)
 	{
-		//
+		//first, reset the collision flags for build raycasting
+		btDiscreteDynamicsWorld& dynamicsWorld = GetDynamicsWorld();
+		dynamicsWorld.removeRigidBody(m_pRigidBody);
+		dynamicsWorld.addRigidBody(m_pRigidBody, COLLISION_STRUCTURE, COLLISION_BUILDRAYCAST);
+		//m_pRigidBody->setCollisionFlags(m_pRigidBody->CF_STATIC_OBJECT);
+		
+		//reset the material
+		m_pAtomEntity->setMaterialName("over_plating");
+
+		//done
+		m_IsBuildPoint = false;
+		SetEntityVisible(true);
 	}
 }
 
@@ -131,6 +142,16 @@ void OverlayPlating::DestroyToBuildPoint()
 {
 	if(!m_IsBuildPoint)
 	{
-		//
+		//reset the rigidbody's collision flags for build raycasting
+		btDiscreteDynamicsWorld& dynamicsWorld = GetDynamicsWorld();
+		dynamicsWorld.removeRigidBody(m_pRigidBody);
+		dynamicsWorld.addRigidBody(m_pRigidBody, COLLISION_BUILDPOINT, COLLISION_BUILDRAYCAST);
+		
+		//reset the material
+		m_pAtomEntity->setMaterialName("cell_highlight_material");
+
+		//done
+		SetEntityVisible(false);
+		m_IsBuildPoint = true;
 	}
 }
