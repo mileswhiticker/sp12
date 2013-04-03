@@ -102,7 +102,7 @@ void Girder::CreateFromBuildPoint()
 {
 	if(m_IsBuildPoint)
 	{
-		//std::cout << "Girder::CreateFromBuildPoint()" << std::endl;
+		std::cout << "creating girder from build point" << std::endl;
 
 		//update the collision flags
 		btDiscreteDynamicsWorld& dynamicsWorld = GetDynamicsWorld();
@@ -128,7 +128,6 @@ void Girder::CreateFromBuildPoint()
 		//create girder buildpoints in adjacent cells
 		Ogre::Vector3 pos = m_pAtomSceneNode->getPosition();
 		MapSuite::GetInstance().CreateAdjacentGirderBuildpoints(m_pSourceMapCell);
-
 	}
 }
 
@@ -136,7 +135,21 @@ void Girder::DestroyToBuildPoint()
 {
 	if(!m_IsBuildPoint)
 	{
-		//std::cout << "Girder::DestroyToBuildPoint()" << std::endl;
+		std::cout << "destroying girder to build point" << std::endl;
+
+		//reset the collision flags for build raycasting
+		btDiscreteDynamicsWorld& dynamicsWorld = GetDynamicsWorld();
+		dynamicsWorld.removeRigidBody(m_pRigidBody);
+		dynamicsWorld.addRigidBody(m_pRigidBody, COLLISION_BUILDPOINT, COLLISION_BUILDRAYCAST);
+
+		//reset the material
+		m_pAtomEntity->setMaterialName("cell_highlight_material");
+
+		//done
+		SetEntityVisible(false);
+		m_IsBuildPoint = true;
+
+		MapSuite::GetInstance().ClearDependantAdjacentGirderBuildpoints(m_pSourceMapCell);
 	}
 }
 

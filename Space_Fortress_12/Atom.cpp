@@ -1,19 +1,23 @@
 #include "Atom.hpp"
+#include "InputModule_ObserverBuild.hpp"
 
 #include <OGRE\OgreEntity.h>
 #include <OGRE\OgreSubEntity.h>
 #include <OGRE\OgreVector4.h>
 #include <OGRE\OgreSceneNode.h>
 
-#include "RandHelper.h"
 
 #include <BulletCollision\CollisionShapes\btBoxShape.h>
 #include <BulletDynamics\Dynamics\btDiscreteDynamicsWorld.h>
 #include <BulletDynamics\Dynamics\btRigidBody.h>
 #include <LinearMath\btDefaultMotionState.h>
 
-#include "DebugDrawer.h"
+#include "OgreHelper.hpp"
+#include "BulletHelper.hpp"
+#include "RandHelper.h"
 #include "BtOgreHelper.hpp"
+
+#include "DebugDrawer.h"
 
 Atom::Atom()
 :	m_pAtomSceneNode(NULL)
@@ -27,6 +31,41 @@ Atom::Atom()
 ,	m_UseRigidbodyPosition(true)
 {
 	//
+}
+
+Atom::~Atom()
+{
+	Ogre::SceneManager& sceneManager = GetSceneManager();
+	btDiscreteDynamicsWorld& dynamicsWorld = GetDynamicsWorld();
+
+	for(auto it = m_pSelectingObservers.begin(); it != m_pSelectingObservers.end(); ++it)
+	{
+		(*it)->ForceClearAtomIfSelected(this);
+	}
+	
+	//clear rigidbody
+	if(m_pRigidBody)
+	{
+		dynamicsWorld.removeRigidBody(m_pRigidBody);
+		delete m_pRigidBody;
+	}
+
+	//clear entity
+	if(m_pAtomEntity)
+	{
+		SetEntityVisible(false);
+		sceneManager.destroyEntity(m_pAtomEntity);
+	}
+
+	//clear scenenode
+	if(m_pAtomSceneNode)
+	{
+		if(m_pAtomSceneNode->getParentSceneNode())
+		{
+			m_pAtomSceneNode->getParentSceneNode()->removeChild(m_pAtomSceneNode);
+		}
+		sceneManager.destroySceneNode(m_pAtomSceneNode);
+	}
 }
 
 void Atom::Update(float a_DeltaT)
@@ -163,4 +202,20 @@ bool Atom::ChangeDirection(int a_NewDir)
 {
 	m_Direction = a_NewDir;
 	return true;
+}
+
+void Atom::Select(ObserverBuild* a_pSelectingObserver)
+{
+	if(a_pSelectingObserver)
+	{
+		m_pSelectingObservers.insert(m_pSelectingObservers.end(), a_pSelectingObserver);
+	}
+}
+
+void Atom::DeSelect(ObserverBuild* a_pSelectingObserver)
+{
+	if(a_pSelectingObserver)
+	{
+		m_pSelectingObservers.erase(a_pSelectingObserver);
+	}
 }

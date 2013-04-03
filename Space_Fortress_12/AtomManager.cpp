@@ -18,7 +18,7 @@ AtomManager::AtomManager()
 
 void AtomManager::ToggleCellFlashing()
 {
-	cellsFlashing = !cellsFlashing;
+	/*cellsFlashing = !cellsFlashing;
 	if(cellsFlashing)
 	{
 		for(auto it = m_GirdersInWorld.begin(); it != m_GirdersInWorld.end(); ++it)
@@ -32,7 +32,7 @@ void AtomManager::ToggleCellFlashing()
 		{
 			(*it)->StopFlashingColour();
 		}
-	}
+	}*/
 }
 
 void AtomManager::Update(float a_DeltaT)
@@ -50,9 +50,9 @@ Atom* AtomManager::CreateAtom(int a_AtomType, Ogre::Vector3 a_Pos, bool a_Instan
 	{
 	case(Atom::OBJECT):
 		{
-			Box* pBox = new Box(a_Pos);
-			m_ObjectsInWorld.push_back(pBox);
-			m_AtomsInWorld.push_back(pBox);
+			pOut = new Box(a_Pos);
+			//m_ObjectsInWorld.push_back(pBox);
+			//m_AtomsInWorld.insert(pBox);
 			break;
 		}
 	default:
@@ -64,6 +64,7 @@ Atom* AtomManager::CreateAtom(int a_AtomType, Ogre::Vector3 a_Pos, bool a_Instan
 	if(pOut && a_InstantiateImmediately)
 	{
 		pOut->InstantiateAtom();
+		m_AtomsInWorld.insert(pOut);
 	}
 
 	if(a_ppAtomLocation)
@@ -81,8 +82,8 @@ Structure* AtomManager::CreateStructure(int a_StructureType, MapCell* a_pLocMapC
 	case(Structure::GIRDER):
 		{
 			pOut = new Girder(a_pLocMapCell);
-			m_GirdersInWorld.push_back((Girder*)pOut);
-			m_AtomsInWorld.push_back(pOut);
+			//m_GirdersInWorld.push_back((Girder*)pOut);
+			//m_AtomsInWorld.insert(pOut);
 			
 			if( !(a_AdditionalFlags&BUILD_POINT) )
 			{
@@ -95,7 +96,7 @@ Structure* AtomManager::CreateStructure(int a_StructureType, MapCell* a_pLocMapC
 			//todo
 			pOut = new OverlayPlating(a_pLocMapCell->m_Position);
 			
-			m_AtomsInWorld.push_back(pOut);
+			//m_AtomsInWorld.insert(pOut);
 			break;
 		}
 	/*case(Structure::UNDERLAYPLATING):
@@ -115,6 +116,8 @@ Structure* AtomManager::CreateStructure(int a_StructureType, MapCell* a_pLocMapC
 		//only grab the direction flags, so we don't pass in unused extra bits
 		pOut->ChangeDirection(a_AdditionalFlags & ALLDIRS);
 		//std::cout << "direction set to " << (a_AdditionalFlags & ALLDIRS) << " " << a_AdditionalFlags << "/" << ALLDIRS << std::endl;
+
+		m_AtomsInWorld.insert(pOut);
 		
 		if(a_AdditionalFlags & INSTANTIATE_IMMEDIATELY)
 		{
@@ -128,6 +131,12 @@ Structure* AtomManager::CreateStructure(int a_StructureType, MapCell* a_pLocMapC
 		*a_ppStructureLocation = pOut;
 	}
 	return pOut;
+}
+
+void AtomManager::DeleteStructure(Structure* a_pStructureToDel)
+{
+	m_AtomsInWorld.erase(a_pStructureToDel);
+	delete a_pStructureToDel;
 }
 
 /*bool AtomManager::CreateObject(std::string a_TypeTag, Ogre::Vector3 a_Position)

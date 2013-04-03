@@ -133,8 +133,8 @@ void OverlayPlating::CreateFromBuildPoint()
 		m_pAtomEntity->setMaterialName("over_plating");
 
 		//done
-		m_IsBuildPoint = false;
 		SetEntityVisible(true);
+		m_IsBuildPoint = false;
 	}
 }
 

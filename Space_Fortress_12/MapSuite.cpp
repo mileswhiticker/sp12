@@ -228,7 +228,6 @@ bool MapSuite::LoadMapFile(std::string a_FileName)
 				m_MapStations.push_back(pStation);*/
 			}
 		}
-
 		return true;
 	}
 
@@ -261,12 +260,6 @@ int MapSuite::CreateAdjacentGirderBuildpoints(MapCell* a_pLocMapCell)
 		/*if(a_X + 1 > MAX_WORLD_RANGE || a_Y + 1 > MAX_WORLD_RANGE || a_Z + 1 > MAX_WORLD_RANGE)
 			return numCreated;*/
 
-		//if there's nothing in the center cell, put a build highlighter here
-		if(!a_pLocMapCell->m_pMyCellTurf)
-		{
-			AtomManager::GetSingleton().CreateStructure(Structure::GIRDER, a_pLocMapCell, NULL, INSTANTIATE_IMMEDIATELY|BUILD_POINT);
-		}
-
 		//loop through cardinal directions and add girder build points in them
 		for(int curDir = 1; curDir < 32; curDir *= 2)
 		{
@@ -284,15 +277,74 @@ int MapSuite::CreateAdjacentGirderBuildpoints(MapCell* a_pLocMapCell)
 	return numCreated;
 }
 
+int MapSuite::ClearDependantAdjacentGirderBuildpoints(MapCell* a_pLocMapCell)
+{
+	int numCleared = 0;
+	if(a_pLocMapCell)
+	{
+		//loop through cardinal directions and delete girder build points if they have no other connected turfs
+		for(int curAdjDir = 1; curAdjDir < 32; curAdjDir *= 2)
+		{
+			Ogre::Vector3 targetCoords = GetCoordsInDir(a_pLocMapCell->m_Position, curAdjDir);
+			MapCell* pCurrentCell = GetCellAtCoordsOrNull(targetCoords);
+
+			//check if there's a girder build point there
+			if(pCurrentCell \
+				&& pCurrentCell->m_pMyCellTurf \
+				&& pCurrentCell->m_pMyCellTurf->m_pMyStructure \
+				&& pCurrentCell->m_pMyCellTurf->m_pMyStructure->GetStructureType() == Structure::GIRDER \
+				&& pCurrentCell->m_pMyCellTurf->m_pMyStructure->IsBuildPoint())
+			{
+				//see if there are any adjacent turfs other than the source cell
+				int sourceDir = ReverseDir(curAdjDir);
+				bool turfAdjacent = false;
+				for(int curCheckDir = 1; curCheckDir <= 32; curCheckDir *= 2)
+				{
+					if(curCheckDir != sourceDir)
+					{
+						//see if there is a turf in that direction we can cling on to
+						MapCell* pCheckCellForTurf = GetCellInDirOrNull(pCurrentCell, curCheckDir);
+						if(pCheckCellForTurf && pCheckCellForTurf->m_pMyCellTurf \
+							&& pCheckCellForTurf->m_pMyCellTurf->m_pMyStructure \
+							&& !pCheckCellForTurf->m_pMyCellTurf->m_pMyStructure->IsBuildPoint())
+						{
+							turfAdjacent = true;
+							break;
+						}
+					}
+				}
+
+				//if there's no adjacent turfs to "connect" the girder buildpoint to, clear this build point and it's associated mapcell
+				//we've already checked above to make sure that the deletion is valid
+				//the things we're deleting will make sure their own deletion is safe
+				if(!turfAdjacent)
+				{
+					AtomManager::GetSingleton().DeleteStructure(pCurrentCell->m_pMyCellTurf->m_pMyStructure);
+					m_MapCellGrid.erase(GetCoordsString(pCurrentCell->m_Position));
+					delete pCurrentCell;
+				}
+			}
+		}
+	}
+
+	return numCleared;
+}
+
 MapCell* MapSuite::GetCellInDirOrNull(MapCell* a_pSourceMapCell, int a_Direction)
 {
 	MapCell* pOut = NULL;
 	if(a_pSourceMapCell)
 	{
 		Ogre::Vector3 newCoords = GetCoordsInDir(a_pSourceMapCell->m_Position, a_Direction);
-
-		//todo: catch out of range exception
-		pOut = m_MapCellGrid.at(GetCoordsString(newCoords));
+		
+		try
+		{
+			pOut = m_MapCellGrid.at(GetCoordsString(newCoords));
+		}
+		catch (const std::out_of_range& oor)
+		{
+			//nothing
+		}
 	}
 	return pOut;
 }
@@ -315,4 +367,23 @@ MapCell* MapSuite::GetCellAtCoordsOrCreate(int a_X, int a_Y, int a_Z)
 MapCell* MapSuite::GetCellAtCoordsOrCreate(Ogre::Vector3 a_Coords)
 {
 	return GetCellAtCoordsOrCreate(a_Coords.x, a_Coords.y, a_Coords.z);
+}
+
+MapCell* MapSuite::GetCellAtCoordsOrNull(int a_X, int a_Y, int a_Z)
+{
+	MapCell* pOut = NULL;
+	try
+	{
+		pOut = m_MapCellGrid.at(GetCoordsString(a_X, a_Y, a_Z));
+	}
+	catch (const std::out_of_range& oor)
+	{
+		//nothing
+	}
+	return pOut;
+}
+
+MapCell* MapSuite::GetCellAtCoordsOrNull(Ogre::Vector3 a_Coords)
+{
+	return GetCellAtCoordsOrNull(a_Coords.x, a_Coords.y, a_Coords.z);
 }

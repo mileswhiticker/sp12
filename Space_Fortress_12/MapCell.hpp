@@ -10,12 +10,12 @@ public:
 	MapCell(Ogre::Vector3 a_Position);
 	Ogre::Vector3 m_Position;
 	//
-	MapCell* m_pAdjNorth;
+	/*MapCell* m_pAdjNorth;
 	MapCell* m_pAdjSouth;
 	MapCell* m_pAdjEast;
 	MapCell* m_pAdjWest;
 	MapCell* m_pAdjUp;
-	MapCell* m_pAdjDown;
+	MapCell* m_pAdjDown;*/
 	//
 	Turf* m_pMyCellTurf;
 };

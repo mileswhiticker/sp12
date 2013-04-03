@@ -3,6 +3,7 @@
 
 #include <string>
 #include <OGRE\OgreVector3.h>
+#include <set>
 
 class Atom;
 class Object;
@@ -31,6 +32,7 @@ public:
 
 	//the first 6 bits of a_AdditionalFlags are directions
 	Structure* CreateStructure(int a_StructureType, MapCell* a_pLocMapCell, Structure** a_ppAtomLocation = NULL, int a_AdditionalFlags = INSTANTIATE_IMMEDIATELY);
+	void DeleteStructure(Structure* a_pStructureToDel);
 
 	void ToggleCellFlashing();
 	//
@@ -38,9 +40,9 @@ private:
 	AtomManager();
 	bool cellsFlashing;
 	//
-	std::vector<Atom*> m_AtomsInWorld;
-	std::vector<Girder*> m_GirdersInWorld;
-	std::vector<Object*> m_ObjectsInWorld;
+	std::set<Atom*> m_AtomsInWorld;
+	//std::set<Girder*> m_GirdersInWorld;
+	//std::set<Object*> m_ObjectsInWorld;
 	//
 };
 

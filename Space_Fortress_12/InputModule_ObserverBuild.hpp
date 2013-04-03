@@ -21,6 +21,8 @@ public:
 	bool m_BuildExpansion;
 	int m_TargetStructureTypes;
 	//
+	void ForceClearAtomIfSelected(Atom* a_pOtherAtom);
+	//
 private:
 	void SelectNewAtom(Atom* a_pNewAtom);
 	void ClearSelectedAtom();

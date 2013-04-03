@@ -119,6 +119,7 @@ void ObserverBuild::SelectNewAtom(Atom* a_pNewAtom)
 			a_pNewAtom->SetFlashingColour(Ogre::ColourValue::Green);
 			m_pCurrentlyTargettedAtom = a_pNewAtom;
 			m_pCurrentlyTargettedAtom->SetEntityVisible();
+			m_pCurrentlyTargettedAtom->Select(this);
 			//std::cout << "new atom targetted" << std::endl;
 		}
 	}
@@ -138,7 +139,16 @@ void ObserverBuild::ClearSelectedAtom()
 		{
 			m_pCurrentlyTargettedAtom->SetEntityVisible(false);
 		}
+		m_pCurrentlyTargettedAtom->DeSelect(this);
 		m_pCurrentlyTargettedAtom = NULL;
+	}
+}
+
+void ObserverBuild::ForceClearAtomIfSelected(Atom* a_pOtherAtom)
+{
+	if(a_pOtherAtom == m_pCurrentlyTargettedAtom)
+	{
+		ClearSelectedAtom();
 	}
 }
 
@@ -149,31 +159,31 @@ bool ObserverBuild::keyPressed( const OIS::KeyEvent &arg )
 	case(OIS::KC_B):
 		{
 			m_BuildExpansion = !m_BuildExpansion;
-			m_BuildExpansion ? std::cout << "buildpoints" << std::endl : std::cout << "existing structures" << std::endl;
+			//m_BuildExpansion ? std::cout << "buildpoints" << std::endl : std::cout << "existing structures" << std::endl;
 			return true;
 		}
 	case(OIS::KC_1):
 		{
 			m_TargetStructureTypes = 0;
-			std::cout << "targetting all structures" << std::endl;
+			//std::cout << "targetting all structures" << std::endl;
 			return true;
 		}
 	case(OIS::KC_2):
 		{
 			m_TargetStructureTypes = Structure::GIRDER;
-			std::cout << "targetting GIRDER" << std::endl;
+			//std::cout << "targetting GIRDER" << std::endl;
 			return true;
 		}
 	case(OIS::KC_3):
 		{
 			m_TargetStructureTypes = Structure::OVERLAYPLATING;
-			std::cout << "targetting OVERLAYPLATING" << std::endl;
+			//std::cout << "targetting OVERLAYPLATING" << std::endl;
 			return true;
 		}
 	case(OIS::KC_4):
 		{
 			m_TargetStructureTypes = Structure::UNDERLAYPLATING;
-			std::cout << "targetting UNDERLAYPLATING" << std::endl;
+			//std::cout << "targetting UNDERLAYPLATING" << std::endl;
 			return true;
 		}
 	case(OIS::KC_I):

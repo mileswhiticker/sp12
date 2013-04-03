@@ -33,10 +33,6 @@ public:
 	//bool AddFilling(std::string a_UnderlayID);
 	void AddFreefloatingObj(std::string a_TypeTag);
 
-	//todo: make overlays and underlays into atoms
-	std::vector<btRigidBody*> m_RigidBodies;
-	std::vector<btBoxShape*> m_BoxCollisionShapes;
-	//
 	MapCell* m_pSourceMapCell;
 	//
 private:

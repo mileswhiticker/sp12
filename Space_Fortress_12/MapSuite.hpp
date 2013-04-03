@@ -20,12 +20,15 @@ public:
 	//
 	//void CreateAdjacentGirderBuildpoints(int a_X, int a_Y, int a_Z);
 	int CreateAdjacentGirderBuildpoints(MapCell* a_pLocMapCell);	//unsigned int a_X, unsigned int a_Y, unsigned int a_Z
+	int ClearDependantAdjacentGirderBuildpoints(MapCell* a_pLocMapCell);
 	MapCell* CreateNewMapCell(int a_X, int a_Y, int a_Z);
 	MapCell* CreateNewMapCell(Ogre::Vector3 a_Coords);
 
 	MapCell* GetCellInDirOrNull(MapCell* a_pSourceMapCell, int a_Direction);
 	MapCell* GetCellAtCoordsOrCreate(int a_X, int a_Y, int a_Z);
 	MapCell* GetCellAtCoordsOrCreate(Ogre::Vector3 a_Coords);
+	MapCell* GetCellAtCoordsOrNull(int a_X, int a_Y, int a_Z);
+	MapCell* GetCellAtCoordsOrNull(Ogre::Vector3 a_Coords);
 	//
 private:
 	MapSuite();

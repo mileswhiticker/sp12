@@ -3,10 +3,11 @@
 
 #include <OGRE\OgreColourValue.h>
 #include <vector>
+#include <set>
 
 class btCollisionShape;
 class btRigidBody;
-
+class ObserverBuild;
 namespace Ogre
 {
 	class SceneNode;
@@ -25,6 +26,7 @@ public:
 		//
 	};
 	Atom();
+	virtual ~Atom();
 	//
 	Ogre::SceneNode* m_pAtomSceneNode;
 	virtual void Update(float a_DeltaT);
@@ -44,6 +46,9 @@ public:
 	AtomType GetAtomType();
 	virtual void TargetcastIntercept();
 	//
+	void Select(ObserverBuild* a_pSelectingObserver);
+	void DeSelect(ObserverBuild* a_pSelectingObserver);
+	//
 protected:
 	AtomType m_MyAtomType;
 	int m_Direction;
@@ -52,6 +57,7 @@ protected:
 private:
 	float m_ColourModulateLevel;
 	int m_ModulateChangeDir;
+	std::set<ObserverBuild*> m_pSelectingObservers;
 	//
 };
 
