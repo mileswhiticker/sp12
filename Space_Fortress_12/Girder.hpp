@@ -1,9 +1,10 @@
 #ifndef GIRDER_HPP
 #define GIRDER_HPP
 
+#include <list>
 #include <OGRE\OgreVector3.h>
-#include "Structure.hpp"
 
+#include "Structure.hpp"
 #include "Turf.hpp"
 
 class Obj;
@@ -22,6 +23,7 @@ class Girder
 {
 public:
 	Girder(MapCell* a_pSourceMapCell);
+	virtual ~Girder();
 	virtual void InstantiateStructure(bool a_IsBuildPoint);
 	virtual void CreateFromBuildPoint();
 	virtual void DestroyToBuildPoint();
@@ -36,9 +38,8 @@ public:
 	MapCell* m_pSourceMapCell;
 	//
 private:
-	std::vector<Ogre::Entity*> m_QuarterGirderGirders;
-	std::vector<Ogre::Entity*> m_Overlays;
-	std::vector<Ogre::Entity*> m_Underlays;
+	std::list<Structure*> m_MountedStructures;
+	std::list<Structure*> m_InvisibleBuildPoints;
 	int m_PlateOverlayDirs;
 	int m_PlateUnderlays;
 	//

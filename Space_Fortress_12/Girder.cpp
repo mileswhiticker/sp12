@@ -43,6 +43,21 @@ Girder::Girder(MapCell* a_pSourceMapCell)
 	}
 }
 
+Girder::~Girder()
+{
+	if(!m_IsBuildPoint)
+	{
+		DestroyToBuildPoint();
+	}
+
+	/*for(int curDir = 1; curDir <= 32; curDir *= 2)
+	{
+		//std::cout << "direction: " << curDir << std::endl;
+		Structure* pUnusedBuildPoint = AtomManager::GetSingleton().CreateStructure(Structure::OVERLAYPLATING, m_pSourceMapCell, NULL, curDir|BUILD_POINT|INSTANTIATE_IMMEDIATELY);
+		m_InvisibleBuildPoints.push_back(pUnusedBuildPoint);
+	}*/
+}
+
 void Girder::InstantiateStructure(bool a_IsBuildPoint)
 {
 	m_IsBuildPoint = a_IsBuildPoint;
@@ -76,12 +91,12 @@ void Girder::InstantiateStructure(bool a_IsBuildPoint)
 	{
 		dynamicsWorld.addRigidBody(m_pRigidBody, COLLISION_STRUCTURE, COLLISION_BUILDRAYCAST);
 
-		//create overlay buildpoints
+		//create plating buildpoints
 		for(int curDir = 1; curDir <= 32; curDir *= 2)
 		{
 			//std::cout << "direction: " << curDir << std::endl;
 			Structure* pUnusedBuildPoint = AtomManager::GetSingleton().CreateStructure(Structure::OVERLAYPLATING, m_pSourceMapCell, NULL, curDir|BUILD_POINT|INSTANTIATE_IMMEDIATELY);
-			m_UnusedBuildPoints.push_back(pUnusedBuildPoint);
+			m_InvisibleBuildPoints.push_back(pUnusedBuildPoint);
 		}
 	}
 }
@@ -109,15 +124,12 @@ void Girder::CreateFromBuildPoint()
 		dynamicsWorld.removeRigidBody(m_pRigidBody);
 		dynamicsWorld.addRigidBody(m_pRigidBody, COLLISION_STRUCTURE, COLLISION_BUILDRAYCAST);
 
-		//create overlay buildpoints
-		Structure* pUnusedBuildPoint;
+		//create plating buildpoints
 		for(int curDir = 1; curDir <= 32; curDir *= 2)
 		{
 			//std::cout << "direction: " << curDir << std::endl;
-			pUnusedBuildPoint = AtomManager::GetSingleton().CreateStructure(Structure::OVERLAYPLATING, m_pSourceMapCell, NULL, INSTANTIATE_IMMEDIATELY|BUILD_POINT);
-			m_UnusedBuildPoints.push_back(pUnusedBuildPoint);
-			pUnusedBuildPoint->ChangeDirection(curDir);
-			pUnusedBuildPoint->InstantiateStructure(true);
+			Structure* pUnusedBuildPoint = AtomManager::GetSingleton().CreateStructure(Structure::OVERLAYPLATING, m_pSourceMapCell, NULL, curDir|BUILD_POINT|INSTANTIATE_IMMEDIATELY);
+			m_InvisibleBuildPoints.push_back(pUnusedBuildPoint);
 		}
 
 		//miscellaneous
@@ -144,6 +156,12 @@ void Girder::DestroyToBuildPoint()
 
 		//reset the material
 		m_pAtomEntity->setMaterialName("cell_highlight_material");
+		
+		//delete all mounted structures for now, buildpoints or not
+		for(auto it = m_InvisibleBuildPoints.begin(); it != m_InvisibleBuildPoints.end(); ++it)
+		{
+			AtomManager::GetSingleton().DeleteStructure(*it);
+		}
 
 		//done
 		SetEntityVisible(false);
