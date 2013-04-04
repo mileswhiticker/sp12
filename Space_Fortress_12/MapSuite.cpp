@@ -125,28 +125,27 @@ bool MapSuite::LoadMapFile(std::string a_FileName)
 						const char* filling_type = NULL;
 						if(skeleton_type)
 						{
-							MapCell* pLocMapCell = CreateNewMapCell(i,j,k);
-
-							pGirder = (Girder*)AtomManager::GetSingleton().CreateStructure(Structure::GIRDER, pLocMapCell, NULL, INSTANTIATE_IMMEDIATELY);
 							//std::string(pElement->Attribute("skeleton"))
+							MapCell* pLocMapCell = CreateNewMapCell(i,j,k);
+							pGirder = (Girder*)AtomManager::GetSingleton().CreateStructure(Structure::GIRDER, pLocMapCell, NULL, INSTANTIATE_IMMEDIATELY);
+
 							//check if it wants to be filling in
 							//todo: update this to new method
-							filling_type = pElement->Attribute("filling");
+							/*filling_type = pElement->Attribute("filling");
 							if(filling_type)
 							{
 								//add underlay plating in every direction
-								/*pGirder->AddUnderlay(1, filling_type);
+								pGirder->AddUnderlay(1, filling_type);
 								pGirder->AddUnderlay(2, filling_type);
 								pGirder->AddUnderlay(4, filling_type);
 								pGirder->AddUnderlay(8, filling_type);
 								pGirder->AddUnderlay(16, filling_type);
-								pGirder->AddUnderlay(32, filling_type);*/
-							}
+								pGirder->AddUnderlay(32, filling_type);
+							}*/
 
 							//loop through cell nodes
 							for(tinyxml2::XMLNode* pGirderAttributeNode = pGirderNode->FirstChild(); pGirderAttributeNode; pGirderAttributeNode = pGirderAttributeNode->NextSibling())
 							{
-								continue;
 								if(pGirder && !std::string("overlay").compare(pGirderAttributeNode->Value()))
 								{
 									//overlay plating
