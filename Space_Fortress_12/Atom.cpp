@@ -219,3 +219,8 @@ void Atom::DeSelect(ObserverBuild* a_pSelectingObserver)
 		m_pSelectingObservers.erase(a_pSelectingObserver);
 	}
 }
+
+int Atom::GetDirection()
+{
+	return m_Direction;
+}

@@ -45,17 +45,8 @@ Girder::Girder(MapCell* a_pSourceMapCell)
 
 Girder::~Girder()
 {
-	if(!m_IsBuildPoint)
-	{
-		DestroyToBuildPoint();
-	}
-
-	/*for(int curDir = 1; curDir <= 32; curDir *= 2)
-	{
-		//std::cout << "direction: " << curDir << std::endl;
-		Structure* pUnusedBuildPoint = AtomManager::GetSingleton().CreateStructure(Structure::OVERLAYPLATING, m_pSourceMapCell, NULL, curDir|BUILD_POINT|INSTANTIATE_IMMEDIATELY);
-		m_InvisibleBuildPoints.push_back(pUnusedBuildPoint);
-	}*/
+	//if we're not a build point, turn us into one (checks inside the func)
+	DestroyToBuildPoint();
 }
 
 void Girder::InstantiateStructure(bool a_IsBuildPoint)
@@ -163,12 +154,20 @@ void Girder::DestroyToBuildPoint()
 		//reset the material
 		m_pAtomEntity->setMaterialName("cell_highlight_material");
 		
-		//delete all mounted structures for now, buildpoints or not
+		//delete all mounted structures
+		for(auto it = m_MountedStructures.begin(); it != m_MountedStructures.end(); ++it)
+		{
+			AtomManager::GetSingleton().DeleteStructure(*it);
+		}
+		m_MountedStructures.erase(m_MountedStructures.begin(), m_MountedStructures.end());
+		
+		//delete all structure buildpoints
 		for(auto it = m_InvisibleBuildPoints.begin(); it != m_InvisibleBuildPoints.end(); ++it)
 		{
 			AtomManager::GetSingleton().DeleteStructure(*it);
 		}
-
+		m_InvisibleBuildPoints.erase(m_InvisibleBuildPoints.begin(), m_InvisibleBuildPoints.end());
+		
 		//done
 		SetEntityVisible(false);
 		m_IsBuildPoint = true;
@@ -177,187 +176,38 @@ void Girder::DestroyToBuildPoint()
 	}
 }
 
-/*void Girder::ResetEmptyOverlays()
+void Girder::CreateBuildpointInDir(Structure::StructureType a_BuildPointType, int a_Dir)
 {
-	for(int i=1; i<=32; i*=2)
+	bool success = false;
+	auto it_end = m_InvisibleBuildPoints.end();
+	for(auto it = m_InvisibleBuildPoints.begin(); it != m_InvisibleBuildPoints.end(); it)
 	{
-		if( !(m_PlateOverlayDirs&i) )
+		//create the first non-buildpoint structure that matches, and delete the rest (if there are any others, there shouldn't be so this is just in case)
+		if((*it)->GetStructureType() == a_BuildPointType && (*it)->GetDirection() == a_Dir)
 		{
-			AddOverlay(i, "");
+			if(!success)
+			{
+				//if it's a build point, create it
+				if((*it)->IsBuildPoint())
+				{
+					(*it)->CreateFromBuildPoint();
+				}
+
+				//now move it over to the list of 'created' build points
+				m_MountedStructures.push_back(*it);
+				it = m_InvisibleBuildPoints.erase(it);
+				success = true;
+			}
+			else
+			{
+				//delete it, because it must be a duplicate
+				AtomManager::GetSingleton().DeleteStructure(*it);
+				it = m_InvisibleBuildPoints.erase(it);
+			}
+		}
+		else
+		{
+			++it;
 		}
 	}
-	//m_PlateOverlayDirs
-}*/
-
-/*bool Girder::AddOverlay(int a_Dir, std::string a_OverlayID)
-{
-	//an overlay plate is essentially an "outer cover" for the tile in one (of six) directions
-	bool isPhysical = false;
-	if(a_OverlayID.length())
-		isPhysical = true;
-	Ogre::SceneManager& sceneManager = GetSceneManager();
-	Ogre::SceneNode* pOverlayNode = m_pAtomSceneNode->createChildSceneNode();
-
-	//only create an entity if it's a valid id
-	if(isPhysical)
-	{
-		m_Overlays.push_back(sceneManager.createEntity(num2string(NewUID()) + " overlay", "cell_overlay.mesh"));
-		pOverlayNode->attachObject(m_Overlays.back());
-	}
-
-	Ogre::Vector3 offsetPos(0, 0, 0);
-	Ogre::Vector3 lookatPos(0, 0, 0);
-	btVector3 halfExtents(0.5f, 0.5f, 0.5f);
-	//
-	if(a_Dir & NORTH)
-	{
-		//offsetPos.z += 0.505f;
-		lookatPos.z += 1;
-		halfExtents.setZ(0.005f);
-		//std::cout << "NORTH " << (isPhysical ? "plating" : "trigger") << std::endl;
-	}
-	if(a_Dir & SOUTH)
-	{
-		//offsetPos.z -= 0.505f;
-		lookatPos.z -= 1;
-		halfExtents.setZ(0.005f);
-		//std::cout << "SOUTH " << (isPhysical ? "plating" : "trigger") << std::endl;
-	}
-	if(a_Dir & EAST)
-	{
-		offsetPos.x += 0.505f;
-		lookatPos.x += 1;
-		halfExtents.setX(0.005f);
-		//std::cout << "EAST " << (isPhysical ? "plating" : "trigger") << std::endl;
-	}
-	if(a_Dir & WEST)
-	{
-		offsetPos.x -= 0.505f;
-		lookatPos.x -= 1;
-		halfExtents.setX(0.005f);
-		//std::cout << "WEST " << (isPhysical ? "plating" : "trigger") << std::endl;
-	}
-	if(a_Dir & UP)
-	{
-		offsetPos.y += 0.505f;
-		lookatPos.y += 1;
-		halfExtents.setY(0.005f);
-		//std::cout << "UP " << (isPhysical ? "plating" : "trigger") << std::endl;
-	}
-	if(a_Dir & DOWN)
-	{
-		offsetPos.y -= 0.505f;
-		lookatPos.y -= 1;
-		halfExtents.setY(0.005f);
-		//std::cout << "DOWN " << (isPhysical ? "plating" : "trigger") << std::endl;
-	}
-	m_PlateOverlayDirs &= a_Dir;
-	//
-	pOverlayNode->lookAt(lookatPos, Ogre::Node::TS_LOCAL);
-	pOverlayNode->setPosition(offsetPos);
-	pOverlayNode->yaw(Ogre::Degree(90));
-
-	//create physics body and initialise to starting position
-	btBoxShape* pBoxShape = new btBoxShape(halfExtents);
-	btDefaultMotionState* groundMotionState = new btDefaultMotionState(btTransform(btQuaternion(0,0,0,1), OGRE2BT(m_pAtomSceneNode->getPosition() + offsetPos)));
-	btRigidBody::btRigidBodyConstructionInfo groundRigidBodyCI(0, groundMotionState, pBoxShape, btVector3(0,0,0));
-	btRigidBody* pRigidBody = new btRigidBody(groundRigidBodyCI);
-	
-	//todo: is this working?
-	if(!isPhysical)
-		pRigidBody->setCollisionFlags(pRigidBody->CF_NO_CONTACT_RESPONSE);
-
-	pRigidBody->setUserPointer(this);
-
-	//add new rigid body to world
-	btDiscreteDynamicsWorld& dynamicsWorld = GetDynamicsWorld();
-	dynamicsWorld.addRigidBody(pRigidBody, COLLISION_STRUCTURE, COLLISION_BUILDRAYCAST);
-
-	m_RigidBodies.push_back(pRigidBody);
-	m_BoxCollisionShapes.push_back(pBoxShape);
-	return true;
-}*/
-
-/*bool Girder::AddUnderlay(int a_Dir, std::string a_UnderlayID)
-{
-	//return false if one already exists, or the specified type doesn't exist
-	if(!a_UnderlayID.compare("grey_default"))
-	{
-		//an overlay plate is essentially an "outer cover" for the tile in one (of six) directions
-		Ogre::SceneManager& sceneManager = GetSceneManager();
-		
-		m_Underlays.push_back(sceneManager.createEntity(num2string(NewUID()) + " underlay", "cell_underlay.mesh"));
-		Ogre::SceneNode* pUnderlayNode = m_pAtomSceneNode->createChildSceneNode();
-		pUnderlayNode->attachObject(m_Underlays.back());
-		std::string matName = m_Underlays.back()->getSubEntity(0)->getMaterialName();
-
-		Ogre::Vector3 offsetPos(0, 0, 0);
-		Ogre::Vector3 lookatPos(0, 0, 0);
-		Ogre::Vector3 scale(0.9f, 0.9f, 0.9f);
-		btVector3 halfExtents(0.5f, 0.5f, 0.5f);
-		//
-		if(a_Dir & NORTH)
-		{
-			offsetPos.z += 0.45f;
-			lookatPos.z += 1;
-			halfExtents.setZ(0.005f);
-			//scale.z = 1;
-		}
-		if(a_Dir & SOUTH)
-		{
-			offsetPos.z -= 0.45f;
-			lookatPos.z -= 1;
-			halfExtents.setZ(0.005f);
-			//scale.z = 1;
-		}
-		if(a_Dir & EAST)
-		{
-			offsetPos.x += 0.45f;
-			lookatPos.x += 1;
-			halfExtents.setX(0.005f);
-			//scale.x = 1;
-		}
-		if(a_Dir & WEST)
-		{
-			offsetPos.x -= 0.45f;
-			lookatPos.x -= 1;
-			halfExtents.setX(0.005f);
-			//scale.x = 1;
-		}
-		if(a_Dir & UP)
-		{
-			offsetPos.y += 0.45f;
-			lookatPos.y += 1;
-			halfExtents.setY(0.005f);
-			//scale.y = 1;
-		}
-		if(a_Dir & DOWN)
-		{
-			offsetPos.y -= 0.45f;
-			lookatPos.y -= 1;
-			halfExtents.setY(0.005f);
-			//scale.y = 1;
-		}
-		//
-		pUnderlayNode->setPosition(offsetPos);
-		pUnderlayNode->lookAt(lookatPos, Ogre::Node::TS_LOCAL);
-		pUnderlayNode->setScale(scale);
-		pUnderlayNode->yaw(Ogre::Degree(90));
-
-		//create physics body and initialise to starting position
-		btBoxShape* pBoxShape = new btBoxShape(halfExtents * OGRE2BT(scale));
-		btDefaultMotionState* groundMotionState = new btDefaultMotionState(btTransform(btQuaternion(0,0,0,1), OGRE2BT(m_pAtomSceneNode->getPosition() + offsetPos)));
-		btRigidBody::btRigidBodyConstructionInfo groundRigidBodyCI(0, groundMotionState, pBoxShape, btVector3(0,0,0));
-		btRigidBody* pRigidBody = new btRigidBody(groundRigidBodyCI);
-
-		//add new rigid body to world
-		btDiscreteDynamicsWorld& dynamicsWorld = GetDynamicsWorld();
-		dynamicsWorld.addRigidBody(pRigidBody);
-
-		m_RigidBodies.push_back(pRigidBody);
-		m_BoxCollisionShapes.push_back(pBoxShape);
-
-		return true;
-	}
-	return false;
-}*/
+}

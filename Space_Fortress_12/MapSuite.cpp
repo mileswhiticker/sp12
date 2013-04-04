@@ -159,7 +159,8 @@ bool MapSuite::LoadMapFile(std::string a_FileName)
 										if(plating)
 										{
 											//pGirder->AddUnderlay(dir, plating);
-											Structure* pUnusedBuildPoint = AtomManager::GetSingleton().CreateStructure(Structure::OVERLAYPLATING, pLocMapCell, NULL, dir|INSTANTIATE_IMMEDIATELY);
+											//Structure* pUnusedBuildPoint = AtomManager::GetSingleton().CreateStructure(Structure::OVERLAYPLATING, pLocMapCell, NULL, dir|INSTANTIATE_IMMEDIATELY);
+											pGirder->CreateBuildpointInDir(Structure::OVERLAYPLATING, dir);
 										}
 									}
 								}
@@ -176,7 +177,8 @@ bool MapSuite::LoadMapFile(std::string a_FileName)
 										if(plating)
 										{
 											//pGirder->AddUnderlay(dir, plating);
-											Structure* pUnusedBuildPoint = AtomManager::GetSingleton().CreateStructure(Structure::UNDERLAYPLATING, pLocMapCell, NULL, dir|INSTANTIATE_IMMEDIATELY);
+											//Structure* pUnusedBuildPoint = AtomManager::GetSingleton().CreateStructure(Structure::UNDERLAYPLATING, pLocMapCell, NULL, dir|INSTANTIATE_IMMEDIATELY);
+											pGirder->CreateBuildpointInDir(Structure::UNDERLAYPLATING, dir);
 										}
 									}
 								}

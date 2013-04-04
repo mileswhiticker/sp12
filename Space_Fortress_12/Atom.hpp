@@ -44,10 +44,12 @@ public:
 	btCollisionShape* m_pCollisionShape;
 	//
 	AtomType GetAtomType();
-	virtual void TargetcastIntercept();
+	int GetDirection();
 	//
 	void Select(ObserverBuild* a_pSelectingObserver);
 	void DeSelect(ObserverBuild* a_pSelectingObserver);
+	//
+	virtual void TargetcastIntercept();
 	//
 protected:
 	AtomType m_MyAtomType;

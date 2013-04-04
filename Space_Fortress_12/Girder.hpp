@@ -25,14 +25,11 @@ public:
 	Girder(MapCell* a_pSourceMapCell);
 	virtual ~Girder();
 	virtual void InstantiateStructure(bool a_IsBuildPoint);
+	//
 	virtual void CreateFromBuildPoint();
 	virtual void DestroyToBuildPoint();
-	//virtual void Update(float a_DeltaT);
+	void CreateBuildpointInDir(Structure::StructureType a_BuildPointType, int a_Dir);
 	//
-	//bool AddOverlay(int a_Dir, std::string a_OverlayID);
-	//void ResetEmptyOverlays();
-	//bool AddUnderlay(int a_Dir, std::string a_UnderlayID);
-	//bool AddFilling(std::string a_UnderlayID);
 	void AddFreefloatingObj(std::string a_TypeTag);
 
 	MapCell* m_pSourceMapCell;
