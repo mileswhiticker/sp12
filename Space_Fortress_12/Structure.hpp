@@ -1,8 +1,9 @@
 #ifndef STRUCTURE_HPP
 #define STRUCTURE_HPP
 
-#include <list>
 #include "Atom.hpp"
+
+class Girder;
 
 class Structure
 :	public Atom
@@ -24,16 +25,17 @@ public:
 	bool IsBuildPoint();
 	virtual void CreateFromBuildPoint()=0;
 	virtual void DestroyToBuildPoint()=0;
-	void OwnedBuildPointCreated(Structure* a_pChild);
+	//
+	bool MountOnGirder(Girder* a_pMountTarget);
+	bool UnmountFromGirder();
 	//
 	StructureType GetStructureType();
 	//
 protected:
 	StructureType m_MyStructureType;
 	bool m_IsBuildPoint;
+	Girder* m_pMountedGirder;
 	Structure* m_pMountedOnStructure;
-	std::list<Structure*> m_UsedBuildPoints;
-	std::list<Structure*> m_UnusedBuildPoints;
 	//
 };
 
