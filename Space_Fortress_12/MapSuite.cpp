@@ -156,6 +156,11 @@ bool MapSuite::LoadMapFile(std::string a_FileName)
 										if(pElement->QueryIntAttribute("dir", &dir))
 											continue;
 										const char* plating = pElement->Attribute("plating");
+										if(plating)
+										{
+											//pGirder->AddUnderlay(dir, plating);
+											Structure* pUnusedBuildPoint = AtomManager::GetSingleton().CreateStructure(Structure::OVERLAYPLATING, pLocMapCell, NULL, dir|INSTANTIATE_IMMEDIATELY);
+										}
 									}
 								}
 								else if(pGirder && !filling_type && !std::string("underlay").compare(pGirderAttributeNode->Value()))

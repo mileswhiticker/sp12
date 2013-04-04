@@ -198,6 +198,9 @@
     <ClCompile Include="MapCell.cpp">
       <Filter>Source Files\MapSuite</Filter>
     </ClCompile>
+    <ClCompile Include="UnderlayPlating.cpp">
+      <Filter>Source Files\Atoms\Structure</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GlueScreen.hpp">
@@ -325,6 +328,9 @@
     </ClInclude>
     <ClInclude Include="MapCell.hpp">
       <Filter>Header Files\MapSuite</Filter>
+    </ClInclude>
+    <ClInclude Include="UnderlayPlating.hpp">
+      <Filter>Header Files\Atoms\Structure</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

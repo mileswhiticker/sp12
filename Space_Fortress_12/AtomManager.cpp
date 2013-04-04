@@ -6,6 +6,7 @@
 #include "Girder.hpp"
 #include "Structure.hpp"
 #include "OverlayPlating.hpp"
+#include "UnderlayPlating.hpp"
 #include "MapCell.hpp"
 
 #include "OgreHelper.hpp"
@@ -99,10 +100,11 @@ Structure* AtomManager::CreateStructure(int a_StructureType, MapCell* a_pLocMapC
 			//m_AtomsInWorld.insert(pOut);
 			break;
 		}
-	/*case(Structure::UNDERLAYPLATING):
+	case(Structure::UNDERLAYPLATING):
 		{
+			pOut = new UnderlayPlating(a_pLocMapCell->m_Position);
 			break;
-		}*/
+		}
 	default:
 		{
 			std::cout << "Unknown structure type: " << a_StructureType << std::endl;

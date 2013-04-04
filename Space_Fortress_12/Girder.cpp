@@ -97,6 +97,9 @@ void Girder::InstantiateStructure(bool a_IsBuildPoint)
 			//std::cout << "direction: " << curDir << std::endl;
 			Structure* pUnusedBuildPoint = AtomManager::GetSingleton().CreateStructure(Structure::OVERLAYPLATING, m_pSourceMapCell, NULL, curDir|BUILD_POINT|INSTANTIATE_IMMEDIATELY);
 			m_InvisibleBuildPoints.push_back(pUnusedBuildPoint);
+
+			pUnusedBuildPoint = AtomManager::GetSingleton().CreateStructure(Structure::UNDERLAYPLATING, m_pSourceMapCell, NULL, curDir|BUILD_POINT|INSTANTIATE_IMMEDIATELY);
+			m_InvisibleBuildPoints.push_back(pUnusedBuildPoint);
 		}
 	}
 }
@@ -117,7 +120,7 @@ void Girder::CreateFromBuildPoint()
 {
 	if(m_IsBuildPoint)
 	{
-		std::cout << "creating girder from build point" << std::endl;
+		//std::cout << "creating girder from build point" << std::endl;
 
 		//update the collision flags
 		btDiscreteDynamicsWorld& dynamicsWorld = GetDynamicsWorld();
@@ -129,6 +132,9 @@ void Girder::CreateFromBuildPoint()
 		{
 			//std::cout << "direction: " << curDir << std::endl;
 			Structure* pUnusedBuildPoint = AtomManager::GetSingleton().CreateStructure(Structure::OVERLAYPLATING, m_pSourceMapCell, NULL, curDir|BUILD_POINT|INSTANTIATE_IMMEDIATELY);
+			m_InvisibleBuildPoints.push_back(pUnusedBuildPoint);
+
+			pUnusedBuildPoint = AtomManager::GetSingleton().CreateStructure(Structure::UNDERLAYPLATING, m_pSourceMapCell, NULL, curDir|BUILD_POINT|INSTANTIATE_IMMEDIATELY);
 			m_InvisibleBuildPoints.push_back(pUnusedBuildPoint);
 		}
 
@@ -147,7 +153,7 @@ void Girder::DestroyToBuildPoint()
 {
 	if(!m_IsBuildPoint)
 	{
-		std::cout << "destroying girder to build point" << std::endl;
+		//std::cout << "destroying girder to build point" << std::endl;
 
 		//reset the collision flags for build raycasting
 		btDiscreteDynamicsWorld& dynamicsWorld = GetDynamicsWorld();

@@ -50,6 +50,7 @@
     <ClCompile Include="tinyxml2.cpp" />
     <ClCompile Include="Turf.cpp" />
     <ClCompile Include="UID.cpp" />
+    <ClCompile Include="UnderlayPlating.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.hpp" />
@@ -94,6 +95,7 @@
     <ClInclude Include="tinyxml2.h" />
     <ClInclude Include="Turf.hpp" />
     <ClInclude Include="UID.hpp" />
+    <ClInclude Include="UnderlayPlating.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="num2string.inl" />
