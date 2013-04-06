@@ -30,6 +30,7 @@ public:
 	//
 private:
 	CEGUI::GUISheet* m_pTopInfoBar;
+	CEGUI::GUISheet* m_pFPSCounter;
 	bool m_HasPersonalCameraNode;
 	//
 };

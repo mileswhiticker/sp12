@@ -11,6 +11,7 @@
 
 #include "OgreHelper.hpp"
 #include "MapHelper.hpp"
+#include "num2string.h"
 
 Client::Client()
 :	m_pCamera(NULL)
@@ -21,16 +22,23 @@ Client::Client()
 	CEGUI::WindowManager& wmgr = CEGUI::WindowManager::getSingleton();
 
 	//test window
-	m_pTopInfoBar = (CEGUI::GUISheet*)wmgr.createWindow( "TaharezLook/StaticText", "testWindow" );
+	m_pTopInfoBar = (CEGUI::GUISheet*)wmgr.createWindow( "TaharezLook/StaticText", "topInfoBar" );
 	Application::StaticGetCEGUIWindow().addChildWindow(m_pTopInfoBar);
 	m_pTopInfoBar->setPosition( CEGUI::UVector2( CEGUI::UDim( 0, 0 ), CEGUI::UDim( 0, 0 ) ) );
-	m_pTopInfoBar->setSize( CEGUI::UVector2( CEGUI::UDim( 1, 0 ), CEGUI::UDim( 0.05f, 0 ) ) );
+	m_pTopInfoBar->setSize( CEGUI::UVector2( CEGUI::UDim( 0.5f, 0 ), CEGUI::UDim( 0.05f, 0 ) ) );
 	m_pTopInfoBar->setText("Observer cam");
+
+	//fps counter
+	m_pFPSCounter = (CEGUI::GUISheet*)wmgr.createWindow( "TaharezLook/StaticText", "fpsCounter" );
+	Application::StaticGetCEGUIWindow().addChildWindow(m_pFPSCounter);
+	m_pFPSCounter->setPosition( CEGUI::UVector2( CEGUI::UDim( 0.5f, 0 ), CEGUI::UDim( 0, 0 ) ) );
+	m_pFPSCounter->setSize( CEGUI::UVector2( CEGUI::UDim( 0.5f, 0 ), CEGUI::UDim( 0.05f, 0 ) ) );
+	m_pFPSCounter->setText("FPS: NA");
 }
 
 void Client::Update(float a_DeltaT)
 {
-	//
+	m_pFPSCounter->setText("FPS: " + num2string(1.f/a_DeltaT));
 }
 
 void Client::Login()
