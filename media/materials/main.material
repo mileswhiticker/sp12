@@ -59,6 +59,21 @@ material girder_material
 	{
 		pass
 		{
+			texture_unit
+			{
+				texture sd_texture.jpg
+				scale 0.1 0.1
+			}
+		}
+	}
+}
+
+material girder_material_modulate
+{
+	technique
+	{
+		pass
+		{
             // Makes the pixel shader alpha output be used for alpha blending
             scene_blend alpha_blend
 			
@@ -87,6 +102,20 @@ material under_plating
 	{
 		pass
 		{
+			texture_unit
+			{
+				texture metal_wall_ports.jpg
+			}
+		}
+	}
+}
+
+material under_plating_modulate
+{
+	technique
+	{
+		pass
+		{
             // Makes the pixel shader alpha output be used for alpha blending
             scene_blend alpha_blend
 			
@@ -109,6 +138,20 @@ material under_plating
 }
 
 material over_plating
+{
+	technique
+	{
+		pass
+		{
+			texture_unit
+			{
+				texture Aluminium-wall-texture.jpg
+			}
+		}
+	}
+}
+
+material over_plating_modulate
 {
 	technique
 	{

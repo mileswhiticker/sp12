@@ -57,6 +57,7 @@ bool Application::create()
 	//m_pWindow->getCustomAttribute("");
 
 	m_pSceneManager = m_pRoot->createSceneManager(Ogre::ST_GENERIC, "BaseSceneManager");
+	//m_pSceneManager->setAmbientLight(Ogre::ColourValue(0, 0, 0));
 
 	m_pRootSceneNode = m_pSceneManager->getRootSceneNode();
 
@@ -262,7 +263,17 @@ void Application::createTestClient()
 	Client* pTestClient = new Client();
 	m_ConnectedClients.push_back(pTestClient);
 
-	Observer* pTestObserver = new Observer();
+	//grab one of the loaded player spawns, and put the test client there
+	//by default spawn at (10, 0, 0) and look west (down the negative x axis)
+	Ogre::Vector3 spawnPos = Ogre::Vector3(10,0,0);
+	int spawnDir = 8;
+	PlayerSpawn* chosenSpawn = MapSuite::GetInstance().GetRandomPlayerSpawn();
+	if(chosenSpawn)
+	{
+		spawnPos = chosenSpawn->pos;
+		spawnDir = chosenSpawn->dir;
+	}
+	Observer* pTestObserver = new Observer(spawnPos, spawnDir);
 	pTestObserver->ConnectClient(pTestClient);
 	m_Mobs.push_back(pTestObserver);
 
@@ -285,7 +296,7 @@ void Application::createTestClient()
 			PlayerSpawn* pObsSpawn = obsSpawns[spawnIndex];
 			
 			//grab the startpos
-			pTestObserver->m_pAtomSceneNode->setPosition(pObsSpawn->pos);
+			pTestObserver->m_pAtomEntitySceneNode->setPosition(pObsSpawn->pos);
 
 			//calculate the starting look direction
 			Ogre::Vector3 startingLookDir = Ogre::Vector3(0,0,0);
@@ -310,7 +321,7 @@ void Application::createTestClient()
 	}
 	else
 	{
-		std::cout << "WARNING: Unable to load starting station!" << std::endl;
+		//std::cout << "WARNING: Unable to load starting station!" << std::endl;
 	}
 }
 

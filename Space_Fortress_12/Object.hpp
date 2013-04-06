@@ -13,7 +13,7 @@ class Object
 :	public Atom
 {
 public:
-	Object();
+	Object(Ogre::Vector3 a_StartPos, int a_StartDirection = 0);
 	virtual void Update(float a_DeltaT);
 	//
 protected:

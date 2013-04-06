@@ -86,7 +86,7 @@ Structure* AtomManager::CreateStructure(int a_StructureType, MapCell* a_pLocMapC
 			//m_GirdersInWorld.push_back((Girder*)pOut);
 			//m_AtomsInWorld.insert(pOut);
 			
-			if( !(a_AdditionalFlags&BUILD_POINT) )
+			if( !(a_AdditionalFlags & BUILD_POINT) )
 			{
 				MapSuite::GetInstance().CreateAdjacentGirderBuildpoints(a_pLocMapCell);
 			}
@@ -94,15 +94,14 @@ Structure* AtomManager::CreateStructure(int a_StructureType, MapCell* a_pLocMapC
 		}
 	case(Structure::OVERLAYPLATING):
 		{
-			//todo
-			pOut = new OverlayPlating(a_pLocMapCell->m_Position);
+			pOut = new OverlayPlating(a_pLocMapCell->m_Position, a_AdditionalFlags & ALLDIRS);
 			
 			//m_AtomsInWorld.insert(pOut);
 			break;
 		}
 	case(Structure::UNDERLAYPLATING):
 		{
-			pOut = new UnderlayPlating(a_pLocMapCell->m_Position);
+			pOut = new UnderlayPlating(a_pLocMapCell->m_Position, a_AdditionalFlags & ALLDIRS);
 			break;
 		}
 	default:
@@ -115,10 +114,6 @@ Structure* AtomManager::CreateStructure(int a_StructureType, MapCell* a_pLocMapC
 	//if creation was successful, deal with any extra flags
 	if(pOut)
 	{
-		//only grab the direction flags, so we don't pass in unused extra bits
-		pOut->ChangeDirection(a_AdditionalFlags & ALLDIRS);
-		//std::cout << "direction set to " << (a_AdditionalFlags & ALLDIRS) << " " << a_AdditionalFlags << "/" << ALLDIRS << std::endl;
-
 		m_AtomsInWorld.insert(pOut);
 		
 		if(a_AdditionalFlags & INSTANTIATE_IMMEDIATELY)

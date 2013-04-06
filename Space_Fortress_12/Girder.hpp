@@ -31,6 +31,9 @@ public:
 	void CreateBuildpointInDir(Structure::StructureType a_BuildPointType, int a_Dir);
 	//
 	void AddFreefloatingObj(std::string a_TypeTag);
+	//
+	virtual void Select(ObserverBuild* a_pSelectingObserver);
+	virtual void DeSelect(ObserverBuild* a_pSelectingObserver);
 
 	MapCell* m_pSourceMapCell;
 	//

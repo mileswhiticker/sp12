@@ -18,8 +18,8 @@
 #include <OGRE\OgreSceneNode.h>
 #include <OGRE\OgreEntity.h>
 
-Object::Object()
-:	Atom()
+Object::Object(Ogre::Vector3 a_StartPos, int a_StartDirection)
+:	Atom(a_StartPos, a_StartDirection)
 {
 	//
 }
@@ -47,12 +47,12 @@ void Object::Update(float a_DeltaT)
 }
 
 Box::Box(Ogre::Vector3 a_Position)
-:	Object()
+:	Object(a_Position, 0)
 {
 	//scenenode
 	Ogre::SceneNode& rootSceneNode = GetRootSceneNode();
-	m_pAtomSceneNode = rootSceneNode.createChildSceneNode();
-	m_pAtomSceneNode->setPosition(a_Position);
+	m_pAtomEntitySceneNode = rootSceneNode.createChildSceneNode();
+	m_pAtomEntitySceneNode->setPosition(a_Position);
 	
 	InstantiateAtom();
 }
@@ -61,15 +61,15 @@ void Box::InstantiateAtom()
 {
 	Ogre::SceneManager& sceneManager = GetSceneManager();
 	m_pAtomEntity = sceneManager.createEntity(num2string(NewUID()) + " obj", "cell_filling.mesh");
-	m_pAtomSceneNode->attachObject(m_pAtomEntity);
-	m_pAtomSceneNode->setScale(0.25f, 0.25f, 0.25f);
+	m_pAtomEntitySceneNode->attachObject(m_pAtomEntity);
+	m_pAtomEntitySceneNode->setScale(0.25f, 0.25f, 0.25f);
 
 	//m_pAtomEntity->setMaterialName("madmarxOutLine");
 
 	//create physics body and initialise to starting position
 	m_pCollisionShape = new btBoxShape( btVector3(0.125f, 0.125f, 0.125f) );
 	//m_pCollisionShape = new btSphereShape(0.5);
-	btDefaultMotionState* fallMotionState = new btDefaultMotionState(btTransform(btQuaternion(0,0,0,1), OGRE2BT(m_pAtomSceneNode->getPosition())));
+	btDefaultMotionState* fallMotionState = new btDefaultMotionState(btTransform(btQuaternion(0,0,0,1), OGRE2BT(m_pAtomEntitySceneNode->getPosition())));
 	btScalar mass = 1;
 	btVector3 fallInertia(0,0,0);
 	m_pCollisionShape->calculateLocalInertia(mass,fallInertia);

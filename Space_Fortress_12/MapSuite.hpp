@@ -30,6 +30,8 @@ public:
 	MapCell* GetCellAtCoordsOrNull(int a_X, int a_Y, int a_Z);
 	MapCell* GetCellAtCoordsOrNull(Ogre::Vector3 a_Coords);
 	//
+	PlayerSpawn* GetRandomPlayerSpawn();
+	//
 private:
 	MapSuite();
 	std::vector<Station*> m_MapStations;

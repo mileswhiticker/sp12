@@ -1,12 +1,15 @@
 #include "Structure.hpp"
 
-Structure::Structure()
-:	Atom()
+#include <OGRE\OgreVector3.h>
+
+Structure::Structure(Ogre::Vector3 a_Pos, int a_Dir)
+:	Atom(a_Pos, a_Dir)
 ,	m_IsBuildPoint(false)
 ,	m_MyStructureType(UNKNOWN)
 ,	m_pMountedOnStructure(NULL)
 ,	m_pMountedGirder(NULL)
 {
+	m_MyAtomType = Atom::STRUCTURE;
 	m_UseRigidbodyPosition = false;
 }
 

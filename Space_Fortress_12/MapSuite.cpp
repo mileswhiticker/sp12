@@ -3,17 +3,21 @@
 #include "Application.hpp"
 #include <OGRE\OgreSceneManager.h>
 
+#include <cmath>
+#include <iostream>
+
+#include "OgreHelper.hpp"
+#include "num2string.h"
+#include "UID.hpp"
+#include "MapHelper.hpp"
+#include "MapDefines.h"
 #include "Direction.h"
 #include "iVector3.h"
 #include "Files.hpp"
 #include "tinyxml2.h"
+#include "RandHelper.h"
 
-#include <cmath>
-#include <iostream>
-
-#include "MapHelper.hpp"
 #include "MapCell.hpp"
-#include "MapDefines.h"
 #include "Station.hpp"
 #include "Girder.hpp"
 #include "PlayerSpawn.hpp"
@@ -96,6 +100,14 @@ bool MapSuite::LoadMapFile(std::string a_FileName)
 								pNewSpawn->type = std::string(new_type);
 							
 							m_LoadedSpawns.push_back(pNewSpawn);
+
+							
+							Ogre::SceneManager& sceneManager = GetSceneManager();
+							Ogre::Light* pointLight = sceneManager.createLight("pointLight" + num2string(NewUID()));
+							pointLight->setType(Ogre::Light::LT_POINT);
+							pointLight->setPosition(pNewSpawn->pos);
+							pointLight->setDiffuseColour(1.0, 0.0, 0.0);
+							pointLight->setSpecularColour(1.0, 0.0, 0.0);
 						}
 					}
 					else if(!std::string("cell").compare(pGirderNode->Value()))
@@ -297,9 +309,9 @@ int MapSuite::ClearDependantAdjacentGirderBuildpoints(MapCell* a_pLocMapCell)
 			//check if there's a girder build point there
 			if(pCurrentCell \
 				&& pCurrentCell->m_pMyCellTurf \
-				&& pCurrentCell->m_pMyCellTurf->m_pMyStructure \
-				&& pCurrentCell->m_pMyCellTurf->m_pMyStructure->GetStructureType() == Structure::GIRDER \
-				&& pCurrentCell->m_pMyCellTurf->m_pMyStructure->IsBuildPoint())
+				&& pCurrentCell->m_pMyCellTurf->m_pTurfStructure \
+				&& pCurrentCell->m_pMyCellTurf->m_pTurfStructure->GetStructureType() == Structure::GIRDER \
+				&& pCurrentCell->m_pMyCellTurf->m_pTurfStructure->IsBuildPoint())
 			{
 				//see if there are any adjacent turfs other than the source cell
 				int sourceDir = ReverseDir(curAdjDir);
@@ -311,8 +323,8 @@ int MapSuite::ClearDependantAdjacentGirderBuildpoints(MapCell* a_pLocMapCell)
 						//see if there is a turf in that direction we can cling on to
 						MapCell* pCheckCellForTurf = GetCellInDirOrNull(pCurrentCell, curCheckDir);
 						if(pCheckCellForTurf && pCheckCellForTurf->m_pMyCellTurf \
-							&& pCheckCellForTurf->m_pMyCellTurf->m_pMyStructure \
-							&& !pCheckCellForTurf->m_pMyCellTurf->m_pMyStructure->IsBuildPoint())
+							&& pCheckCellForTurf->m_pMyCellTurf->m_pTurfStructure \
+							&& !pCheckCellForTurf->m_pMyCellTurf->m_pTurfStructure->IsBuildPoint())
 						{
 							turfAdjacent = true;
 							break;
@@ -325,7 +337,7 @@ int MapSuite::ClearDependantAdjacentGirderBuildpoints(MapCell* a_pLocMapCell)
 				//the things we're deleting will make sure their own deletion is safe
 				if(!turfAdjacent)
 				{
-					AtomManager::GetSingleton().DeleteStructure(pCurrentCell->m_pMyCellTurf->m_pMyStructure);
+					AtomManager::GetSingleton().DeleteStructure(pCurrentCell->m_pMyCellTurf->m_pTurfStructure);
 					m_MapCellGrid.erase(GetCoordsString(pCurrentCell->m_Position));
 					delete pCurrentCell;
 				}
@@ -392,4 +404,13 @@ MapCell* MapSuite::GetCellAtCoordsOrNull(int a_X, int a_Y, int a_Z)
 MapCell* MapSuite::GetCellAtCoordsOrNull(Ogre::Vector3 a_Coords)
 {
 	return GetCellAtCoordsOrNull(a_Coords.x, a_Coords.y, a_Coords.z);
+}
+
+PlayerSpawn* MapSuite::GetRandomPlayerSpawn()
+{
+	if(m_LoadedSpawns.size())
+	{
+		return m_LoadedSpawns[iRand(m_LoadedSpawns.size())];
+	}
+	return NULL;
 }

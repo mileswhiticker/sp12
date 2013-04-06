@@ -16,7 +16,7 @@ class Mob
 ,	public Atom
 {
 public:
-	Mob();
+	Mob(Ogre::Vector3 a_StartPos, int a_Direction = 0);
 	//
 	bool ConnectClient(Client* a_pNewClient);
 	bool DisconnectClient();

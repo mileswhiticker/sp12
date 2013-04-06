@@ -89,10 +89,10 @@
 			<obj tag="box"></obj>
 		</cell>
 		
-		<playerspawn x="2" y="4" z="5" type="observer" dir="2"></playerspawn>
-		<playerspawn x="2" y="4" z="-2" type="observer" dir="1"></playerspawn>
-		<playerspawn x="5" y="4" z="2" type="observer" dir="8"></playerspawn>
-		<playerspawn x="-2" y="4" z="2" type="observer" dir="4"></playerspawn>
+		<playerspawn x="2" y="2" z="5" type="observer" dir="2"></playerspawn>
+		<playerspawn x="2" y="2" z="-2" type="observer" dir="1"></playerspawn>
+		<playerspawn x="5" y="2" z="2" type="observer" dir="8"></playerspawn>
+		<playerspawn x="-2" y="2" z="2" type="observer" dir="4"></playerspawn>
 		
 	</station>
 

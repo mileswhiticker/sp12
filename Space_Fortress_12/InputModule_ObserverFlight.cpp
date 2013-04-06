@@ -21,7 +21,7 @@ void ObserverFlight::Update(float a_DeltaT)
 	if(!m_pOwnedMob || !m_pOwnedClient)
 		return;
 
-	m_pOwnedMob->m_pAtomSceneNode->setPosition(m_pOwnedMob->m_pAtomSceneNode->getPosition() + m_pOwnedClient->m_pCamera->getOrientation() * m_RelativeMoveDir * a_DeltaT * m_FlySpeed);
+	m_pOwnedMob->m_pAtomEntitySceneNode->setPosition(m_pOwnedMob->m_pAtomEntitySceneNode->getPosition() + m_pOwnedClient->m_pCamera->getOrientation() * m_RelativeMoveDir * a_DeltaT * m_FlySpeed);
 }
 
 bool ObserverFlight::mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )

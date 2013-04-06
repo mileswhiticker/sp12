@@ -4,11 +4,11 @@
 #include "Client.hpp"
 #include "OgreHelper.hpp"
 
-Mob::Mob()
-:	m_pPossessingClient(NULL)
+Mob::Mob(Ogre::Vector3 a_StartPos, int a_Direction)
+:	Atom(a_StartPos, a_Direction)
+,	m_pPossessingClient(NULL)
 {
-	Ogre::SceneNode& rootSceneNode = GetRootSceneNode();
-	m_pAtomSceneNode = rootSceneNode.createChildSceneNode();
+	m_MyAtomType = Atom::MOB;
 }
 
 void Mob::Update(float a_DeltaT)

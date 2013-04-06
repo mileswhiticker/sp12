@@ -26,7 +26,7 @@ ObserverBuild::ObserverBuild(Mob* a_pOwnedMob, Client* a_pOwnedClient)
 void ObserverBuild::Update(float a_DeltaT)
 {
 	//DebugDrawer::getSingleton().drawSphere(Ogre::Vector3(0,0,0), 10, Ogre::ColourValue::Blue);
-	if(m_pOwnedClient->m_pCamera)
+	if(m_pOwnedClient && m_pOwnedClient->m_pCamera)
 	{
 		Ogre::Vector3 camPos = m_pOwnedClient->m_pCamera->getDerivedPosition();
 		btVector3 startPos = OGRE2BT(camPos);

@@ -1,7 +1,7 @@
 #include "Turf.hpp"
 
 Turf::Turf()
-:	m_pMyStructure(0)
+:	m_pTurfStructure(0)
 {
 	//
 }

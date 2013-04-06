@@ -25,20 +25,18 @@
 #include "CollisionDefines.h"
 
 Girder::Girder(MapCell* a_pSourceMapCell)
-:	Structure()
+:	Structure(Ogre::Vector3::ZERO, 0)
 ,	Turf()
 ,	m_PlateOverlayDirs(0)
 ,	m_PlateUnderlays(0)
 ,	m_pSourceMapCell(a_pSourceMapCell)
 {
-	m_pMyStructure = this;
-	m_MyAtomType = Atom::STRUCTURE;
 	m_MyStructureType = Structure::GIRDER;
+	m_pTurfStructure = this;
 	//
-	m_pAtomSceneNode = NewSceneNode();
 	if(m_pSourceMapCell)
 	{
-		m_pAtomSceneNode->setPosition(m_pSourceMapCell->m_Position);
+		m_pAtomEntitySceneNode->setPosition(m_pSourceMapCell->m_Position);
 		a_pSourceMapCell->m_pMyCellTurf = this;
 	}
 }
@@ -56,12 +54,12 @@ void Girder::InstantiateStructure(bool a_IsBuildPoint)
 	//a single cuboid girder to cover this cell
 	Ogre::SceneManager& sceneManager = GetSceneManager();
 	m_pAtomEntity = sceneManager.createEntity(num2string(NewUID()) + " girder", "girder.mesh");
-	m_pAtomSceneNode->attachObject(m_pAtomEntity);
+	m_pAtomEntitySceneNode->attachObject(m_pAtomEntity);
 	StopFlashingColour();
 	
 	//create physics collider to intercept raycasts
 	btBoxShape* m_pCollisionShape = new btBoxShape(btVector3(0.5f, 0.5f, 0.5f));
-	btDefaultMotionState* groundMotionState = new btDefaultMotionState(btTransform(btQuaternion(0,0,0,1), OGRE2BT(m_pAtomSceneNode->getPosition())));
+	btDefaultMotionState* groundMotionState = new btDefaultMotionState(btTransform(btQuaternion(0,0,0,1), OGRE2BT(m_pAtomEntitySceneNode->getPosition())));
 	btRigidBody::btRigidBodyConstructionInfo groundRigidBodyCI(0, groundMotionState, m_pCollisionShape, btVector3(0,0,0));
 	m_pRigidBody = new btRigidBody(groundRigidBodyCI);
 	m_pRigidBody->setUserPointer(this);
@@ -97,9 +95,9 @@ void Girder::InstantiateStructure(bool a_IsBuildPoint)
 
 void Girder::AddFreefloatingObj(std::string a_TypeTag)
 {
-	if(m_pAtomSceneNode)
+	if(m_pAtomEntitySceneNode)
 	{
-		AtomManager::GetSingleton().CreateAtom(Atom::OBJECT, m_pAtomSceneNode->getPosition());
+		AtomManager::GetSingleton().CreateAtom(Atom::OBJECT, m_pAtomEntitySceneNode->getPosition());
 	}
 	else
 	{
@@ -135,7 +133,7 @@ void Girder::CreateFromBuildPoint()
 		m_IsBuildPoint = false;
 		
 		//create girder buildpoints in adjacent cells
-		Ogre::Vector3 pos = m_pAtomSceneNode->getPosition();
+		Ogre::Vector3 pos = m_pAtomEntitySceneNode->getPosition();
 		MapSuite::GetInstance().CreateAdjacentGirderBuildpoints(m_pSourceMapCell);
 	}
 }
@@ -209,5 +207,23 @@ void Girder::CreateBuildpointInDir(Structure::StructureType a_BuildPointType, in
 		{
 			++it;
 		}
+	}
+}
+
+void Girder::Select(ObserverBuild* a_pSelectingObserver)
+{
+	Atom::Select(a_pSelectingObserver);
+	if(m_pAtomEntity)
+	{
+		m_pAtomEntity->setMaterialName("girder_material_modulate");
+	}
+}
+
+void Girder::DeSelect(ObserverBuild* a_pSelectingObserver)
+{
+	Atom::DeSelect(a_pSelectingObserver);
+	if(m_pAtomEntity)
+	{
+		m_pAtomEntity->setMaterialName("girder_material");
 	}
 }

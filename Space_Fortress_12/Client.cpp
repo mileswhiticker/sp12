@@ -1,6 +1,7 @@
 #include "Client.hpp"
 
 #include "Application.hpp"
+#include "Mob.hpp"
 
 #include <CEGUI\CEGUIWindowManager.h>
 #include <CEGUI\elements\CEGUIGUISheet.h>
@@ -9,8 +10,7 @@
 #include <OGRE\OgreSceneNode.h>
 
 #include "OgreHelper.hpp"
-
-#include "Mob.hpp"
+#include "MapHelper.hpp"
 
 Client::Client()
 :	m_pCamera(NULL)
@@ -54,7 +54,10 @@ void Client::ResetCamera()
 		m_pCamera = sceneManager.createCamera("client_camera");
 		m_pCamera->setNearClipDistance(0.0001f);
 		m_pCamera->setFarClipDistance(9999999.f);
-		m_pCamera->lookAt(0.f, 0.f, 0.f);
+		int lookDir = 1;
+		if(m_pPossessedMob)
+			lookDir = m_pPossessedMob->GetDirection();
+		m_pCamera->lookAt(GetCoordsInDir(m_pCamera->getDerivedPosition(), lookDir));
 
 		// Create one viewport, entire window
 		Ogre::Viewport* vp = renderWindow.addViewport(m_pCamera);
@@ -63,7 +66,7 @@ void Client::ResetCamera()
 		m_pCamera->setAspectRatio((float)vp->getActualWidth() / (float)vp->getActualHeight());
 	}
 	
-	if(m_pPossessedMob && m_pPossessedMob->m_pAtomSceneNode)
+	if(m_pPossessedMob && m_pPossessedMob->m_pAtomEntitySceneNode)
 	{
 		//clear out the old node, and use the mob's one
 		if(m_pCameraNode)
@@ -84,7 +87,7 @@ void Client::ResetCamera()
 
 		//set the new node
 		m_HasPersonalCameraNode = false;
-		m_pCameraNode = m_pPossessedMob->m_pAtomSceneNode;
+		m_pCameraNode = m_pPossessedMob->m_pAtomEntitySceneNode;
 		m_pCameraNode->attachObject(m_pCamera);
 	}
 	else if(!m_pCameraNode)

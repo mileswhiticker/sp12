@@ -19,18 +19,21 @@
 
 #include "DebugDrawer.h"
 
-Atom::Atom()
-:	m_pAtomSceneNode(NULL)
+Atom::Atom(Ogre::Vector3 a_Pos, int a_Dir)
+:	m_pAtomEntitySceneNode(NULL)
+,	m_pAtomRootSceneNode(NULL)
 ,	m_pAtomEntity(NULL)
 ,	m_ColourModulateLevel(0)
 ,	m_ModulateChangeDir(0)
 ,	m_pRigidBody(NULL)
 ,	m_pCollisionShape(NULL)
 ,	m_MyAtomType(UNKNOWN)
-,	m_Direction(0)
+,	m_Direction(a_Dir)
 ,	m_UseRigidbodyPosition(true)
 {
-	//
+	m_pAtomEntitySceneNode = NewSceneNode();
+	m_pAtomEntitySceneNode->setPosition(a_Pos);
+	m_pAtomRootSceneNode = m_pAtomEntitySceneNode->createChildSceneNode();
 }
 
 Atom::~Atom()
@@ -58,27 +61,27 @@ Atom::~Atom()
 	}
 
 	//clear scenenode
-	if(m_pAtomSceneNode)
+	if(m_pAtomEntitySceneNode)
 	{
-		if(m_pAtomSceneNode->getParentSceneNode())
+		if(m_pAtomEntitySceneNode->getParentSceneNode())
 		{
-			m_pAtomSceneNode->getParentSceneNode()->removeChild(m_pAtomSceneNode);
+			m_pAtomEntitySceneNode->getParentSceneNode()->removeChild(m_pAtomEntitySceneNode);
 		}
-		sceneManager.destroySceneNode(m_pAtomSceneNode);
+		sceneManager.destroySceneNode(m_pAtomEntitySceneNode);
 	}
 }
 
 void Atom::Update(float a_DeltaT)
 {
 	//phys updates
-	if(m_UseRigidbodyPosition && m_pRigidBody && m_pAtomSceneNode)
+	if(m_UseRigidbodyPosition && m_pRigidBody && m_pAtomEntitySceneNode)
 	{
 		btTransform& transform = m_pRigidBody->getWorldTransform();
 		btVector3& origin = transform.getOrigin();
 		btQuaternion& rotation = transform.getRotation();
 
-		m_pAtomSceneNode->setPosition(origin.getX(), origin.getY(), origin.getZ());
-		m_pAtomSceneNode->setOrientation(rotation.w(), rotation.x(), rotation.y(), rotation.z());
+		m_pAtomEntitySceneNode->setPosition(origin.getX(), origin.getY(), origin.getZ());
+		m_pAtomEntitySceneNode->setOrientation(rotation.w(), rotation.x(), rotation.y(), rotation.z());
 	}
 
 	//--- highlights shader ---//
@@ -170,11 +173,11 @@ void Atom::SetEntityVisible(bool a_Visible)
 		if(a_Visible)
 		{
 			Ogre::SceneNode* pEntitySceneNode = m_pAtomEntity->getParentSceneNode();
-			if(pEntitySceneNode != m_pAtomSceneNode)
+			if(pEntitySceneNode != m_pAtomEntitySceneNode)
 			{
 				if(pEntitySceneNode)
 					pEntitySceneNode->detachObject(m_pAtomEntity);
-				m_pAtomSceneNode->attachObject(m_pAtomEntity);
+				m_pAtomEntitySceneNode->attachObject(m_pAtomEntity);
 			}
 		}
 		else

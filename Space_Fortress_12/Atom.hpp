@@ -25,10 +25,9 @@ public:
 		MOB,
 		//
 	};
-	Atom();
+	Atom(Ogre::Vector3 a_Pos, int a_Dir = 0);
 	virtual ~Atom();
 	//
-	Ogre::SceneNode* m_pAtomSceneNode;
 	virtual void Update(float a_DeltaT);
 	virtual void InstantiateAtom()=0;
 	virtual bool ChangeDirection(int a_NewDir);
@@ -38,16 +37,18 @@ public:
 	//
 	std::vector<Atom*> m_AtomContents;
 	void SetEntityVisible(bool a_Visible = true);
-	Ogre::Entity* m_pAtomEntity;
 	//
+	Ogre::Entity* m_pAtomEntity;
 	btRigidBody* m_pRigidBody;
 	btCollisionShape* m_pCollisionShape;
+	Ogre::SceneNode* m_pAtomEntitySceneNode;
+	Ogre::SceneNode* m_pAtomRootSceneNode;
 	//
 	AtomType GetAtomType();
 	int GetDirection();
 	//
-	void Select(ObserverBuild* a_pSelectingObserver);
-	void DeSelect(ObserverBuild* a_pSelectingObserver);
+	virtual void Select(ObserverBuild* a_pSelectingObserver);
+	virtual void DeSelect(ObserverBuild* a_pSelectingObserver);
 	//
 	virtual void TargetcastIntercept();
 	//

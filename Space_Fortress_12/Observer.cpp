@@ -6,7 +6,8 @@
 
 #include <OGRE\OgreSceneNode.h>
 
-Observer::Observer()
+Observer::Observer(Ogre::Vector3 a_StartPos, int a_Direction)
+:	Mob(a_StartPos, a_Direction)
 {
 	InstantiateAtom();
 }

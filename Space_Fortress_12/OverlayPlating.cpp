@@ -20,15 +20,10 @@
 #include "num2string.h"
 #include "UID.hpp"
 
-OverlayPlating::OverlayPlating(Ogre::Vector3 a_Pos)
-:	Structure()
+OverlayPlating::OverlayPlating(Ogre::Vector3 a_Pos, int a_Dir)
+:	Structure(a_Pos, a_Dir)
 {
-	m_MyAtomType = Atom::STRUCTURE;
 	m_MyStructureType = Structure::OVERLAYPLATING;
-	//
-	m_pActualSceneNode = NewSceneNode();
-	m_pActualSceneNode->setPosition(a_Pos);
-	m_pAtomSceneNode = m_pActualSceneNode->createChildSceneNode();
 }
 
 void OverlayPlating::InstantiateStructure(bool a_IsBuildPoint)
@@ -41,7 +36,7 @@ void OverlayPlating::InstantiateStructure(bool a_IsBuildPoint)
 	
 	//create entity
 	m_pAtomEntity = sceneManager.createEntity("overlayplating_" + num2string(NewUID()), "cell_overlay.mesh");
-	m_pAtomSceneNode->attachObject(m_pAtomEntity);
+	m_pAtomEntitySceneNode->attachObject(m_pAtomEntity);
 	StopFlashingColour();
 
 	//set up the directional offsets
@@ -91,13 +86,13 @@ void OverlayPlating::InstantiateStructure(bool a_IsBuildPoint)
 		halfExtents.setY(0.005f);
 		//std::cout << "DOWN " << (isPhysical ? "plating" : "trigger") << std::endl;
 	}
-	m_pAtomSceneNode->setPosition(offsetPos);
-	m_pAtomSceneNode->lookAt(lookatPos, Ogre::Node::TS_LOCAL);
-	m_pAtomSceneNode->yaw(Ogre::Degree(90));
+	m_pAtomEntitySceneNode->setPosition(offsetPos);
+	m_pAtomEntitySceneNode->lookAt(lookatPos, Ogre::Node::TS_LOCAL);
+	m_pAtomEntitySceneNode->yaw(Ogre::Degree(90));
 	
 	//create physics body and initialise to starting position
 	m_pCollisionShape = new btBoxShape(halfExtents);
-	btDefaultMotionState* groundMotionState = new btDefaultMotionState(btTransform(btQuaternion(0,0,0,1), OGRE2BT(m_pAtomSceneNode->_getDerivedPosition())));
+	btDefaultMotionState* groundMotionState = new btDefaultMotionState(btTransform(btQuaternion(0,0,0,1), OGRE2BT(m_pAtomEntitySceneNode->_getDerivedPosition())));
 	btRigidBody::btRigidBodyConstructionInfo groundRigidBodyCI(0, groundMotionState, m_pCollisionShape, btVector3(0,0,0));
 	m_pRigidBody = new btRigidBody(groundRigidBodyCI);
 	m_pRigidBody->setUserPointer(this);
@@ -153,5 +148,23 @@ void OverlayPlating::DestroyToBuildPoint()
 		//done
 		SetEntityVisible(false);
 		m_IsBuildPoint = true;
+	}
+}
+
+void OverlayPlating::Select(ObserverBuild* a_pSelectingObserver)
+{
+	Atom::Select(a_pSelectingObserver);
+	if(m_pAtomEntity)
+	{
+		m_pAtomEntity->setMaterialName("over_plating_modulate");
+	}
+}
+
+void OverlayPlating::DeSelect(ObserverBuild* a_pSelectingObserver)
+{
+	Atom::DeSelect(a_pSelectingObserver);
+	if(m_pAtomEntity)
+	{
+		m_pAtomEntity->setMaterialName("over_plating");
 	}
 }

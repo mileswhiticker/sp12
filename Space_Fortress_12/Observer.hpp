@@ -7,7 +7,7 @@ class Observer
 :	public Mob
 {
 public:
-	Observer();
+	Observer(Ogre::Vector3 a_StartPos, int a_Direction = 0);
 	virtual void InstantiateAtom();
 	//
 private:

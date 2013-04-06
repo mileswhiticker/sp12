@@ -7,7 +7,7 @@ class Turf
 public:
 	Turf();
 	//
-	Structure* m_pMyStructure;
+	Structure* m_pTurfStructure;
 	//
 private:
 	//

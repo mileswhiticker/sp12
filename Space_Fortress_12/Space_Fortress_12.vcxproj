@@ -30,6 +30,7 @@
     <ClCompile Include="guicon.cpp" />
     <ClCompile Include="InputModule.cpp" />
     <ClCompile Include="InputModule_ObserverFlight.cpp" />
+    <ClCompile Include="LightFixture.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MainMenu.cpp" />
     <ClCompile Include="MapCell.cpp" />
@@ -74,6 +75,7 @@
     <ClInclude Include="InputModule.hpp" />
     <ClInclude Include="InputModule_ObserverFlight.hpp" />
     <ClInclude Include="iVector3.h" />
+    <ClInclude Include="LightFixture.hpp" />
     <ClInclude Include="MapCell.hpp" />
     <ClInclude Include="MapHelper.hpp" />
     <ClInclude Include="MapSuite.hpp" />

@@ -201,6 +201,9 @@
     <ClCompile Include="UnderlayPlating.cpp">
       <Filter>Source Files\Atoms\Structure</Filter>
     </ClCompile>
+    <ClCompile Include="LightFixture.cpp">
+      <Filter>Source Files\Atoms\Structure</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GlueScreen.hpp">
@@ -330,6 +333,9 @@
       <Filter>Header Files\MapSuite</Filter>
     </ClInclude>
     <ClInclude Include="UnderlayPlating.hpp">
+      <Filter>Header Files\Atoms\Structure</Filter>
+    </ClInclude>
+    <ClInclude Include="LightFixture.hpp">
       <Filter>Header Files\Atoms\Structure</Filter>
     </ClInclude>
   </ItemGroup>

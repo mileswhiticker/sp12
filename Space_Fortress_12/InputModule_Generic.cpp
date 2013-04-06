@@ -46,7 +46,7 @@ bool Generic::keyReleased( const OIS::KeyEvent &arg )
 			if(!m_pOwnedMob)
 				return false;
 
-			Ogre::Vector3 outPos = m_pOwnedMob->m_pAtomSceneNode->getPosition();
+			Ogre::Vector3 outPos = m_pOwnedMob->m_pAtomEntitySceneNode->getPosition();
 			std::cout << outPos.x << ", " << outPos.y << ", " << outPos.z << std::endl;
 			break;
 		}

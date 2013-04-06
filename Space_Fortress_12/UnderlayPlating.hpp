@@ -13,13 +13,13 @@ class UnderlayPlating
 :	public Structure
 {
 public:
-	UnderlayPlating(Ogre::Vector3 a_Pos);
+	UnderlayPlating(Ogre::Vector3 a_Pos, int a_Dir = 0);
 	virtual void InstantiateStructure(bool a_IsBuildPoint);
 	virtual void CreateFromBuildPoint();
 	virtual void DestroyToBuildPoint();
 	//
-private:
-	Ogre::SceneNode* m_pActualSceneNode;
+	virtual void Select(ObserverBuild* a_pSelectingObserver);
+	virtual void DeSelect(ObserverBuild* a_pSelectingObserver);
 	//
 };
 
