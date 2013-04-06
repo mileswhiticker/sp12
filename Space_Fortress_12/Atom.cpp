@@ -31,9 +31,9 @@ Atom::Atom(Ogre::Vector3 a_Pos, int a_Dir)
 ,	m_Direction(a_Dir)
 ,	m_UseRigidbodyPosition(true)
 {
-	m_pAtomEntitySceneNode = NewSceneNode();
-	m_pAtomEntitySceneNode->setPosition(a_Pos);
-	m_pAtomRootSceneNode = m_pAtomEntitySceneNode->createChildSceneNode();
+	m_pAtomRootSceneNode = NewSceneNode();
+	m_pAtomRootSceneNode->setPosition(a_Pos);
+	m_pAtomEntitySceneNode = m_pAtomRootSceneNode->createChildSceneNode();
 }
 
 Atom::~Atom()
