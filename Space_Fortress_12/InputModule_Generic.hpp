@@ -5,6 +5,11 @@
 #include <OGRE\OgreVector3.h>
 #include <OGRE\OgreQuaternion.h>
 
+namespace Ogre
+{
+	class Light;
+};
+
 class Generic
 :	public InputModule
 {
@@ -18,6 +23,7 @@ public:
 	virtual bool mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id );
 	virtual bool mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id );
 	//
+	Ogre::Light* m_pPointLight;
 };
 
 #endif	INPUTMODULE_GENERIC_HPP

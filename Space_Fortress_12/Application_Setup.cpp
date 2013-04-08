@@ -14,6 +14,7 @@
 #include <OGRE\OgreRenderWindow.h>
 #include <OGRE\OgreEntity.h>
 #include <OGRE\OgreSubEntity.h>
+#include <OGRE\OgreShadowCameraSetupFocused.h>
 
 #include <OIS\OIS.h>
 
@@ -58,7 +59,6 @@ bool Application::create()
 
 	m_pSceneManager = m_pRoot->createSceneManager(Ogre::ST_GENERIC, "BaseSceneManager");
 	//m_pSceneManager->setAmbientLight(Ogre::ColourValue(0, 0, 0));
-
 	m_pRootSceneNode = m_pSceneManager->getRootSceneNode();
 
 	createFrameListener();
@@ -68,7 +68,23 @@ bool Application::create()
 
 	// Load resources
 	Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
-	
+
+	//set up depth shadow mapping, now that we've loaded resources (requires custom shaders + materials)
+	/*m_pSceneManager->setAmbientLight(Ogre::ColourValue(0.5, 0.5, 0.5));
+	// Allow self shadowing (note: this only works in conjunction with the shaders defined above)
+	m_pSceneManager->setShadowTextureSelfShadow(true);
+	// Set the caster material which uses the shaders defined above
+	m_pSceneManager->setShadowTextureCasterMaterial("Ogre/DepthShadowmap/Caster/Float");
+	// Set the pixel format to floating point
+	m_pSceneManager->setShadowTexturePixelFormat(Ogre::PF_FLOAT32_R);
+	// You can switch this on or off, I suggest you try both and see which works best for you
+	m_pSceneManager->setShadowCasterRenderBackFaces(true);
+	// Finally enable the shadows using texture additive integrated
+	m_pSceneManager->setShadowTechnique(Ogre::SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
+
+	Ogre::FocusedShadowCameraSetup *camSetup = new Ogre::FocusedShadowCameraSetup();
+	m_pSceneManager->setShadowCameraSetup(Ogre::ShadowCameraSetupPtr(camSetup));*/
+
 	createPhysics();
 	MapSuite::LoadMap("test");
 
@@ -265,7 +281,7 @@ void Application::createTestClient()
 
 	//grab one of the loaded player spawns, and put the test client there
 	//by default spawn at (10, 0, 0) and look west (down the negative x axis)
-	Ogre::Vector3 spawnPos = Ogre::Vector3(10,0,0);
+	Ogre::Vector3 spawnPos = Ogre::Vector3(10,5,0);
 	int spawnDir = 8;
 	PlayerSpawn* chosenSpawn = MapSuite::GetInstance().GetRandomPlayerSpawn();
 	if(chosenSpawn)
