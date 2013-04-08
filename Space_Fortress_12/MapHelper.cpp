@@ -83,3 +83,34 @@ int ReverseDir(int a_SourceDir)
 	}
 	return a_SourceDir;
 }
+
+Ogre::Vector3 GetUnitVectorFromDir(int a_Direction)
+{
+	Ogre::Vector3 outVector;
+	if(a_Direction & NORTH)
+	{
+		outVector += Ogre::Vector3::UNIT_Z;
+	}
+	if(a_Direction & SOUTH)
+	{
+		outVector += Ogre::Vector3::NEGATIVE_UNIT_Z;
+	}
+	if(a_Direction & EAST)
+	{
+		outVector += Ogre::Vector3::UNIT_X;
+	}
+	if(a_Direction & WEST)
+	{
+		outVector += Ogre::Vector3::NEGATIVE_UNIT_X;
+	}
+	if(a_Direction & UP)
+	{
+		outVector += Ogre::Vector3::UNIT_Y;
+	}
+	if(a_Direction & DOWN)
+	{
+		outVector += Ogre::Vector3::NEGATIVE_UNIT_Y;
+	}
+	outVector.normalise();
+	return outVector;
+}
