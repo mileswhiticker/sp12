@@ -1,40 +1,4 @@
-// CG Vertex shader definition
-vertex_program PlainTexture_VS cg            
-{
-    // Look in this source file for shader code
-    source build_highlights.cg
-    // Use this function for the vertex shader            
-    entry_point main_plain_texture_vp    
-    // Compile the shader to vs_1_1 format    
-    profiles vs_1_1                    
- 
-    // This block saves us from manually setting parameters in code
-        default_params                    
-    {
-                // Ogre will put the worldviewproj into our 'worldViewProj' parameter for us.
-        param_named_auto worldViewProj worldviewproj_matrix        
-                // Note that 'worldViewProj' is a parameter in the cg code.
-    }
-}
- 
-// CG Pixel shader definition
-fragment_program ModulateColour_PS cg
-{
-        // Look in this source file for shader code
-    source build_highlights.cg
-        // Use this function for the pixel shader    
-    entry_point modulate_colour_fp
-        // Compile to ps_1_1 format    
-    profiles ps_1_1
-	
-    default_params
-    {
-        // Specify a default value for a new parameter
-        // Note that we don't need to specify whether it's a pixel of vertex shader parameter
-        param_named modulateAmount float4 0 1 1 1
-        param_named colourVal float4 1 1 1 1
-    }
-}
+import * from "DepthShadowmap.material"
 
 material space_material
 {
@@ -44,7 +8,7 @@ material space_material
 		{
 			//todo: kickass shader that makes distant stars twinkle occasionally
 			//also, get rid of the sphincter effect (get a proper space skydome texture)
-			
+			lighting off
 			texture_unit
 			{
 				texture space_texture.jpg
@@ -54,7 +18,9 @@ material space_material
 }
 
 material girder_material
+// : Ogre/DepthShadowmap/BasicTemplateMaterial
 {
+	//set_texture_alias MainTexture sd_texture.jpg
 	technique
 	{
 		pass
@@ -62,73 +28,19 @@ material girder_material
 			texture_unit
 			{
 				texture sd_texture.jpg
-				scale 0.1 0.1
-			}
-		}
-	}
-}
-
-material girder_material_modulate
-{
-	technique
-	{
-		pass
-		{
-            // Makes the pixel shader alpha output be used for alpha blending
-            scene_blend alpha_blend
-			
-            // Make this pass use the vertex shader defined above
-            vertex_program_ref PlainTexture_VS    
-            {
-            }
-            // Make this pass use the pixel shader defined above
-			fragment_program_ref ModulateColour_PS
-            {
-                param_named_auto modulateAmount custom 1
-                param_named_auto colourVal custom 2
-            }
-			texture_unit
-			{
-				texture sd_texture.jpg
-				scale 0.1 0.1
 			}
 		}
 	}
 }
 
 material under_plating
+// : Ogre/DepthShadowmap/BasicTemplateMaterial
 {
+	//set_texture_alias MainTexture metal_wall_ports.jpg
 	technique
 	{
 		pass
 		{
-			texture_unit
-			{
-				texture metal_wall_ports.jpg
-			}
-		}
-	}
-}
-
-material under_plating_modulate
-{
-	technique
-	{
-		pass
-		{
-            // Makes the pixel shader alpha output be used for alpha blending
-            scene_blend alpha_blend
-			
-            // Make this pass use the vertex shader defined above
-            vertex_program_ref PlainTexture_VS    
-            {
-            }
-            // Make this pass use the pixel shader defined above
-			fragment_program_ref ModulateColour_PS
-            {
-                param_named_auto modulateAmount custom 1
-                param_named_auto colourVal custom 2
-            }
 			texture_unit
 			{
 				texture metal_wall_ports.jpg
@@ -138,7 +50,9 @@ material under_plating_modulate
 }
 
 material over_plating
+// : Ogre/DepthShadowmap/BasicTemplateMaterial
 {
+	//set_texture_alias MainTexture Aluminium-wall-texture.jpg
 	technique
 	{
 		pass
@@ -151,71 +65,17 @@ material over_plating
 	}
 }
 
-material over_plating_modulate
+material gravplates
+// : Ogre/DepthShadowmap/BasicTemplateMaterial
 {
-	technique
-	{
-		pass
-		{
-            // Makes the pixel shader alpha output be used for alpha blending
-            scene_blend alpha_blend
-			
-            // Make this pass use the vertex shader defined above
-            vertex_program_ref PlainTexture_VS    
-            {
-            }
-            // Make this pass use the pixel shader defined above
-			fragment_program_ref ModulateColour_PS
-            {
-                param_named_auto modulateAmount custom 1
-                param_named_auto colourVal custom 2
-            }
-			texture_unit
-			{
-				texture Aluminium-wall-texture.jpg
-			}
-		}
-	}
-}
-
-material cell_highlight_material
-{
-	technique
-	{
-		pass
-		{
-            // Makes the pixel shader alpha output be used for alpha blending
-            scene_blend alpha_blend
-			
-            // Make this pass use the vertex shader defined above
-            vertex_program_ref PlainTexture_VS    
-            {
-            }
-            // Make this pass use the pixel shader defined above
-			fragment_program_ref ModulateColour_PS
-            {
-                param_named_auto modulateAmount custom 1
-                param_named_auto colourVal custom 2
-            }
-			texture_unit
-			{
-				texture white.jpg
-			}
-		}
-	}
-}
-
-//default material that exported meshes from max use
-//this texture should be easy to spot
-material defaultLambert
-{
+	//set_texture_alias MainTexture Lightning_Marble_11_111_by_robostimpy.jpg
 	technique
 	{
 		pass
 		{
 			texture_unit
 			{
-				texture default.jpg
+				texture Lightning_Marble_11_111_by_robostimpy.jpg
 			}
 		}
 	}

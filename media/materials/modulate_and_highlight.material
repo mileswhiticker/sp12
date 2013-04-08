@@ -1,0 +1,136 @@
+
+material cell_highlight_material
+{
+	technique
+	{
+		pass
+		{
+            // Makes the pixel shader alpha output be used for alpha blending
+            scene_blend alpha_blend
+			
+            // Make this pass use the vertex shader defined above
+            vertex_program_ref PlainTexture_VS    
+            {
+            }
+            // Make this pass use the pixel shader defined above
+			fragment_program_ref ModulateColour_PS
+            {
+                param_named_auto modulateAmount custom 1
+                param_named_auto colourVal custom 2
+            }
+			texture_unit
+			{
+				texture white.jpg
+			}
+		}
+	}
+}
+
+material girder_material_modulate
+{
+	technique
+	{
+		pass
+		{
+            // Makes the pixel shader alpha output be used for alpha blending
+            scene_blend alpha_blend
+			
+            // Make this pass use the vertex shader defined above
+            vertex_program_ref PlainTexture_VS    
+            {
+            }
+            // Make this pass use the pixel shader defined above
+			fragment_program_ref ModulateColour_PS
+            {
+                param_named_auto modulateAmount custom 1
+                param_named_auto colourVal custom 2
+            }
+			texture_unit
+			{
+				texture sd_texture.jpg
+				scale 0.1 0.1
+			}
+		}
+	}
+}
+
+material over_plating_modulate
+{
+	technique
+	{
+		pass
+		{
+            // Makes the pixel shader alpha output be used for alpha blending
+            scene_blend alpha_blend
+			
+            // Make this pass use the vertex shader defined above
+            vertex_program_ref PlainTexture_VS    
+            {
+            }
+            // Make this pass use the pixel shader defined above
+			fragment_program_ref ModulateColour_PS
+            {
+                param_named_auto modulateAmount custom 1
+                param_named_auto colourVal custom 2
+            }
+			texture_unit
+			{
+				texture Aluminium-wall-texture.jpg
+			}
+		}
+	}
+}
+
+material under_plating_modulate
+{
+	technique
+	{
+		pass
+		{
+            // Makes the pixel shader alpha output be used for alpha blending
+            scene_blend alpha_blend
+			
+            // Make this pass use the vertex shader defined above
+            vertex_program_ref PlainTexture_VS    
+            {
+            }
+            // Make this pass use the pixel shader defined above
+			fragment_program_ref ModulateColour_PS
+            {
+                param_named_auto modulateAmount custom 1
+                param_named_auto colourVal custom 2
+            }
+			texture_unit
+			{
+				texture metal_wall_ports.jpg
+			}
+		}
+	}
+}
+
+material gravplates_modulate
+{
+	technique
+	{
+		pass
+		{
+            // Makes the pixel shader alpha output be used for alpha blending
+            scene_blend alpha_blend
+			
+            // Make this pass use the vertex shader defined above
+            vertex_program_ref PlainTexture_VS    
+            {
+            }
+            // Make this pass use the pixel shader defined above
+			fragment_program_ref ModulateColour_PS
+            {
+                param_named_auto modulateAmount custom 1
+                param_named_auto colourVal custom 2
+            }
+			texture_unit
+			{
+				texture Lightning_Marble_11_111_by_robostimpy.jpg
+			}
+		}
+	}
+}
