@@ -1,15 +1,17 @@
 #include "AtomManager.hpp"
 
-#include "Direction.h"
 #include "MapSuite.hpp"
+#include "MapCell.hpp"
+
 #include "Object.hpp"
 #include "Girder.hpp"
 #include "Structure.hpp"
 #include "OverlayPlating.hpp"
 #include "UnderlayPlating.hpp"
-#include "MapCell.hpp"
+#include "GravPlates.hpp"
 
 #include "OgreHelper.hpp"
+#include "Direction.h"
 
 AtomManager::AtomManager()
 :	cellsFlashing(false)
@@ -102,6 +104,11 @@ Structure* AtomManager::CreateStructure(int a_StructureType, MapCell* a_pLocMapC
 	case(Structure::UNDERLAYPLATING):
 		{
 			pOut = new UnderlayPlating(a_pLocMapCell->m_Position, a_AdditionalFlags & ALLDIRS);
+			break;
+		}
+	case(Structure::GRAVPLATES):
+		{
+			pOut = new GravPlates(a_pLocMapCell->m_Position, a_AdditionalFlags & ALLDIRS);
 			break;
 		}
 	default:

@@ -14,6 +14,7 @@
 #include "BtOgreHelper.hpp"
 #include "OgreHelper.hpp"
 #include "BulletHelper.hpp"
+#include "MapHelper.hpp"
 
 #include "CollisionDefines.h"
 #include "Direction.h"
@@ -28,14 +29,13 @@ OverlayPlating::OverlayPlating(Ogre::Vector3 a_Pos, int a_Dir)
 
 void OverlayPlating::InstantiateStructure(bool a_IsBuildPoint)
 {
-	//an overlay plate is essentially an "outer cover" for the tile in one of the six cardinal directions
 	//system is currently setup to handle any combination of the six, but it probably shouldn't be
 	m_IsBuildPoint = a_IsBuildPoint;
 	Ogre::SceneManager& sceneManager = GetSceneManager();
 	//std::cout << "instantiating OverlayPlating with direction " << m_Direction << std::endl;
 	
 	//create entity
-	m_pAtomEntity = sceneManager.createEntity("overlayplating_" + num2string(NewUID()), "cell_overlay.mesh");
+	m_pAtomEntity = sceneManager.createEntity("over_plating_" + num2string(NewUID()), "cell_overlay.mesh");
 	m_pAtomEntitySceneNode->attachObject(m_pAtomEntity);
 	StopFlashingColour();
 
@@ -156,7 +156,10 @@ void OverlayPlating::Select(ObserverBuild* a_pSelectingObserver)
 	Atom::Select(a_pSelectingObserver);
 	if(m_pAtomEntity)
 	{
-		m_pAtomEntity->setMaterialName("over_plating_modulate");
+		if(m_IsBuildPoint)
+			m_pAtomEntity->setMaterialName("cell_highlight_material");
+		else
+			m_pAtomEntity->setMaterialName("over_plating_modulate");
 	}
 }
 

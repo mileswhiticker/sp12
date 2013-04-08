@@ -204,6 +204,9 @@
     <ClCompile Include="LightFixture.cpp">
       <Filter>Source Files\Atoms\Structure</Filter>
     </ClCompile>
+    <ClCompile Include="GravPlates.cpp">
+      <Filter>Source Files\Atoms\Structure</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GlueScreen.hpp">
@@ -336,6 +339,9 @@
       <Filter>Header Files\Atoms\Structure</Filter>
     </ClInclude>
     <ClInclude Include="LightFixture.hpp">
+      <Filter>Header Files\Atoms\Structure</Filter>
+    </ClInclude>
+    <ClInclude Include="GravPlates.hpp">
       <Filter>Header Files\Atoms\Structure</Filter>
     </ClInclude>
   </ItemGroup>

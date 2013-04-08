@@ -71,6 +71,22 @@ bool MapSuite::LoadMapFile(std::string a_FileName)
 				/*Station* pStation = new Station();
 				pStation->m_Name = pTopLevelElement->Attribute("name");*/
 				
+				Ogre::SceneManager& sceneManager = GetSceneManager();
+				//point light for testing
+				/*Ogre::Light* pointLight = sceneManager.createLight("pointLight" + num2string(NewUID()));
+				pointLight->setType(Ogre::Light::LT_POINT);
+				pointLight->setPosition(10,5,0);
+				pointLight->setDiffuseColour(1.0, 1.0, 1.0);
+				//pointLight->setSpecularColour(0.0, 0.0, 1.0);
+				pointLight->setAttenuation(25, 0, 1, 0);*/
+
+				//light from a nearby star
+				/*Ogre::Light* directionalLight = sceneManager.createLight("directionalLight" + num2string(NewUID()));
+				directionalLight->setType(Ogre::Light::LT_DIRECTIONAL);
+				directionalLight->setDirection(Ogre::Vector3::UNIT_X);
+				directionalLight->setDiffuseColour(1,1,1);
+				//directionalLight->setDiffuseColour(0.5,0.5,0.5);*/
+
 				//Ogre::SceneNode* pStationSceneNode = Application::StaticGetSceneManager().getRootSceneNode()->createChildSceneNode(pStationName);
 				for(tinyxml2::XMLNode* pGirderNode = pTopLevelNode->FirstChild(); pGirderNode; pGirderNode = pGirderNode->NextSibling())
 				{
@@ -100,14 +116,6 @@ bool MapSuite::LoadMapFile(std::string a_FileName)
 								pNewSpawn->type = std::string(new_type);
 							
 							m_LoadedSpawns.push_back(pNewSpawn);
-
-							
-							Ogre::SceneManager& sceneManager = GetSceneManager();
-							Ogre::Light* pointLight = sceneManager.createLight("pointLight" + num2string(NewUID()));
-							pointLight->setType(Ogre::Light::LT_POINT);
-							pointLight->setPosition(pNewSpawn->pos);
-							pointLight->setDiffuseColour(1.0, 0.0, 0.0);
-							pointLight->setSpecularColour(1.0, 0.0, 0.0);
 						}
 					}
 					else if(!std::string("cell").compare(pGirderNode->Value()))

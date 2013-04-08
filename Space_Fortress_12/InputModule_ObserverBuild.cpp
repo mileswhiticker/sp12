@@ -159,31 +159,43 @@ bool ObserverBuild::keyPressed( const OIS::KeyEvent &arg )
 	case(OIS::KC_B):
 		{
 			m_BuildExpansion = !m_BuildExpansion;
-			//m_BuildExpansion ? std::cout << "buildpoints" << std::endl : std::cout << "existing structures" << std::endl;
+			m_BuildExpansion ? std::cout << "Targetting buildpoints" << std::endl : std::cout << "Targetting existing structures" << std::endl;
 			return true;
 		}
 	case(OIS::KC_1):
 		{
 			m_TargetStructureTypes = 0;
-			//std::cout << "targetting all structures" << std::endl;
+			std::cout << "targetting all structures" << std::endl;
 			return true;
 		}
 	case(OIS::KC_2):
 		{
 			m_TargetStructureTypes = Structure::GIRDER;
-			//std::cout << "targetting GIRDER" << std::endl;
+			std::cout << "targetting GIRDER" << std::endl;
 			return true;
 		}
 	case(OIS::KC_3):
 		{
 			m_TargetStructureTypes = Structure::OVERLAYPLATING;
-			//std::cout << "targetting OVERLAYPLATING" << std::endl;
+			std::cout << "targetting OVERLAYPLATING" << std::endl;
 			return true;
 		}
 	case(OIS::KC_4):
 		{
 			m_TargetStructureTypes = Structure::UNDERLAYPLATING;
-			//std::cout << "targetting UNDERLAYPLATING" << std::endl;
+			std::cout << "targetting UNDERLAYPLATING" << std::endl;
+			return true;
+		}
+	case(OIS::KC_5):
+		{
+			m_TargetStructureTypes = Structure::LIGHTFIXTURE;
+			std::cout << "targetting LIGHTFIXTURE" << std::endl;
+			return true;
+		}
+	case(OIS::KC_6):
+		{
+			m_TargetStructureTypes = Structure::GRAVPLATES;
+			std::cout << "targetting GRAVPLATES" << std::endl;
 			return true;
 		}
 	case(OIS::KC_I):

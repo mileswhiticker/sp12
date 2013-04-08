@@ -15,7 +15,8 @@ public:
 		GIRDER,
 		OVERLAYPLATING,
 		UNDERLAYPLATING,
-		LIGHTFIXTURE
+		LIGHTFIXTURE,
+		GRAVPLATES
 		//
 	};
 	Structure(Ogre::Vector3 a_Pos, int a_Dir = 0);

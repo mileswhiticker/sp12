@@ -24,6 +24,7 @@
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="DebugDrawer.cpp" />
     <ClCompile Include="EffectManager.cpp" />
+    <ClCompile Include="GravPlates.cpp" />
     <ClCompile Include="InputModule_Generic.cpp" />
     <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="GlueScreen.cpp" />
@@ -67,6 +68,7 @@
     <ClInclude Include="DebugDrawer.h" />
     <ClInclude Include="Direction.h" />
     <ClInclude Include="EffectManager.hpp" />
+    <ClInclude Include="GravPlates.hpp" />
     <ClInclude Include="InputModule_Generic.hpp" />
     <ClInclude Include="Files.hpp" />
     <ClInclude Include="GameManager.hpp" />

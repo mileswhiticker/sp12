@@ -80,7 +80,7 @@ void Girder::InstantiateStructure(bool a_IsBuildPoint)
 	{
 		dynamicsWorld.addRigidBody(m_pRigidBody, COLLISION_STRUCTURE, COLLISION_BUILDRAYCAST);
 
-		//create plating buildpoints
+		//create structure buildpoints
 		for(int curDir = 1; curDir <= 32; curDir *= 2)
 		{
 			//std::cout << "direction: " << curDir << std::endl;
@@ -88,6 +88,9 @@ void Girder::InstantiateStructure(bool a_IsBuildPoint)
 			m_InvisibleBuildPoints.push_back(pUnusedBuildPoint);
 
 			pUnusedBuildPoint = AtomManager::GetSingleton().CreateStructure(Structure::UNDERLAYPLATING, m_pSourceMapCell, NULL, curDir|BUILD_POINT|INSTANTIATE_IMMEDIATELY);
+			m_InvisibleBuildPoints.push_back(pUnusedBuildPoint);
+
+			pUnusedBuildPoint = AtomManager::GetSingleton().CreateStructure(Structure::GRAVPLATES, m_pSourceMapCell, NULL, curDir|BUILD_POINT|INSTANTIATE_IMMEDIATELY);
 			m_InvisibleBuildPoints.push_back(pUnusedBuildPoint);
 		}
 	}
@@ -215,7 +218,10 @@ void Girder::Select(ObserverBuild* a_pSelectingObserver)
 	Atom::Select(a_pSelectingObserver);
 	if(m_pAtomEntity)
 	{
-		m_pAtomEntity->setMaterialName("girder_material_modulate");
+		if(m_IsBuildPoint)
+			m_pAtomEntity->setMaterialName("cell_highlight_material");
+		else
+			m_pAtomEntity->setMaterialName("girder_material_modulate");
 	}
 }
 
