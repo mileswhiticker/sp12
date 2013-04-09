@@ -38,6 +38,9 @@ private:
 	{};
 	bool m_NeedsRebuild;
 	//
+	void DrawSphere(CachedSphere* a_pCachedSphere);
+	void DrawLine(CachedLine* a_pCachedLine);
+	void DrawCube(CachedCube* a_pCachedCube);
 	std::vector<CachedLine*> m_CachedLines;
 	std::vector<CachedSphere*> m_CachedSpheres;
 	std::vector<CachedCube*> m_CachedCubes;

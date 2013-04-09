@@ -1,5 +1,7 @@
 #include "EffectManager.hpp"
 
+#include <omp.h>
+
 #include "DebugDrawer.h"
 #include "Cached.hpp"
 
@@ -9,34 +11,21 @@ bool EffectManager::frameStarted(const Ogre::FrameEvent& evt)
 	{
 		for(auto it = m_CachedSpheres.begin(); it != m_CachedSpheres.end(); ++it)
 		{
-			DebugDrawer::getSingleton().drawSphere((*it)->pos, (*it)->radius, (*it)->colour, true);
+			DrawSphere(*it);
 			//delete *it;
 		}
 		//m_CachedSpheres.clear();
 	
 		for(auto it = m_CachedLines.begin(); it != m_CachedLines.end(); ++it)
 		{
-			DebugDrawer::getSingleton().drawLine((*it)->startPos, (*it)->endPos, (*it)->colour);
+			DrawLine(*it);
 			//delete *it;
 		}
 		//m_CachedLines.clear();
-
+		
 		for(auto it = m_CachedCubes.begin(); it != m_CachedCubes.end(); ++it)
 		{
-			//positive Z and negative Z
-			Ogre::Vector3 posZ[4] = {(*it)->m_Verts[0] + (*it)->pos, (*it)->m_Verts[1] + (*it)->pos, (*it)->m_Verts[2] + (*it)->pos, (*it)->m_Verts[3] + (*it)->pos};
-			DebugDrawer::getSingleton().drawQuad(posZ, (*it)->colour, true);
-			Ogre::Vector3 negZ[4] = {(*it)->m_Verts[4] + (*it)->pos, (*it)->m_Verts[5] + (*it)->pos, (*it)->m_Verts[6] + (*it)->pos, (*it)->m_Verts[7] + (*it)->pos};
-			DebugDrawer::getSingleton().drawQuad(negZ, (*it)->colour, true);
-			
-			//positive Y
-			Ogre::Vector3 posY[4] = {(*it)->m_Verts[0] + (*it)->pos, (*it)->m_Verts[1] + (*it)->pos, (*it)->m_Verts[4] + (*it)->pos, (*it)->m_Verts[5] + (*it)->pos};
-			DebugDrawer::getSingleton().drawQuad(posY, (*it)->colour, true);
-
-			//negative Y
-			Ogre::Vector3 negY[4] = {(*it)->m_Verts[2] + (*it)->pos, (*it)->m_Verts[3] + (*it)->pos, (*it)->m_Verts[6] + (*it)->pos, (*it)->m_Verts[7] + (*it)->pos};
-			DebugDrawer::getSingleton().drawQuad(negY, (*it)->colour, true);
-
+			DrawCube(*it);
 			//delete *it;
 		}
 		//m_CachedCubes.clear();
@@ -64,18 +53,30 @@ bool EffectManager::frameEnded(const Ogre::FrameEvent& evt)
 void EffectManager::CacheSphere(CachedSphere* a_pCachedSphere)
 {
 	m_CachedSpheres.push_back(a_pCachedSphere);
+	while(m_CachedSpheres.size() > 50)
+	{
+		m_CachedSpheres.erase(m_CachedSpheres.begin());
+	}
 	m_NeedsRebuild = true;
 }
 
 void EffectManager::CacheLine(CachedLine* a_pCachedLine)
 {
 	m_CachedLines.push_back(a_pCachedLine);
+	while(m_CachedLines.size() > 50)
+	{
+		m_CachedLines.erase(m_CachedLines.begin());
+	}
 	m_NeedsRebuild = true;
 }
 
 void EffectManager::CacheCube(CachedCube* a_pCachedCube)
 {
 	m_CachedCubes.push_back(a_pCachedCube);
+	while(m_CachedCubes.size() > 50)
+	{
+		m_CachedCubes.erase(m_CachedCubes.begin());
+	}
 	m_NeedsRebuild = true;
 }
 
@@ -119,6 +120,33 @@ void EffectManager::ClearCacheCube(CachedCube* a_pCachedCube)
 			return;
 		}
 	}
+}
+
+void EffectManager::DrawSphere(CachedSphere* a_pCachedSphere)
+{
+	DebugDrawer::getSingleton().drawSphere(a_pCachedSphere->pos, a_pCachedSphere->radius, a_pCachedSphere->colour, true);
+}
+
+void EffectManager::DrawLine(CachedLine* a_pCachedLine)
+{
+	DebugDrawer::getSingleton().drawLine(a_pCachedLine->startPos, a_pCachedLine->endPos, a_pCachedLine->colour);
+}
+
+void EffectManager::DrawCube(CachedCube* a_pCachedCube)
+{
+	//positive Z and negative Z
+	Ogre::Vector3 posZ[4] = {a_pCachedCube->m_Verts[0] + a_pCachedCube->pos, a_pCachedCube->m_Verts[1] + a_pCachedCube->pos, a_pCachedCube->m_Verts[2] + a_pCachedCube->pos, a_pCachedCube->m_Verts[3] + a_pCachedCube->pos};
+	DebugDrawer::getSingleton().drawQuad(posZ, a_pCachedCube->colour, true);
+	Ogre::Vector3 negZ[4] = {a_pCachedCube->m_Verts[4] + a_pCachedCube->pos, a_pCachedCube->m_Verts[5] + a_pCachedCube->pos, a_pCachedCube->m_Verts[6] + a_pCachedCube->pos, a_pCachedCube->m_Verts[7] + a_pCachedCube->pos};
+	DebugDrawer::getSingleton().drawQuad(negZ, a_pCachedCube->colour, true);
+			
+	//positive Y
+	Ogre::Vector3 posY[4] = {a_pCachedCube->m_Verts[0] + a_pCachedCube->pos, a_pCachedCube->m_Verts[1] + a_pCachedCube->pos, a_pCachedCube->m_Verts[4] + a_pCachedCube->pos, a_pCachedCube->m_Verts[5] + a_pCachedCube->pos};
+	DebugDrawer::getSingleton().drawQuad(posY, a_pCachedCube->colour, true);
+
+	//negative Y
+	Ogre::Vector3 negY[4] = {a_pCachedCube->m_Verts[2] + a_pCachedCube->pos, a_pCachedCube->m_Verts[3] + a_pCachedCube->pos, a_pCachedCube->m_Verts[6] + a_pCachedCube->pos, a_pCachedCube->m_Verts[7] + a_pCachedCube->pos};
+	DebugDrawer::getSingleton().drawQuad(negY, a_pCachedCube->colour, true);
 }
 
 void EffectManager::ForceRebuild()
