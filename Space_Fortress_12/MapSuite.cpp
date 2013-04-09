@@ -271,7 +271,9 @@ MapCell* MapSuite::CreateNewMapCell(int a_X, int a_Y, int a_Z)
 MapCell* MapSuite::CreateNewMapCell(Ogre::Vector3 a_Coords)
 {
 	MapCell* pNewMapCell = new MapCell(a_Coords);
-	m_MapCellGrid.emplace(std::make_pair(GetCoordsString(a_Coords), pNewMapCell));
+	//second param is false if it already exists
+	if(!m_MapCellGrid.emplace(std::make_pair(GetCoordsString(a_Coords), pNewMapCell)).second)
+		delete pNewMapCell;
 
 	return pNewMapCell;
 }
@@ -372,6 +374,17 @@ MapCell* MapSuite::GetCellInDirOrNull(MapCell* a_pSourceMapCell, int a_Direction
 		{
 			//nothing
 		}
+	}
+	return pOut;
+}
+
+MapCell* MapSuite::GetCellInDirOrCreate(MapCell* a_pSourceMapCell, int a_Direction)
+{
+	MapCell* pOut = NULL;
+	if(a_pSourceMapCell)
+	{
+		Ogre::Vector3 newCoords = GetCoordsInDir(a_pSourceMapCell->m_Position, a_Direction);
+		pOut = GetCellAtCoordsOrCreate(newCoords);
 	}
 	return pOut;
 }

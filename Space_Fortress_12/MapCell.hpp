@@ -9,15 +9,15 @@ class MapCell
 public:
 	MapCell(Ogre::Vector3 a_Position);
 	Ogre::Vector3 m_Position;
-	//
-	/*MapCell* m_pAdjNorth;
-	MapCell* m_pAdjSouth;
-	MapCell* m_pAdjEast;
-	MapCell* m_pAdjWest;
-	MapCell* m_pAdjUp;
-	MapCell* m_pAdjDown;*/
-	//
 	Turf* m_pMyCellTurf;
+	//
+	void AddGravityForce(Ogre::Vector3 a_AdditiveGravityForce);
+	void RemoveGavityForce(Ogre::Vector3 a_SubtractiveGravityForce);
+	Ogre::Vector3 GetGravity();
+	//
+private:
+	Ogre::Vector3 m_CombinedGravity;
+	//
 };
 
 #endif	MAP_CELL_HPP

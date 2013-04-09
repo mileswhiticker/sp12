@@ -32,8 +32,7 @@ Human::Human(Ogre::Vector3 a_StartPos, int a_Direction)
 :	Mob(a_StartPos, a_Direction)
 {
 	m_MyMobType = HUMAN;
-	InstantiateAtom();
-	InstantiateMob();
+	SetupInputModules();
 }
 
 void Human::Update(float a_DeltaT)
@@ -41,13 +40,6 @@ void Human::Update(float a_DeltaT)
 	Mob::Update(a_DeltaT);
 	Ogre::Vector3 newPos = BT2OGRE(m_pRigidBody->getWorldTransform().getOrigin());
 	m_pAtomRootSceneNode->setPosition(newPos);
-}
-
-void Human::InstantiateMob()
-{
-	m_InputModules.push_back(new Generic(this, NULL));
-	m_InputModules.push_back(new MouseLook(this, NULL));
-	m_InputModules.push_back(new MobWalk(this, NULL));
 }
 
 void Human::InstantiateAtom()
@@ -80,4 +72,13 @@ void Human::InstantiateAtom()
 	//add new rigid body to world
 	btDiscreteDynamicsWorld& dynamicsWorld = GetDynamicsWorld();
 	dynamicsWorld.addRigidBody(m_pRigidBody, COLLISION_MOB, COLLISION_STRUCTURE | COLLISION_MOB);
+	
+	Mob::InstantiateAtom();
+}
+
+void Human::SetupInputModules()
+{
+	m_InputModules.push_back(new Generic(this, NULL));
+	m_InputModules.push_back(new MouseLook(this, NULL));
+	m_InputModules.push_back(new MobWalk(this, NULL));
 }

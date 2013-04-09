@@ -20,8 +20,8 @@
 #include "num2string.h"
 #include "UID.hpp"
 
-UnderlayPlating::UnderlayPlating(Ogre::Vector3 a_Pos, int a_Dir)
-:	Structure(a_Pos, a_Dir)
+UnderlayPlating::UnderlayPlating(MapCell* a_pMapCell, int a_Dir)
+:	Structure(a_pMapCell, a_Dir)
 {
 	m_MyStructureType = Structure::UNDERLAYPLATING;
 }

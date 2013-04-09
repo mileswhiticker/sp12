@@ -13,7 +13,7 @@ class OverlayPlating
 :	public Structure
 {
 public:
-	OverlayPlating(Ogre::Vector3 a_Pos, int a_Dir = 0);
+	OverlayPlating(MapCell* a_pMapCell, int a_Dir = 0);
 	virtual void InstantiateStructure(bool a_IsBuildPoint);
 	virtual void CreateFromBuildPoint();
 	virtual void DestroyToBuildPoint();

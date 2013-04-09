@@ -86,7 +86,7 @@ int ReverseDir(int a_SourceDir)
 
 Ogre::Vector3 GetUnitVectorFromDir(int a_Direction)
 {
-	Ogre::Vector3 outVector;
+	Ogre::Vector3 outVector = Ogre::Vector3::ZERO;
 	if(a_Direction & NORTH)
 	{
 		outVector += Ogre::Vector3::UNIT_Z;

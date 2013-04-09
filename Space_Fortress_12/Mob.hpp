@@ -29,7 +29,8 @@ public:
 	//
 	bool ConnectClient(Client* a_pNewClient);
 	bool DisconnectClient();
-	virtual void InstantiateMob()=0;
+	virtual void InstantiateAtom();
+	virtual void SetupInputModules()=0;
 	virtual void Update(float a_DeltaT);
 	//
 	virtual bool keyPressed( const OIS::KeyEvent &arg );

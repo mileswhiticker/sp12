@@ -9,6 +9,7 @@ class btBoxShape;
 class btRigidBody;
 class ObserverBuild;
 struct CachedCube;
+class MapCell;
 namespace Ogre
 {
 	class SceneNode;
@@ -58,6 +59,8 @@ protected:
 	bool m_UseRigidbodyPosition;
 	//
 	void InitCollisionShapeDebugDraw(Ogre::ColourValue a_ColourVal);
+	bool m_UsesGravity;
+	MapCell* m_pSourceMapCell;		//for handling gravity
 	//
 private:
 	float m_ColourModulateLevel;

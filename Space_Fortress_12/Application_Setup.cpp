@@ -270,7 +270,8 @@ void Application::createPhysics()
 
 	m_pBulletDynamicsWorld = new btDiscreteDynamicsWorld (m_pBulletDispatcher, m_pBulletOverlappingPairCache, m_pBulletSolver, collisionConfiguration);
 
-	m_pBulletDynamicsWorld->setGravity(btVector3(0, -10, 0));
+	//m_pBulletDynamicsWorld->setGravity(btVector3(0, -10, 0));
+	m_pBulletDynamicsWorld->setGravity(btVector3(0, 0, 0));	//no gravity in space
 
 	//m_pBulletDynamicsWorld->
 }

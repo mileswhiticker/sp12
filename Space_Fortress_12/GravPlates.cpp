@@ -15,13 +15,21 @@
 #include "BulletHelper.hpp"
 #include "BtOgreHelper.hpp"
 
+#include "MapSuite.hpp"
+#include "MapHelper.hpp"
+#include "MapCell.hpp"
 #include "CollisionDefines.h"
 #include "Direction.h"
 #include "num2string.h"
 #include "UID.hpp"
 
-GravPlates::GravPlates(Ogre::Vector3 a_Pos, int a_Dir)
-:	Structure(a_Pos, a_Dir)
+GravPlates::GravPlates(MapCell* a_pMapCell, int a_Dir)
+:	Structure(a_pMapCell, a_Dir)
+,	m_CellRange(10)
+,	m_InitialGravityForce(10)
+,	m_LinearGravityFalloff(1)
+,	m_GravityActive(false)
+,	m_GravityReversed(false)
 {
 	m_MyStructureType = Structure::GRAVPLATES;
 }
@@ -112,8 +120,12 @@ void GravPlates::InstantiateStructure(bool a_IsBuildPoint)
 	else
 	{
 		dynamicsWorld.addRigidBody(m_pRigidBody, COLLISION_STRUCTURE, COLLISION_BUILDRAYCAST);
+
+		//activate gravity
+		ToggleGravity();
 	}
 	InitCollisionShapeDebugDraw(Ogre::ColourValue::Red);
+
 }
 
 void GravPlates::CreateFromBuildPoint()
@@ -128,6 +140,9 @@ void GravPlates::CreateFromBuildPoint()
 		
 		//reset the material
 		m_pAtomEntity->setMaterialName("gravplates");
+		
+		//activate gravity
+		ToggleGravity();
 
 		//done
 		SetEntityVisible(true);
@@ -172,4 +187,80 @@ void GravPlates::DeSelect(ObserverBuild* a_pSelectingObserver)
 	{
 		m_pAtomEntity->setMaterialName("gravplates");
 	}
+}
+
+void GravPlates::ToggleGravity()
+{
+	//toggle gravity
+	if(!m_pSourceMapCell)
+	{
+		m_pSourceMapCell = MapSuite::GetInstance().GetCellAtCoordsOrNull(m_pAtomRootSceneNode->_getDerivedPosition());
+	}
+	if(m_pSourceMapCell)
+	{
+		if(m_GravityActive)
+		{
+			float gravityForceLeft = m_InitialGravityForce;
+			int cellsLeft = m_CellRange;
+			MapCell* pCurMapCell = m_pSourceMapCell;
+			int gravityDir = m_GravityReversed ? ReverseDir(m_Direction) : m_Direction;
+			while(cellsLeft > 0 && gravityForceLeft > 0)
+			{
+				Ogre::Vector3 curGravForce = GetUnitVectorFromDir(gravityDir) * gravityForceLeft;
+				pCurMapCell->RemoveGavityForce(curGravForce);
+				//
+				pCurMapCell = MapSuite::GetInstance().GetCellInDirOrCreate(pCurMapCell, m_Direction);
+				cellsLeft -= 1;
+				gravityForceLeft -= m_LinearGravityFalloff;
+			}
+			m_GravityActive = false;
+		}
+		else
+		{
+			float gravityForceLeft = m_InitialGravityForce;
+			int cellsLeft = m_CellRange;
+			MapCell* pCurMapCell = MapSuite::GetInstance().GetCellInDirOrCreate(m_pSourceMapCell, m_Direction);
+			int gravityDir = m_GravityReversed ? m_Direction : ReverseDir(m_Direction);
+			Ogre::Vector3 initialGravity = GetUnitVectorFromDir(gravityDir);
+			while(cellsLeft > 0 && gravityForceLeft > 0)
+			{
+				pCurMapCell->AddGravityForce(initialGravity * gravityForceLeft);
+				//
+				pCurMapCell = MapSuite::GetInstance().GetCellInDirOrCreate(pCurMapCell, m_Direction);
+				cellsLeft -= 1;
+				gravityForceLeft -= m_LinearGravityFalloff;
+			}
+			m_GravityActive = true;
+		}
+	}
+}
+
+void GravPlates::SetGravityRange(int a_NewRange)
+{
+	bool reenableGrav = m_GravityActive;
+	if(reenableGrav)
+		ToggleGravity();
+	m_CellRange = a_NewRange;
+	if(reenableGrav)
+		ToggleGravity();
+}
+
+void GravPlates::SetGravityForce(float a_NewForce)
+{
+	bool reenableGrav = m_GravityActive;
+	if(reenableGrav)
+		ToggleGravity();
+	m_InitialGravityForce = a_NewForce;
+	if(reenableGrav)
+		ToggleGravity();
+}
+
+void GravPlates::SetLinearGravityFalloff(float a_NewLinearFallof)
+{
+	bool reenableGrav = m_GravityActive;
+	if(reenableGrav)
+		ToggleGravity();
+	m_LinearGravityFalloff = a_NewLinearFallof;
+	if(reenableGrav)
+		ToggleGravity();
 }

@@ -2,7 +2,13 @@
 
 #include "InputModule.hpp"
 #include "Client.hpp"
+#include "MapSuite.hpp"
+#include "MapCell.hpp"
 #include "OgreHelper.hpp"
+
+#include <LinearMath\btVector3.h>
+#include "RandHelper.h"
+#include <BulletDynamics\Dynamics\btRigidBody.h>
 
 Mob::Mob(Ogre::Vector3 a_StartPos, int a_Direction)
 :	Atom(a_StartPos, a_Direction)
@@ -40,6 +46,14 @@ bool Mob::ConnectClient(Client* a_pNewClient)
 		return true;
 	}
 	return false;
+}
+
+void Mob::InstantiateAtom()
+{
+	if(m_pRigidBody)
+	{
+		m_pRigidBody->applyForce(btVector3(btScalar(fRand(-2,2)), btScalar(fRand(-2,2)), btScalar(fRand(-2,2))), btVector3(fRand(-0.1f,0.1f), fRand(-0.1f,0.1f), fRand(-0.1f,0.1f)));
+	}
 }
 
 bool Mob::DisconnectClient()

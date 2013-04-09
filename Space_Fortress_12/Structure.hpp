@@ -19,7 +19,7 @@ public:
 		GRAVPLATES
 		//
 	};
-	Structure(Ogre::Vector3 a_Pos, int a_Dir = 0);
+	Structure(MapCell* a_pMapCell, int a_Dir = 0);
 	//
 	virtual void InstantiateAtom();
 	virtual void InstantiateStructure(bool a_IsBuildPoint)=0;

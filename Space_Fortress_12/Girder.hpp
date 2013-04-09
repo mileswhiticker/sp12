@@ -35,7 +35,6 @@ public:
 	virtual void Select(ObserverBuild* a_pSelectingObserver);
 	virtual void DeSelect(ObserverBuild* a_pSelectingObserver);
 
-	MapCell* m_pSourceMapCell;
 	//
 private:
 	std::list<Structure*> m_MountedStructures;

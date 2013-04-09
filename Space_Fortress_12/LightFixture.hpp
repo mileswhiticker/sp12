@@ -8,7 +8,7 @@ class LightFixture
 :	public Structure
 {
 public:
-	LightFixture(Ogre::Vector3 a_Pos, int a_Dir = 0);
+	LightFixture(MapCell* m_pMapCell, int a_Dir = 0);
 
 	virtual void InstantiateStructure(bool a_IsBuildPoint);
 	virtual void CreateFromBuildPoint();

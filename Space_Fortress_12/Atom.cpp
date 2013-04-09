@@ -20,6 +20,8 @@
 #include "EffectManager.hpp"
 #include "Cached.hpp"
 #include "DebugDrawer.h"
+#include "MapCell.hpp"
+#include "MapSuite.hpp"
 
 
 Atom::Atom(Ogre::Vector3 a_Pos, int a_Dir)
@@ -34,6 +36,8 @@ Atom::Atom(Ogre::Vector3 a_Pos, int a_Dir)
 ,	m_Direction(a_Dir)
 ,	m_UseRigidbodyPosition(true)
 ,	m_pCachedCube(NULL)
+,	m_pSourceMapCell(NULL)
+,	m_UsesGravity(true)
 {
 	m_pAtomRootSceneNode = NewSceneNode();
 	m_pAtomRootSceneNode->setPosition(a_Pos);
@@ -135,6 +139,25 @@ void Atom::Update(float a_DeltaT)
 		{
 			//only need to give it a scalar, but for some reason can only pass in float4 params?
 			m_pAtomEntity->getSubEntity(i)->setCustomParameter(1, Ogre::Vector4(m_ColourModulateLevel, 1, 1, 1));
+		}
+	}
+	
+	//--- Gravity ---//
+	
+	if(m_UsesGravity && m_pRigidBody)
+	{
+		//update the map cell we're currently in
+		Ogre::Vector3 curPos = BT2OGRE( m_pRigidBody->getWorldTransform().getOrigin() );
+		if(!m_pSourceMapCell || m_pSourceMapCell->m_Position.squaredDistance(curPos) > 1)
+		{
+			//if we've moved far enough away from the current cell (or it doesn't exist) get a new one
+			m_pSourceMapCell = MapSuite::GetInstance().GetCellAtCoordsOrNull(curPos);
+		}
+
+		//apply gravity of the current cell
+		if(m_pSourceMapCell)
+		{
+			m_pRigidBody->applyCentralForce( OGRE2BT(m_pSourceMapCell->GetGravity() * a_DeltaT) );
 		}
 	}
 }

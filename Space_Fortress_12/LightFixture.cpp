@@ -18,8 +18,8 @@
 #include "CollisionDefines.h"
 #include "Direction.h"
 
-LightFixture::LightFixture(Ogre::Vector3 a_Pos, int a_Dir)
-:	Structure(a_Pos, a_Dir)
+LightFixture::LightFixture(MapCell* m_pMapCell, int a_Dir)
+:	Structure(m_pMapCell, a_Dir)
 {
 	m_MyStructureType = Structure::LIGHTFIXTURE;
 }

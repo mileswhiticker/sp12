@@ -26,18 +26,17 @@
 #include "CollisionDefines.h"
 
 Girder::Girder(MapCell* a_pSourceMapCell)
-:	Structure(Ogre::Vector3::ZERO, 0)
+:	Structure(a_pSourceMapCell, 0)
 ,	Turf()
 ,	m_PlateOverlayDirs(0)
 ,	m_PlateUnderlays(0)
-,	m_pSourceMapCell(a_pSourceMapCell)
 {
 	m_MyStructureType = Structure::GIRDER;
 	m_pTurfStructure = this;
 	//
 	if(m_pSourceMapCell)
 	{
-		m_pAtomEntitySceneNode->setPosition(m_pSourceMapCell->m_Position);
+		m_pAtomRootSceneNode->setPosition(m_pSourceMapCell->m_Position);
 		a_pSourceMapCell->m_pMyCellTurf = this;
 	}
 }
@@ -121,7 +120,7 @@ void Girder::CreateFromBuildPoint()
 		dynamicsWorld.removeRigidBody(m_pRigidBody);
 		dynamicsWorld.addRigidBody(m_pRigidBody, COLLISION_STRUCTURE, COLLISION_BUILDRAYCAST);
 
-		//create plating buildpoints
+		//create structure buildpoints
 		for(int curDir = 1; curDir <= 32; curDir *= 2)
 		{
 			//std::cout << "direction: " << curDir << std::endl;
@@ -129,6 +128,9 @@ void Girder::CreateFromBuildPoint()
 			m_InvisibleBuildPoints.push_back(pUnusedBuildPoint);
 
 			pUnusedBuildPoint = AtomManager::GetSingleton().CreateStructure(Structure::UNDERLAYPLATING, m_pSourceMapCell, NULL, curDir|BUILD_POINT|INSTANTIATE_IMMEDIATELY);
+			m_InvisibleBuildPoints.push_back(pUnusedBuildPoint);
+
+			pUnusedBuildPoint = AtomManager::GetSingleton().CreateStructure(Structure::GRAVPLATES, m_pSourceMapCell, NULL, curDir|BUILD_POINT|INSTANTIATE_IMMEDIATELY);
 			m_InvisibleBuildPoints.push_back(pUnusedBuildPoint);
 		}
 

@@ -10,6 +10,7 @@
 
 #include "Cached.hpp"
 #include "EffectManager.hpp"
+#include "RandHelper.h"
 
 #include <BulletCollision\CollisionShapes\btBoxShape.h>
 #include <BulletCollision\CollisionShapes\btSphereShape.h>
@@ -49,6 +50,13 @@ void Object::Update(float a_DeltaT)
 		DebugDrawer::getSingleton().drawCuboid(pVertices, Ogre::ColourValue::Red, true);
 	}*/
 }
+void Object::InstantiateAtom()
+{
+	if(m_pRigidBody)
+	{
+		m_pRigidBody->applyForce(btVector3(fRand(-2,2), fRand(-2,2), fRand(-2,2)), btVector3(fRand(-0.1f,0.1f), fRand(-0.1f,0.1f), fRand(-0.1f,0.1f)));
+	}
+}
 
 Object::ObjType Object::GetObjType()
 {
@@ -81,10 +89,13 @@ void Box::InstantiateAtom()
 	m_pCollisionShape->calculateLocalInertia(mass,fallInertia);
 	btRigidBody::btRigidBodyConstructionInfo fallRigidBodyCI(mass, fallMotionState, m_pCollisionShape, fallInertia);
 	m_pRigidBody = new btRigidBody(fallRigidBodyCI);
+	m_pRigidBody->setSleepingThresholds(0,0);
 
 	//add new rigid body to world
 	btDiscreteDynamicsWorld& dynamicsWorld = GetDynamicsWorld();
 	dynamicsWorld.addRigidBody(m_pRigidBody, COLLISION_OBJ, COLLISION_OBJ|COLLISION_STRUCTURE);
 	
 	InitCollisionShapeDebugDraw(Ogre::ColourValue::Blue);
+	
+	Object::InstantiateAtom();
 }

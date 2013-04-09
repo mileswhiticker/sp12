@@ -112,19 +112,19 @@ Structure* AtomManager::CreateStructure(int a_StructureType, MapCell* a_pLocMapC
 		}
 	case(Structure::OVERLAYPLATING):
 		{
-			pOut = new OverlayPlating(a_pLocMapCell->m_Position, a_AdditionalFlags & ALLDIRS);
+			pOut = new OverlayPlating(a_pLocMapCell, a_AdditionalFlags & ALLDIRS);
 			
 			//m_AtomsInWorld.insert(pOut);
 			break;
 		}
 	case(Structure::UNDERLAYPLATING):
 		{
-			pOut = new UnderlayPlating(a_pLocMapCell->m_Position, a_AdditionalFlags & ALLDIRS);
+			pOut = new UnderlayPlating(a_pLocMapCell, a_AdditionalFlags & ALLDIRS);
 			break;
 		}
 	case(Structure::GRAVPLATES):
 		{
-			pOut = new GravPlates(a_pLocMapCell->m_Position, a_AdditionalFlags & ALLDIRS);
+			pOut = new GravPlates(a_pLocMapCell, a_AdditionalFlags & ALLDIRS);
 			break;
 		}
 	default:
@@ -185,6 +185,10 @@ Mob* AtomManager::CreateMob(int a_MobType, Ogre::Vector3 a_SpawnPos, Mob** a_ppA
 	if(pOut)
 	{
 		m_MobsInWorld.insert(pOut);
+		if(a_AdditionalFlags & INSTANTIATE_IMMEDIATELY)
+		{
+			pOut->InstantiateAtom();
+		}
 	}
 
 	//update the passed in memaddress, regardless of whether creation was successful or not

@@ -9,7 +9,7 @@ class Human
 public:
 	Human(Ogre::Vector3 a_StartPos, int a_Direction = 0);
 	virtual void InstantiateAtom();
-	virtual void InstantiateMob();
+	virtual void SetupInputModules();
 	//
 	virtual void Update(float a_DeltaT);
 	//

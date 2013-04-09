@@ -19,6 +19,7 @@ public:
 		BOX
 	};
 	Object(Ogre::Vector3 a_StartPos, int a_StartDirection = 0);
+	virtual void InstantiateAtom();
 	virtual void Update(float a_DeltaT);
 	ObjType GetObjType();
 	//
