@@ -13,10 +13,17 @@ class Object
 :	public Atom
 {
 public:
+	enum ObjType
+	{
+		UNKNOWN = 0,
+		BOX
+	};
 	Object(Ogre::Vector3 a_StartPos, int a_StartDirection = 0);
 	virtual void Update(float a_DeltaT);
+	ObjType GetObjType();
 	//
 protected:
+	ObjType m_MyObjType;
 	//
 };
 

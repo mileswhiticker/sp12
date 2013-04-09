@@ -21,6 +21,7 @@
 #include "Station.hpp"
 #include "Girder.hpp"
 #include "PlayerSpawn.hpp"
+#include "Object.hpp"
 
 #include "AtomManager.hpp"
 
@@ -211,7 +212,7 @@ bool MapSuite::LoadMapFile(std::string a_FileName)
 										std::string objTag = pElement->Attribute("tag");
 										if(!objTag.compare("box"))
 										{
-											AtomManager::GetSingleton().CreateAtom(Atom::OBJECT, Ogre::Vector3(Ogre::Real(i),Ogre::Real(j),Ogre::Real(k)));
+											AtomManager::GetSingleton().CreateObject(Object::BOX, Ogre::Vector3(Ogre::Real(i),Ogre::Real(j),Ogre::Real(k)));
 										}
 									}
 								}
@@ -287,7 +288,7 @@ int MapSuite::CreateAdjacentGirderBuildpoints(MapCell* a_pLocMapCell)
 			return numCreated;*/
 
 		//loop through cardinal directions and add girder build points in them
-		for(int curDir = 1; curDir < 32; curDir *= 2)
+		for(int curDir = 1; curDir <= 32; curDir *= 2)
 		{
 			Ogre::Vector3 targetCoords = GetCoordsInDir(a_pLocMapCell->m_Position, curDir);
 			MapCell* pCurrentCell = GetCellAtCoordsOrCreate(targetCoords);

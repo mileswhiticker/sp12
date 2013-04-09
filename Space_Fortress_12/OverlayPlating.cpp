@@ -29,6 +29,7 @@ OverlayPlating::OverlayPlating(Ogre::Vector3 a_Pos, int a_Dir)
 
 void OverlayPlating::InstantiateStructure(bool a_IsBuildPoint)
 {
+	//an underlay plate is essentially an "inner cover" for the tile in one of the six cardinal directions
 	//system is currently setup to handle any combination of the six, but it probably shouldn't be
 	m_IsBuildPoint = a_IsBuildPoint;
 	Ogre::SceneManager& sceneManager = GetSceneManager();
@@ -106,12 +107,13 @@ void OverlayPlating::InstantiateStructure(bool a_IsBuildPoint)
 		dynamicsWorld.addRigidBody(m_pRigidBody, COLLISION_BUILDPOINT, COLLISION_BUILDRAYCAST);
 
 		//todo: is this working?
-		m_pRigidBody->setCollisionFlags(m_pRigidBody->CF_NO_CONTACT_RESPONSE);
+		//m_pRigidBody->setCollisionFlags(m_pRigidBody->CF_NO_CONTACT_RESPONSE);
 	}
 	else
 	{
-		dynamicsWorld.addRigidBody(m_pRigidBody, COLLISION_STRUCTURE, COLLISION_BUILDRAYCAST);
+		dynamicsWorld.addRigidBody(m_pRigidBody, COLLISION_STRUCTURE, COLLISION_BUILDRAYCAST|COLLISION_OBJ|COLLISION_MOB);
 	}
+	InitCollisionShapeDebugDraw(Ogre::ColourValue::Red);
 }
 
 void OverlayPlating::CreateFromBuildPoint()
@@ -121,7 +123,7 @@ void OverlayPlating::CreateFromBuildPoint()
 		//first, reset the collision flags for build raycasting
 		btDiscreteDynamicsWorld& dynamicsWorld = GetDynamicsWorld();
 		dynamicsWorld.removeRigidBody(m_pRigidBody);
-		dynamicsWorld.addRigidBody(m_pRigidBody, COLLISION_STRUCTURE, COLLISION_BUILDRAYCAST);
+		dynamicsWorld.addRigidBody(m_pRigidBody, COLLISION_STRUCTURE, COLLISION_BUILDRAYCAST|COLLISION_OBJ|COLLISION_MOB);
 		//m_pRigidBody->setCollisionFlags(m_pRigidBody->CF_STATIC_OBJECT);
 		
 		//reset the material

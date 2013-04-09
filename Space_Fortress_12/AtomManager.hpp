@@ -10,6 +10,7 @@ class Object;
 class Girder;
 class Structure;
 class MapCell;
+class Mob;
 
 #define INSTANTIATE_IMMEDIATELY 64
 #define BUILD_POINT 128
@@ -27,12 +28,14 @@ public:
 		return &AtomManager::GetSingleton();
 	}
 	void Update(float a_DeltaT);
-
-	Atom* CreateAtom(int a_AtomType, Ogre::Vector3 a_Pos, bool a_InstantiateImmediately = true, Atom** a_ppAtomLocation = NULL);
-
+	
 	//the first 6 bits of a_AdditionalFlags are directions
+	Object* CreateObject(int a_ObjectType, Ogre::Vector3 a_Pos, Atom** a_ppAtomLocation = NULL, int a_AdditionalFlags = INSTANTIATE_IMMEDIATELY);
 	Structure* CreateStructure(int a_StructureType, MapCell* a_pLocMapCell, Structure** a_ppAtomLocation = NULL, int a_AdditionalFlags = INSTANTIATE_IMMEDIATELY);
+	Mob* CreateMob(int a_MobType, Ogre::Vector3 a_SpawnPos, Mob** a_ppAtomLocation = NULL, int a_AdditionalFlags = INSTANTIATE_IMMEDIATELY);
+	//
 	void DeleteStructure(Structure* a_pStructureToDel);
+	void AtomManager::DeleteMob(Mob* a_pMobToDel);
 
 	void ToggleCellFlashing();
 	//
@@ -40,9 +43,9 @@ private:
 	AtomManager();
 	bool cellsFlashing;
 	//
-	std::set<Atom*> m_AtomsInWorld;
-	//std::set<Girder*> m_GirdersInWorld;
-	//std::set<Object*> m_ObjectsInWorld;
+	std::set<Structure*> m_StructuresInWorld;
+	std::set<Mob*> m_MobsInWorld;
+	std::set<Atom*> m_ObjectsInWorld;
 	//
 };
 

@@ -106,12 +106,13 @@ void UnderlayPlating::InstantiateStructure(bool a_IsBuildPoint)
 		dynamicsWorld.addRigidBody(m_pRigidBody, COLLISION_BUILDPOINT, COLLISION_BUILDRAYCAST);
 
 		//todo: is this working?
-		m_pRigidBody->setCollisionFlags(m_pRigidBody->CF_NO_CONTACT_RESPONSE);
+		//m_pRigidBody->setCollisionFlags(m_pRigidBody->CF_NO_CONTACT_RESPONSE);
 	}
 	else
 	{
-		dynamicsWorld.addRigidBody(m_pRigidBody, COLLISION_STRUCTURE, COLLISION_BUILDRAYCAST);
+		dynamicsWorld.addRigidBody(m_pRigidBody, COLLISION_STRUCTURE, COLLISION_BUILDRAYCAST|COLLISION_OBJ|COLLISION_MOB);
 	}
+	InitCollisionShapeDebugDraw(Ogre::ColourValue::Red);
 }
 
 void UnderlayPlating::CreateFromBuildPoint()
@@ -121,8 +122,8 @@ void UnderlayPlating::CreateFromBuildPoint()
 		//first, reset the collision flags for build raycasting
 		btDiscreteDynamicsWorld& dynamicsWorld = GetDynamicsWorld();
 		dynamicsWorld.removeRigidBody(m_pRigidBody);
-		dynamicsWorld.addRigidBody(m_pRigidBody, COLLISION_STRUCTURE, COLLISION_BUILDRAYCAST);
-		//m_pRigidBody->setCollisionFlags(m_pRigidBody->CF_STATIC_OBJECT);
+		dynamicsWorld.addRigidBody(m_pRigidBody, COLLISION_STRUCTURE, COLLISION_BUILDRAYCAST|COLLISION_OBJ|COLLISION_MOB);
+		m_pRigidBody->setCollisionFlags(m_pRigidBody->CF_STATIC_OBJECT);
 		
 		//reset the material
 		m_pAtomEntity->setMaterialName("under_plating");

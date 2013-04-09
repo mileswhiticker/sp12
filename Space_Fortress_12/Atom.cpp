@@ -17,7 +17,10 @@
 #include "RandHelper.h"
 #include "BtOgreHelper.hpp"
 
+#include "EffectManager.hpp"
+#include "Cached.hpp"
 #include "DebugDrawer.h"
+
 
 Atom::Atom(Ogre::Vector3 a_Pos, int a_Dir)
 :	m_pAtomEntitySceneNode(NULL)
@@ -30,6 +33,7 @@ Atom::Atom(Ogre::Vector3 a_Pos, int a_Dir)
 ,	m_MyAtomType(UNKNOWN)
 ,	m_Direction(a_Dir)
 ,	m_UseRigidbodyPosition(true)
+,	m_pCachedCube(NULL)
 {
 	m_pAtomRootSceneNode = NewSceneNode();
 	m_pAtomRootSceneNode->setPosition(a_Pos);
@@ -46,11 +50,20 @@ Atom::~Atom()
 		(*it)->ForceClearAtomIfSelected(this);
 	}
 	
-	//clear rigidbody
+	//clear physics
 	if(m_pRigidBody)
 	{
 		dynamicsWorld.removeRigidBody(m_pRigidBody);
 		delete m_pRigidBody;
+	}
+	if(m_pCollisionShape)
+	{
+		delete m_pCollisionShape;
+	}
+	if(m_pCachedCube)
+	{
+		EffectManager::GetSingleton().ClearCacheCube(m_pCachedCube);
+		delete m_pCachedCube;
 	}
 
 	//clear entity
@@ -59,7 +72,7 @@ Atom::~Atom()
 		SetEntityVisible(false);
 		sceneManager.destroyEntity(m_pAtomEntity);
 	}
-
+	
 	//clear scenenode
 	if(m_pAtomEntitySceneNode)
 	{
@@ -69,41 +82,38 @@ Atom::~Atom()
 		}
 		sceneManager.destroySceneNode(m_pAtomEntitySceneNode);
 	}
+	if(m_pAtomRootSceneNode)
+	{
+		if(m_pAtomRootSceneNode->getParentSceneNode())
+		{
+			m_pAtomRootSceneNode->getParentSceneNode()->removeChild(m_pAtomRootSceneNode);
+		}
+		sceneManager.destroySceneNode(m_pAtomRootSceneNode);
+	}
 }
 
 void Atom::Update(float a_DeltaT)
 {
 	//phys updates
-	if(m_UseRigidbodyPosition && m_pRigidBody && m_pAtomEntitySceneNode)
+	if(m_pRigidBody)
 	{
 		btTransform& transform = m_pRigidBody->getWorldTransform();
 		btVector3& origin = transform.getOrigin();
 		btQuaternion& rotation = transform.getRotation();
 
-		m_pAtomEntitySceneNode->setPosition(origin.getX(), origin.getY(), origin.getZ());
-		m_pAtomEntitySceneNode->setOrientation(rotation.w(), rotation.x(), rotation.y(), rotation.z());
+		if(m_UseRigidbodyPosition && m_pAtomRootSceneNode)
+		{
+			m_pAtomRootSceneNode->setPosition(origin.getX(), origin.getY(), origin.getZ());
+			m_pAtomRootSceneNode->setOrientation(rotation.w(), rotation.x(), rotation.y(), rotation.z());
+		}
+		if(m_pCachedCube)
+		{
+			m_pCachedCube->pos = BT2OGRE(origin);
+		}
 	}
 
 	//--- highlights shader ---//
-
-	//chance to randomly turn on for testing
-	/*if(!m_ModulateChangeDir)
-	{
-		int val = iRand(1000);
-		if(val == 0)
-		{
-			SetFlashingColour(Ogre::ColourValue(1,0,0,1));
-		}
-		else if(val == 1)
-		{
-			SetFlashingColour(Ogre::ColourValue(0,1,0,1));
-		}
-		else if(val == 2)
-		{
-			SetFlashingColour(Ogre::ColourValue(0,0,1,1));
-		}
-	}*/
-
+	
 	if(m_pAtomEntity && m_ModulateChangeDir)
 	{
 		m_ColourModulateLevel += a_DeltaT * m_ModulateChangeDir;
@@ -117,12 +127,6 @@ void Atom::Update(float a_DeltaT)
 			m_ModulateChangeDir = 1;
 			m_ColourModulateLevel = 0.25f;
 		}
-
-		//stop flashing after a while
-		/*if(!iRand(250))
-		{
-			StopFlashingColour();
-		}*/
 
 		//pass in the updated colour level to the shader
 		unsigned int numSubEntities = m_pAtomEntity->getNumSubEntities();
@@ -196,11 +200,6 @@ Atom::AtomType Atom::GetAtomType()
 	return m_MyAtomType;
 }
 
-void Atom::TargetcastIntercept()
-{
-	//
-}
-
 bool Atom::ChangeDirection(int a_NewDir)
 {
 	m_Direction = a_NewDir;
@@ -226,4 +225,26 @@ void Atom::DeSelect(ObserverBuild* a_pSelectingObserver)
 int Atom::GetDirection()
 {
 	return m_Direction;
+}
+
+void Atom::InitCollisionShapeDebugDraw(Ogre::ColourValue a_ColourVal)
+{
+	//debug draw the collision box
+	if(m_pCollisionShape)
+	{
+		btVector3 halfExtents = m_pCollisionShape->getHalfExtentsWithMargin();
+		Ogre::Vector3 verts[8] = {\
+			Ogre::Vector3(-halfExtents.getX(), halfExtents.getY(), halfExtents.getZ()),\
+			Ogre::Vector3(halfExtents.getX(), halfExtents.getY(), halfExtents.getZ()),\
+			Ogre::Vector3(halfExtents.getX(), -halfExtents.getY(), halfExtents.getZ()),\
+			Ogre::Vector3(-halfExtents.getX(), -halfExtents.getY(), halfExtents.getZ()),\
+		
+			Ogre::Vector3(halfExtents.getX(), halfExtents.getY(), -halfExtents.getZ()),\
+			Ogre::Vector3(-halfExtents.getX(), halfExtents.getY(), -halfExtents.getZ()),\
+			Ogre::Vector3(-halfExtents.getX(), -halfExtents.getY(), -halfExtents.getZ()),\
+			Ogre::Vector3(halfExtents.getX(), -halfExtents.getY(), -halfExtents.getZ()),\
+		};
+		m_pCachedCube = new CachedCube(m_pAtomEntitySceneNode->_getDerivedPosition(), verts, a_ColourVal);
+		EffectManager::GetSingleton().CacheCube(m_pCachedCube);
+	}
 }

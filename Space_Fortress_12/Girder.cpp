@@ -12,6 +12,7 @@
 
 #include "AtomManager.hpp"
 #include "MapSuite.hpp"
+#include "Object.hpp"
 
 #include "BtOgreHelper.hpp"
 #include "OgreHelper.hpp"
@@ -53,19 +54,19 @@ void Girder::InstantiateStructure(bool a_IsBuildPoint)
 
 	//a single cuboid girder to cover this cell
 	Ogre::SceneManager& sceneManager = GetSceneManager();
-	m_pAtomEntity = sceneManager.createEntity(num2string(NewUID()) + " girder", "girder.mesh");
+	m_pAtomEntity = sceneManager.createEntity("girder_" + num2string(NewUID()), "girder.mesh");
 	m_pAtomEntitySceneNode->attachObject(m_pAtomEntity);
 	StopFlashingColour();
 	
 	//create physics collider to intercept raycasts
-	btBoxShape* m_pCollisionShape = new btBoxShape(btVector3(0.5f, 0.5f, 0.5f));
-	btDefaultMotionState* groundMotionState = new btDefaultMotionState(btTransform(btQuaternion(0,0,0,1), OGRE2BT(m_pAtomEntitySceneNode->getPosition())));
+	m_pCollisionShape = new btBoxShape(btVector3(0.5f, 0.5f, 0.5f));
+	btDefaultMotionState* groundMotionState = new btDefaultMotionState(btTransform(btQuaternion(0,0,0,1), OGRE2BT(m_pAtomEntitySceneNode->_getDerivedPosition())));
 	btRigidBody::btRigidBodyConstructionInfo groundRigidBodyCI(0, groundMotionState, m_pCollisionShape, btVector3(0,0,0));
 	m_pRigidBody = new btRigidBody(groundRigidBodyCI);
 	m_pRigidBody->setUserPointer(this);
 	
 	//todo: is this working?
-	m_pRigidBody->setCollisionFlags(m_pRigidBody->CF_NO_CONTACT_RESPONSE);
+	m_pRigidBody->setCollisionFlags(m_pRigidBody->CF_KINEMATIC_OBJECT);
 
 	//add new rigid body to world
 	btDiscreteDynamicsWorld& dynamicsWorld = GetDynamicsWorld();
@@ -94,13 +95,14 @@ void Girder::InstantiateStructure(bool a_IsBuildPoint)
 			m_InvisibleBuildPoints.push_back(pUnusedBuildPoint);
 		}
 	}
+	InitCollisionShapeDebugDraw(Ogre::ColourValue(1,0,1,1));
 }
 
 void Girder::AddFreefloatingObj(std::string a_TypeTag)
 {
-	if(m_pAtomEntitySceneNode)
+	if(m_pAtomRootSceneNode)
 	{
-		AtomManager::GetSingleton().CreateAtom(Atom::OBJECT, m_pAtomEntitySceneNode->getPosition());
+		AtomManager::GetSingleton().CreateObject(Object::BOX, m_pAtomRootSceneNode->_getDerivedPosition());
 	}
 	else
 	{

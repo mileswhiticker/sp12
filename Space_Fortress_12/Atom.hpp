@@ -5,9 +5,10 @@
 #include <vector>
 #include <set>
 
-class btCollisionShape;
+class btBoxShape;
 class btRigidBody;
 class ObserverBuild;
+struct CachedCube;
 namespace Ogre
 {
 	class SceneNode;
@@ -40,9 +41,10 @@ public:
 	//
 	Ogre::Entity* m_pAtomEntity;
 	btRigidBody* m_pRigidBody;
-	btCollisionShape* m_pCollisionShape;
+	btBoxShape* m_pCollisionShape;
 	Ogre::SceneNode* m_pAtomEntitySceneNode;
 	Ogre::SceneNode* m_pAtomRootSceneNode;
+	CachedCube* m_pCachedCube;	//used to draw the collision shape, assuming it's a cube
 	//
 	AtomType GetAtomType();
 	int GetDirection();
@@ -50,12 +52,12 @@ public:
 	virtual void Select(ObserverBuild* a_pSelectingObserver);
 	virtual void DeSelect(ObserverBuild* a_pSelectingObserver);
 	//
-	virtual void TargetcastIntercept();
-	//
 protected:
 	AtomType m_MyAtomType;
 	int m_Direction;
 	bool m_UseRigidbodyPosition;
+	//
+	void InitCollisionShapeDebugDraw(Ogre::ColourValue a_ColourVal);
 	//
 private:
 	float m_ColourModulateLevel;

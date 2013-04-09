@@ -1,12 +1,15 @@
 #include "Object.hpp"
 
-#include "Application.hpp"
-
 #include "BtOgreHelper.hpp"
+#include "BulletHelper.hpp"
 #include "OgreHelper.hpp"
 #include "UID.hpp"
 #include "num2string.h"
 #include "DebugDrawer.h"
+#include "CollisionDefines.h"
+
+#include "Cached.hpp"
+#include "EffectManager.hpp"
 
 #include <BulletCollision\CollisionShapes\btBoxShape.h>
 #include <BulletCollision\CollisionShapes\btSphereShape.h>
@@ -20,6 +23,7 @@
 
 Object::Object(Ogre::Vector3 a_StartPos, int a_StartDirection)
 :	Atom(a_StartPos, a_StartDirection)
+,	m_MyObjType(UNKNOWN)
 {
 	//
 }
@@ -28,7 +32,7 @@ void Object::Update(float a_DeltaT)
 {
 	Atom::Update(a_DeltaT);
 
-	if(DebugDrawer::getSingleton().getEnabled() && m_pRigidBody && m_pCollisionShape)
+	/*if(DebugDrawer::getSingleton().getEnabled() && m_pRigidBody && m_pCollisionShape)
 	{
 		btTransform& transform = m_pRigidBody->getWorldTransform();
 		Ogre::Vector3 pVertices[8];
@@ -43,33 +47,35 @@ void Object::Update(float a_DeltaT)
 		}
 		
 		DebugDrawer::getSingleton().drawCuboid(pVertices, Ogre::ColourValue::Red, true);
-	}
+	}*/
+}
+
+Object::ObjType Object::GetObjType()
+{
+	return m_MyObjType;
 }
 
 Box::Box(Ogre::Vector3 a_Position)
 :	Object(a_Position, 0)
 {
 	//scenenode
-	Ogre::SceneNode& rootSceneNode = GetRootSceneNode();
-	m_pAtomEntitySceneNode = rootSceneNode.createChildSceneNode();
-	m_pAtomEntitySceneNode->setPosition(a_Position);
-	
-	InstantiateAtom();
+	m_MyObjType = Object::BOX;
 }
 
 void Box::InstantiateAtom()
 {
 	Ogre::SceneManager& sceneManager = GetSceneManager();
-	m_pAtomEntity = sceneManager.createEntity(num2string(NewUID()) + " obj", "cell_filling.mesh");
+	m_pAtomEntity = sceneManager.createEntity("box_" + num2string(NewUID()), "cell_filling.mesh");
 	m_pAtomEntitySceneNode->attachObject(m_pAtomEntity);
 	m_pAtomEntitySceneNode->setScale(0.25f, 0.25f, 0.25f);
 
 	//m_pAtomEntity->setMaterialName("madmarxOutLine");
 
 	//create physics body and initialise to starting position
-	m_pCollisionShape = new btBoxShape( btVector3(0.125f, 0.125f, 0.125f) );
+	btVector3 halfExtents(0.125f, 0.125f, 0.125f);
+	m_pCollisionShape = new btBoxShape(halfExtents);
 	//m_pCollisionShape = new btSphereShape(0.5);
-	btDefaultMotionState* fallMotionState = new btDefaultMotionState(btTransform(btQuaternion(0,0,0,1), OGRE2BT(m_pAtomEntitySceneNode->getPosition())));
+	btDefaultMotionState* fallMotionState = new btDefaultMotionState(btTransform(btQuaternion(0,0,0,1), OGRE2BT(m_pAtomEntitySceneNode->_getDerivedPosition())));
 	btScalar mass = 1;
 	btVector3 fallInertia(0,0,0);
 	m_pCollisionShape->calculateLocalInertia(mass,fallInertia);
@@ -77,6 +83,8 @@ void Box::InstantiateAtom()
 	m_pRigidBody = new btRigidBody(fallRigidBodyCI);
 
 	//add new rigid body to world
-	btDiscreteDynamicsWorld& dynamicsWorld = Application::StaticGetDynamicsWorld();
-	dynamicsWorld.addRigidBody(m_pRigidBody);
+	btDiscreteDynamicsWorld& dynamicsWorld = GetDynamicsWorld();
+	dynamicsWorld.addRigidBody(m_pRigidBody, COLLISION_OBJ, COLLISION_OBJ|COLLISION_STRUCTURE);
+	
+	InitCollisionShapeDebugDraw(Ogre::ColourValue::Blue);
 }

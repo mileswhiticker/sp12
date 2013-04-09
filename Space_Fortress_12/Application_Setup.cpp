@@ -25,6 +25,7 @@
 #include "Mob.hpp"
 #include "Observer.hpp"
 
+#include "AtomManager.hpp"
 #include "Files.hpp"
 #include "MapSuite.hpp"
 
@@ -289,56 +290,8 @@ void Application::createTestClient()
 		spawnPos = chosenSpawn->pos;
 		spawnDir = chosenSpawn->dir;
 	}
-	Observer* pTestObserver = new Observer(spawnPos, spawnDir);
+	Observer* pTestObserver = (Observer*)AtomManager::GetSingleton().CreateMob(Mob::OBSERVER, spawnPos, NULL, spawnDir | INSTANTIATE_IMMEDIATELY);
 	pTestObserver->ConnectClient(pTestClient);
-	m_Mobs.push_back(pTestObserver);
-
-	//grab a starting spawn
-	Station* pStartingStation = MapSuite::GetStartingStation();
-	if(pStartingStation)
-	{
-		//grab all observer spawn points
-		std::vector<PlayerSpawn*> obsSpawns;
-		for(auto it = pStartingStation->m_PlayerSpawns.begin(); it != pStartingStation->m_PlayerSpawns.end(); ++it)
-		{
-			if(!(*it)->type.compare("observer"))
-				obsSpawns.push_back(*it);
-		}
-
-		int spawnMax = obsSpawns.size();
-		if(spawnMax > 0)
-		{
-			int spawnIndex = iRand(0, spawnMax);
-			PlayerSpawn* pObsSpawn = obsSpawns[spawnIndex];
-			
-			//grab the startpos
-			pTestObserver->m_pAtomEntitySceneNode->setPosition(pObsSpawn->pos);
-
-			//calculate the starting look direction
-			Ogre::Vector3 startingLookDir = Ogre::Vector3(0,0,0);
-			if(pObsSpawn->dir & 1)
-				startingLookDir.z += 1;
-			if(pObsSpawn->dir & 2)
-				startingLookDir.z -= 1;
-			if(pObsSpawn->dir & 4)
-				startingLookDir.x += 1;
-			if(pObsSpawn->dir & 8)
-				startingLookDir.x -= 1;
-			if(pObsSpawn->dir & 16)
-				startingLookDir.y += 1;
-			if(pObsSpawn->dir & 32)
-				startingLookDir.y -= 1;
-			pTestClient->m_pCamera->lookAt(pTestClient->m_pCamera->getDerivedPosition() + startingLookDir);
-		}
-		else
-		{
-			std::cout << "WARNING: No valid observer spawn landmarks!" << std::endl;
-		}
-	}
-	else
-	{
-		//std::cout << "WARNING: Unable to load starting station!" << std::endl;
-	}
 }
 
 #undef RESOURCES_CFG

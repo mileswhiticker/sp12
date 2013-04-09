@@ -30,4 +30,18 @@ struct CachedSphere
 	Ogre::ColourValue colour;
 };
 
+struct CachedCube
+{
+	CachedCube(Ogre::Vector3 a_pos, Ogre::Vector3 a_Verts[8], Ogre::ColourValue a_colour)
+	{
+		pos = a_pos;
+		for(int i=0;i<8;++i)
+			m_Verts[i] = a_Verts[i];
+		colour = a_colour;
+	}
+	Ogre::Vector3 pos;
+	Ogre::Vector3 m_Verts[8];
+	Ogre::ColourValue colour;
+};
+
 #endif	CACHED_HPP

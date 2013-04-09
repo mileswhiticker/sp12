@@ -3,6 +3,8 @@
 #include "MapSuite.hpp"
 #include "MapCell.hpp"
 
+#include "Human.hpp"
+#include "Observer.hpp"
 #include "Object.hpp"
 #include "Girder.hpp"
 #include "Structure.hpp"
@@ -40,18 +42,26 @@ void AtomManager::ToggleCellFlashing()
 
 void AtomManager::Update(float a_DeltaT)
 {
-	for(auto it = m_AtomsInWorld.begin(); it != m_AtomsInWorld.end(); ++it)
+	for(auto it = m_StructuresInWorld.begin(); it != m_StructuresInWorld.end(); ++it)
+	{
+		(*it)->Update(a_DeltaT);
+	}
+	for(auto it = m_MobsInWorld.begin(); it != m_MobsInWorld.end(); ++it)
+	{
+		(*it)->Update(a_DeltaT);
+	}
+	for(auto it = m_ObjectsInWorld.begin(); it != m_ObjectsInWorld.end(); ++it)
 	{
 		(*it)->Update(a_DeltaT);
 	}
 }
 
-Atom* AtomManager::CreateAtom(int a_AtomType, Ogre::Vector3 a_Pos, bool a_InstantiateImmediately, Atom** a_ppAtomLocation)
+Object* AtomManager::CreateObject(int a_ObjectType, Ogre::Vector3 a_Pos, Atom** a_ppAtomLocation, int a_AdditionalFlags)
 {
-	Atom* pOut = NULL;
-	switch(a_AtomType)
+	Object* pOut = NULL;
+	switch(a_ObjectType)
 	{
-	case(Atom::OBJECT):
+	case(Object::BOX):
 		{
 			pOut = new Box(a_Pos);
 			//m_ObjectsInWorld.push_back(pBox);
@@ -60,14 +70,20 @@ Atom* AtomManager::CreateAtom(int a_AtomType, Ogre::Vector3 a_Pos, bool a_Instan
 		}
 	default:
 		{
-			std::cout << "Unknown atom type: " << a_AtomType << std::endl;
+			std::cout << "Unknown object type: " << a_ObjectType << std::endl;
 			break;
 		}
 	}
-	if(pOut && a_InstantiateImmediately)
+	if(pOut)
 	{
-		pOut->InstantiateAtom();
-		m_AtomsInWorld.insert(pOut);
+		m_ObjectsInWorld.insert(pOut);
+
+		//deal with any additional flags
+		//ignore dir for now, worry about it later
+		if(a_AdditionalFlags & INSTANTIATE_IMMEDIATELY)
+		{
+			pOut->InstantiateAtom();
+		}
 	}
 
 	if(a_ppAtomLocation)
@@ -121,7 +137,7 @@ Structure* AtomManager::CreateStructure(int a_StructureType, MapCell* a_pLocMapC
 	//if creation was successful, deal with any extra flags
 	if(pOut)
 	{
-		m_AtomsInWorld.insert(pOut);
+		m_StructuresInWorld.insert(pOut);
 		
 		if(a_AdditionalFlags & INSTANTIATE_IMMEDIATELY)
 		{
@@ -139,8 +155,50 @@ Structure* AtomManager::CreateStructure(int a_StructureType, MapCell* a_pLocMapC
 
 void AtomManager::DeleteStructure(Structure* a_pStructureToDel)
 {
-	m_AtomsInWorld.erase(a_pStructureToDel);
+	m_StructuresInWorld.erase(a_pStructureToDel);
 	delete a_pStructureToDel;
+}
+
+Mob* AtomManager::CreateMob(int a_MobType, Ogre::Vector3 a_SpawnPos, Mob** a_ppAtomLocation, int a_AdditionalFlags)
+{
+	Mob* pOut = NULL;
+	switch(a_MobType)
+	{
+	case(Mob::OBSERVER):
+		{
+			pOut = new Observer(a_SpawnPos, a_AdditionalFlags & ALLDIRS);
+			break;
+		}
+	case(Mob::HUMAN):
+		{
+			pOut = new Human(a_SpawnPos, a_AdditionalFlags & ALLDIRS);
+			break;
+		}
+	default:
+		{
+			std::cout << "Unknown mob type: " << a_MobType << std::endl;
+			break;
+		}
+	}
+
+	//if creation was successful, deal with any extra flags
+	if(pOut)
+	{
+		m_MobsInWorld.insert(pOut);
+	}
+
+	//update the passed in memaddress, regardless of whether creation was successful or not
+	if(a_ppAtomLocation)
+	{
+		*a_ppAtomLocation = pOut;
+	}
+	return pOut;
+}
+
+void AtomManager::DeleteMob(Mob* a_pMobToDel)
+{
+	m_MobsInWorld.erase(a_pMobToDel);
+	delete a_pMobToDel;
 }
 
 /*bool AtomManager::CreateObject(std::string a_TypeTag, Ogre::Vector3 a_Position)
