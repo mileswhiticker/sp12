@@ -16,10 +16,20 @@ class Mob
 ,	public Atom
 {
 public:
+	enum MobType
+	{
+		UNKNOWN = 0,
+		OBSERVER,
+		HUMAN,
+		ROBOT_DRONE,
+		ALIEN_PENGUIN
+		//
+	};
 	Mob(Ogre::Vector3 a_StartPos, int a_Direction = 0);
 	//
 	bool ConnectClient(Client* a_pNewClient);
 	bool DisconnectClient();
+	virtual void InstantiateMob()=0;
 	virtual void Update(float a_DeltaT);
 	//
 	virtual bool keyPressed( const OIS::KeyEvent &arg );
@@ -28,10 +38,12 @@ public:
 	virtual bool mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id );
 	virtual bool mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id );
 	//
+	MobType GetMobType();
 	//used by input modules
 	Client* m_pPossessingClient;
 	//
 protected:
+	MobType m_MyMobType;
 	std::vector<InputModule*> m_InputModules;
 	//
 };

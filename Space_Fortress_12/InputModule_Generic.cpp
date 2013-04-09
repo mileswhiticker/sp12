@@ -9,6 +9,8 @@
 #include "DebugDrawer.h"
 #include "AtomManager.hpp"
 #include "Client.hpp"
+#include "EffectManager.hpp"
+#include "Object.hpp"
 
 Generic::Generic(Mob* a_pOwnedMob, Client* a_pOwnedClient)
 :	InputModule(a_pOwnedMob, a_pOwnedClient)
@@ -56,6 +58,12 @@ bool Generic::keyReleased( const OIS::KeyEvent &arg )
 	case(OIS::KC_O):
 		{
 			DebugDrawer::getSingleton().setEnabled(!DebugDrawer::getSingleton().getEnabled());
+			EffectManager::GetSingleton().ForceRebuild();
+			break;
+		}
+	case(OIS::KC_N):
+		{
+			AtomManager::GetSingleton().CreateObject(Object::BOX, m_pOwnedMob->m_pAtomRootSceneNode->_getDerivedPosition());
 			break;
 		}
 	case(OIS::KC_P):
@@ -63,7 +71,7 @@ bool Generic::keyReleased( const OIS::KeyEvent &arg )
 			if(!m_pOwnedMob)
 				return false;
 
-			Ogre::Vector3 outPos = m_pOwnedMob->m_pAtomEntitySceneNode->getPosition();
+			Ogre::Vector3 outPos = m_pOwnedMob->m_pAtomRootSceneNode->getPosition();
 			std::cout << outPos.x << ", " << outPos.y << ", " << outPos.z << std::endl;
 			break;
 		}

@@ -13,6 +13,11 @@
 #include <BulletDynamics\Dynamics\btDiscreteDynamicsWorld.h>
 #include <BulletCollision\CollisionDispatch\btCollisionWorld.h>
 
+#include "Human.hpp"
+#include "AtomManager.hpp"
+#include <BulletDynamics\Dynamics\btRigidBody.h>
+#include <OGRE\OgreSceneNode.h>
+
 ObserverBuild::ObserverBuild(Mob* a_pOwnedMob, Client* a_pOwnedClient)
 :	InputModule(a_pOwnedMob, a_pOwnedClient)
 ,	m_pCurrentlyTargettedAtom(NULL)
@@ -20,7 +25,8 @@ ObserverBuild::ObserverBuild(Mob* a_pOwnedMob, Client* a_pOwnedClient)
 ,	m_BuildExpansion(true)
 ,	m_TargetStructureTypes(0)
 {
-	m_pOwnedMob = a_pOwnedMob;
+	//create a test human
+	m_pTestHuman = (Human*)AtomManager::GetSingleton().CreateMob(Mob::HUMAN, Ogre::Vector3::ZERO, NULL, 0 | INSTANTIATE_IMMEDIATELY);
 }
 
 void ObserverBuild::Update(float a_DeltaT)
@@ -34,7 +40,7 @@ void ObserverBuild::Update(float a_DeltaT)
 		btVector3 rayDir = OGRE2BT(camDir);
 		
 		//EffectManager::GetSingleton().CacheLine(new CachedLine(Ogre::Vector3(0,0,0), camPos, Ogre::ColourValue::Green));
-		EffectManager::GetSingleton().CacheLine(new CachedLine(camPos, camPos + camDir, Ogre::ColourValue::Blue));
+		//EffectManager::GetSingleton().CacheLine(new CachedLine(camPos, camPos + camDir, Ogre::ColourValue::Blue));
 		//DebugDrawer::getSingleton().drawLine(Ogre::Vector3::ZERO, Ogre::Vector3::UNIT_X * 10, Ogre::ColourValue::Green);
 
 		btCollisionWorld::ClosestRayResultCallback closestHitRayCallback(startPos, startPos + rayDir * btScalar(m_CellBuildRange));
@@ -103,7 +109,7 @@ void ObserverBuild::Update(float a_DeltaT)
 		{
 			//draw a sphere at the hit point
 			Ogre::Vector3 drawPos = camPos + camDir * Ogre::Real(m_CellBuildRange) * hitDistScalar;
-			EffectManager::GetSingleton().CacheSphere(new CachedSphere(drawPos, 0.01f, Ogre::ColourValue::Red));
+			//EffectManager::GetSingleton().CacheSphere(new CachedSphere(drawPos, 0.01f, Ogre::ColourValue::Red));
 		}
 		SelectNewAtom(pHitAtom);
 	}
@@ -162,6 +168,16 @@ bool ObserverBuild::keyPressed( const OIS::KeyEvent &arg )
 			m_BuildExpansion ? std::cout << "Targetting buildpoints" << std::endl : std::cout << "Targetting existing structures" << std::endl;
 			return true;
 		}
+	case(OIS::KC_H):
+		{
+			btTransform newTransform;
+			newTransform.setIdentity();
+			Ogre::Vector3 newPos = m_pOwnedMob->m_pAtomRootSceneNode->_getDerivedPosition();
+			newTransform.setOrigin( OGRE2BT(newPos) );
+			m_pTestHuman->m_pRigidBody->setLinearVelocity(btVector3(0,0,0));
+			m_pTestHuman->m_pRigidBody->setWorldTransform(newTransform);
+			return true;
+		}
 	case(OIS::KC_1):
 		{
 			m_TargetStructureTypes = 0;
@@ -214,11 +230,6 @@ bool ObserverBuild::keyPressed( const OIS::KeyEvent &arg )
 	return false;
 }
 
-bool ObserverBuild::keyReleased( const OIS::KeyEvent &arg )
-{
-	return false;
-}
-
 bool ObserverBuild::mouseMoved( const OIS::MouseEvent &arg )
 {
 	//zmovement represents mousewheel
@@ -230,16 +241,7 @@ bool ObserverBuild::mouseMoved( const OIS::MouseEvent &arg )
 			m_CellBuildRange = 0;
 		else if(m_CellBuildRange > 6)
 			m_CellBuildRange = 6;
+		return true;
 	}
-	return false;
-}
-
-bool ObserverBuild::mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
-{
-	return false;
-}
-
-bool ObserverBuild::mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
-{
 	return false;
 }

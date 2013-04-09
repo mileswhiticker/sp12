@@ -74,7 +74,7 @@ void Client::ResetCamera()
 		m_pCamera->setAspectRatio((float)vp->getActualWidth() / (float)vp->getActualHeight());
 	}
 	
-	if(m_pPossessedMob && m_pPossessedMob->m_pAtomEntitySceneNode)
+	if(m_pPossessedMob && m_pPossessedMob->m_pAtomRootSceneNode)
 	{
 		//clear out the old node, and use the mob's one
 		if(m_pCameraNode)
@@ -95,7 +95,7 @@ void Client::ResetCamera()
 
 		//set the new node
 		m_HasPersonalCameraNode = false;
-		m_pCameraNode = m_pPossessedMob->m_pAtomEntitySceneNode;
+		m_pCameraNode = m_pPossessedMob->m_pAtomRootSceneNode;
 		m_pCameraNode->attachObject(m_pCamera);
 	}
 	else if(!m_pCameraNode)

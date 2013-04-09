@@ -7,12 +7,14 @@
 Mob::Mob(Ogre::Vector3 a_StartPos, int a_Direction)
 :	Atom(a_StartPos, a_Direction)
 ,	m_pPossessingClient(NULL)
+,	m_MyMobType(UNKNOWN)
 {
 	m_MyAtomType = Atom::MOB;
 }
 
 void Mob::Update(float a_DeltaT)
 {
+	Atom::Update(a_DeltaT);
 	for(auto it = m_InputModules.begin(); it != m_InputModules.end(); ++it)
 	{
 		(*it)->Update(a_DeltaT);
@@ -95,6 +97,7 @@ bool Mob::mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
 
 	return false;
 }
+
 bool Mob::mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
 {
 	for(auto it = m_InputModules.begin(); it != m_InputModules.end(); ++it)
@@ -103,4 +106,9 @@ bool Mob::mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
 	}
 
 	return false;
+}
+
+Mob::MobType Mob::GetMobType()
+{
+	return m_MyMobType;
 }

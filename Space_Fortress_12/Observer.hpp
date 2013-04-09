@@ -9,6 +9,7 @@ class Observer
 public:
 	Observer(Ogre::Vector3 a_StartPos, int a_Direction = 0);
 	virtual void InstantiateAtom();
+	virtual void InstantiateMob();
 	//
 private:
 	//
