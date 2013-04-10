@@ -135,10 +135,6 @@ bool MapSuite::LoadMapFile(std::string a_FileName)
 						if(pElement->QueryIntAttribute("z", &k))
 							continue;
 						
-						//cube the entire tilemap for now so that all dimensions are equal
-						unsigned int max = unsigned int(i) > unsigned int(j) ? unsigned int(i) : unsigned int(j);
-						max = max > unsigned int(k) ? max : unsigned int(k);
-
 						//create the cell and slot it into the tilemap
 						//iVector3 coords = iVector3(i, j, k);
 						const char* skeleton_type = pElement->Attribute("skeleton");
@@ -272,8 +268,13 @@ MapCell* MapSuite::CreateNewMapCell(Ogre::Vector3 a_Coords)
 {
 	MapCell* pNewMapCell = new MapCell(a_Coords);
 	//second param is false if it already exists
-	if(!m_MapCellGrid.emplace(std::make_pair(GetCoordsString(a_Coords), pNewMapCell)).second)
+
+	std::pair<std::unordered_map<std::string, MapCell*>::iterator, bool> result = m_MapCellGrid.emplace(std::make_pair(GetCoordsString(a_Coords), pNewMapCell));
+	if(!result.second)
+	{
 		delete pNewMapCell;
+		pNewMapCell = result.first->second;
+	}
 
 	return pNewMapCell;
 }
