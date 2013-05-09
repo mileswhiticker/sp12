@@ -55,7 +55,7 @@ void Human::InstantiateAtom()
 	btVector3 halfExtents = btVector3(0.15, 0.4, 0.1);
 	m_pCollisionShape = new btBoxShape(halfExtents);
 	btDefaultMotionState* startMotionState = new btDefaultMotionState(btTransform(btQuaternion(0,0,0,1), OGRE2BT(m_pAtomEntitySceneNode->_getDerivedPosition())));
-	btScalar mass = 0.01f;
+	btScalar mass = 100.f;
 	btVector3 fallInertia(0,0,0);
 	m_pCollisionShape->calculateLocalInertia(mass,fallInertia);
 	btRigidBody::btRigidBodyConstructionInfo rigidBodyCI(mass, startMotionState, m_pCollisionShape, fallInertia);

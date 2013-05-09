@@ -162,6 +162,7 @@ void Girder::DestroyToBuildPoint()
 		//delete all mounted structures
 		for(auto it = m_MountedStructures.begin(); it != m_MountedStructures.end(); ++it)
 		{
+			(*it)->DestroyToBuildPoint();
 			AtomManager::GetSingleton().DeleteStructure(*it);
 		}
 		m_MountedStructures.erase(m_MountedStructures.begin(), m_MountedStructures.end());
@@ -169,6 +170,9 @@ void Girder::DestroyToBuildPoint()
 		//delete all structure buildpoints
 		for(auto it = m_InvisibleBuildPoints.begin(); it != m_InvisibleBuildPoints.end(); ++it)
 		{
+			//just in case an actual structure made it in here
+			//note that at the moment, buildpoints aren't being moved out of here when they're turned into structures7
+			(*it)->DestroyToBuildPoint();
 			AtomManager::GetSingleton().DeleteStructure(*it);
 		}
 		m_InvisibleBuildPoints.erase(m_InvisibleBuildPoints.begin(), m_InvisibleBuildPoints.end());

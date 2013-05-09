@@ -148,10 +148,10 @@ void Atom::Update(float a_DeltaT)
 	{
 		//update the map cell we're currently in
 		Ogre::Vector3 curPos = BT2OGRE( m_pRigidBody->getWorldTransform().getOrigin() );
-		if(!m_pSourceMapCell || m_pSourceMapCell->m_Position.squaredDistance(curPos) > 1)
+		if(!m_pSourceMapCell || m_pSourceMapCell->m_Position.squaredDistance(curPos) > 0.25)
 		{
 			//if we've moved far enough away from the current cell (or it doesn't exist) get a new one
-			m_pSourceMapCell = MapSuite::GetInstance().GetCellAtCoordsOrNull(curPos);
+			m_pSourceMapCell = MapSuite::GetInstance().GetCellAtCoordsOrNull(curPos + Ogre::Vector3(0.5f,0.5f,0.5f));
 		}
 
 		//apply gravity of the current cell

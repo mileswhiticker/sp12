@@ -16,6 +16,7 @@ public:
 	virtual void DeSelect(ObserverBuild* a_pSelectingObserver);
 	//
 	void ToggleGravity();
+	void SetGravity(bool a_Active = true);
 	void SetGravityRange(int a_NewRange);
 	void SetGravityForce(float a_NewForce);
 	void SetLinearGravityFalloff(float a_NewLinearFallof);

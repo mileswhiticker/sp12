@@ -19,7 +19,7 @@ void MapCell::AddGravityForce(Ogre::Vector3 a_AdditiveGravityForce)
 	m_CombinedGravity += a_AdditiveGravityForce;
 }
 
-void MapCell::RemoveGavityForce(Ogre::Vector3 a_SubtractiveGravityForce)
+void MapCell::RemoveGravityForce(Ogre::Vector3 a_SubtractiveGravityForce)
 {
 	m_CombinedGravity -= a_SubtractiveGravityForce;
 }

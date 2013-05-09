@@ -12,7 +12,7 @@ public:
 	Turf* m_pMyCellTurf;
 	//
 	void AddGravityForce(Ogre::Vector3 a_AdditiveGravityForce);
-	void RemoveGavityForce(Ogre::Vector3 a_SubtractiveGravityForce);
+	void RemoveGravityForce(Ogre::Vector3 a_SubtractiveGravityForce);
 	Ogre::Vector3 GetGravity();
 	//
 private:

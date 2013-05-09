@@ -26,7 +26,7 @@
 GravPlates::GravPlates(MapCell* a_pMapCell, int a_Dir)
 :	Structure(a_pMapCell, a_Dir)
 ,	m_CellRange(10)
-,	m_InitialGravityForce(10)
+,	m_InitialGravityForce(100)
 ,	m_LinearGravityFalloff(1)
 ,	m_GravityActive(false)
 ,	m_GravityReversed(false)
@@ -162,6 +162,9 @@ void GravPlates::DestroyToBuildPoint()
 		//reset the material
 		m_pAtomEntity->setMaterialName("cell_highlight_material");
 
+		//disable gravity
+		SetGravity(false);
+
 		//done
 		SetEntityVisible(false);
 		m_IsBuildPoint = true;
@@ -189,6 +192,12 @@ void GravPlates::DeSelect(ObserverBuild* a_pSelectingObserver)
 	}
 }
 
+void GravPlates::SetGravity(bool a_Active)
+{
+	if(m_GravityActive != a_Active)
+		ToggleGravity();
+}
+
 void GravPlates::ToggleGravity()
 {
 	//toggle gravity
@@ -203,23 +212,23 @@ void GravPlates::ToggleGravity()
 			float gravityForceLeft = m_InitialGravityForce;
 			int cellsLeft = m_CellRange;
 			MapCell* pCurMapCell = m_pSourceMapCell;
-			int gravityDir = m_GravityReversed ? ReverseDir(m_Direction) : m_Direction;
+			int gravityDir = m_GravityReversed ? m_Direction : ReverseDir(m_Direction);
+			Ogre::Vector3 initialGravity = GetUnitVectorFromDir(gravityDir);
 			while(cellsLeft > 0 && gravityForceLeft > 0)
 			{
-				Ogre::Vector3 curGravForce = GetUnitVectorFromDir(gravityDir) * gravityForceLeft;
-				pCurMapCell->RemoveGavityForce(curGravForce);
+				pCurMapCell->RemoveGravityForce(initialGravity * gravityForceLeft);
 				//
 				pCurMapCell = MapSuite::GetInstance().GetCellInDirOrCreate(pCurMapCell, m_Direction);
 				cellsLeft -= 1;
 				gravityForceLeft -= m_LinearGravityFalloff;
 			}
-			m_GravityActive = false;
+			m_GravityActive = true;
 		}
 		else
 		{
 			float gravityForceLeft = m_InitialGravityForce;
 			int cellsLeft = m_CellRange;
-			MapCell* pCurMapCell = MapSuite::GetInstance().GetCellInDirOrCreate(m_pSourceMapCell, m_Direction);
+			MapCell* pCurMapCell = m_pSourceMapCell;
 			int gravityDir = m_GravityReversed ? m_Direction : ReverseDir(m_Direction);
 			Ogre::Vector3 initialGravity = GetUnitVectorFromDir(gravityDir);
 			while(cellsLeft > 0 && gravityForceLeft > 0)
