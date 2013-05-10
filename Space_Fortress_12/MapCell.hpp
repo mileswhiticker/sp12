@@ -3,6 +3,7 @@
 
 #include <OGRE/OgreVector3.h>
 class Turf;
+class GravitySource;
 
 class MapCell
 {
@@ -11,12 +12,12 @@ public:
 	Ogre::Vector3 m_Position;
 	Turf* m_pMyCellTurf;
 	//
-	void AddGravityForce(Ogre::Vector3 a_AdditiveGravityForce);
-	void RemoveGravityForce(Ogre::Vector3 a_SubtractiveGravityForce);
+	void AddGravityAffector(GravitySource* a_pGravSource, float a_DistScalar);
+	void RemoveGravityAffector(GravitySource* a_pGravSource);
 	Ogre::Vector3 GetGravity();
 	//
 private:
-	Ogre::Vector3 m_CombinedGravity;
+	std::vector< std::pair<GravitySource*,float> > m_GravityAffectors;
 	//
 };
 

@@ -25,11 +25,8 @@
 
 GravPlates::GravPlates(MapCell* a_pMapCell, int a_Dir)
 :	Structure(a_pMapCell, a_Dir)
-,	m_CellRange(10)
-,	m_InitialGravityForce(100)
-,	m_LinearGravityFalloff(1)
+,	m_PercentGravityFalloff(0.1f)
 ,	m_GravityActive(false)
-,	m_GravityReversed(false)
 {
 	m_MyStructureType = Structure::GRAVPLATES;
 }
@@ -209,41 +206,38 @@ void GravPlates::ToggleGravity()
 	{
 		if(m_GravityActive)
 		{
-			float gravityForceLeft = m_InitialGravityForce;
-			int cellsLeft = m_CellRange;
+			m_Gravity = Ogre::Vector3::ZERO;
+			//
 			MapCell* pCurMapCell = m_pSourceMapCell;
-			int gravityDir = m_GravityReversed ? m_Direction : ReverseDir(m_Direction);
-			Ogre::Vector3 initialGravity = GetUnitVectorFromDir(gravityDir);
-			while(cellsLeft > 0 && gravityForceLeft > 0)
+			float percentLeft = 1.0f;
+			while(percentLeft > 0)
 			{
-				pCurMapCell->RemoveGravityForce(initialGravity * gravityForceLeft);
+				pCurMapCell->RemoveGravityAffector(this);
 				//
 				pCurMapCell = MapSuite::GetInstance().GetCellInDirOrCreate(pCurMapCell, m_Direction);
-				cellsLeft -= 1;
-				gravityForceLeft -= m_LinearGravityFalloff;
+				percentLeft -= m_PercentGravityFalloff;
 			}
 			m_GravityActive = true;
 		}
 		else
 		{
-			float gravityForceLeft = m_InitialGravityForce;
-			int cellsLeft = m_CellRange;
+			m_Gravity = GetUnitVectorFromDir(ReverseDir(m_Direction)) * 9.8f;
+			//
 			MapCell* pCurMapCell = m_pSourceMapCell;
-			int gravityDir = m_GravityReversed ? m_Direction : ReverseDir(m_Direction);
-			Ogre::Vector3 initialGravity = GetUnitVectorFromDir(gravityDir);
-			while(cellsLeft > 0 && gravityForceLeft > 0)
+			float percentLeft = 1.0f;
+			while(percentLeft > 0)
 			{
-				pCurMapCell->AddGravityForce(initialGravity * gravityForceLeft);
+				pCurMapCell->AddGravityAffector(this, percentLeft);
 				//
 				pCurMapCell = MapSuite::GetInstance().GetCellInDirOrCreate(pCurMapCell, m_Direction);
-				cellsLeft -= 1;
-				gravityForceLeft -= m_LinearGravityFalloff;
+				percentLeft -= m_PercentGravityFalloff;
 			}
 			m_GravityActive = true;
 		}
 	}
 }
 
+/*
 void GravPlates::SetGravityRange(int a_NewRange)
 {
 	bool reenableGrav = m_GravityActive;
@@ -254,12 +248,12 @@ void GravPlates::SetGravityRange(int a_NewRange)
 		ToggleGravity();
 }
 
-void GravPlates::SetGravityForce(float a_NewForce)
+void GravPlates::SetGravityAccel(float a_NewAccel)
 {
 	bool reenableGrav = m_GravityActive;
 	if(reenableGrav)
 		ToggleGravity();
-	m_InitialGravityForce = a_NewForce;
+	m_InitialGravityAccel = a_NewAccel;
 	if(reenableGrav)
 		ToggleGravity();
 }
@@ -273,3 +267,4 @@ void GravPlates::SetLinearGravityFalloff(float a_NewLinearFallof)
 	if(reenableGrav)
 		ToggleGravity();
 }
+*/

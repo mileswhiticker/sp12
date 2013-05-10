@@ -24,6 +24,7 @@
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="DebugDrawer.cpp" />
     <ClCompile Include="EffectManager.cpp" />
+    <ClCompile Include="GravitySource.cpp" />
     <ClCompile Include="GravPlates.cpp" />
     <ClCompile Include="Human.cpp" />
     <ClCompile Include="InputModule_Generic.cpp" />
@@ -71,6 +72,7 @@
     <ClInclude Include="DebugDrawer.h" />
     <ClInclude Include="Direction.h" />
     <ClInclude Include="EffectManager.hpp" />
+    <ClInclude Include="GravitySource.hpp" />
     <ClInclude Include="GravPlates.hpp" />
     <ClInclude Include="Human.hpp" />
     <ClInclude Include="InputModule_Generic.hpp" />

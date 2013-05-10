@@ -216,6 +216,9 @@
     <ClCompile Include="InputModule_MouseLook.cpp">
       <Filter>Source Files\InputModule</Filter>
     </ClCompile>
+    <ClCompile Include="GravitySource.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GlueScreen.hpp">
@@ -361,6 +364,9 @@
     </ClInclude>
     <ClInclude Include="InputModule_MouseLook.hpp">
       <Filter>Header Files\InputModule</Filter>
+    </ClInclude>
+    <ClInclude Include="GravitySource.hpp">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

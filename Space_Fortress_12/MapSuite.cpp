@@ -350,8 +350,9 @@ int MapSuite::ClearDependantAdjacentGirderBuildpoints(MapCell* a_pLocMapCell)
 				if(!turfAdjacent)
 				{
 					AtomManager::GetSingleton().DeleteStructure(pCurrentCell->m_pMyCellTurf->m_pTurfStructure);
-					m_MapCellGrid.erase(GetCoordsString(pCurrentCell->m_Position));
-					delete pCurrentCell;
+					//leave the mapcell, gravity needs it
+					//m_MapCellGrid.erase(GetCoordsString(pCurrentCell->m_Position));
+					//delete pCurrentCell;
 				}
 			}
 		}

@@ -2,9 +2,11 @@
 #define GRAV_PLATES_HPP
 
 #include "Structure.hpp"
+#include "GravitySource.hpp"
 
 class GravPlates
 :	public Structure
+,	public GravitySource
 {
 public:
 	GravPlates(MapCell* a_pMapCell, int a_Dir = 0);
@@ -17,16 +19,10 @@ public:
 	//
 	void ToggleGravity();
 	void SetGravity(bool a_Active = true);
-	void SetGravityRange(int a_NewRange);
-	void SetGravityForce(float a_NewForce);
-	void SetLinearGravityFalloff(float a_NewLinearFallof);
+	void SetPercentGravityFalloff(float a_NewLinearFallof);
 private:
-	int m_CellRange;
-	float m_InitialGravityForce;
-	float m_LinearGravityFalloff;
-	//
+	float m_PercentGravityFalloff;
 	bool m_GravityActive;
-	bool m_GravityReversed;
 	//
 };
 

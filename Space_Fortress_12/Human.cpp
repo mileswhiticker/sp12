@@ -61,7 +61,7 @@ void Human::InstantiateAtom()
 	btRigidBody::btRigidBodyConstructionInfo rigidBodyCI(mass, startMotionState, m_pCollisionShape, fallInertia);
 	m_pRigidBody = new btRigidBody(rigidBodyCI);
 	m_pRigidBody->setSleepingThresholds(0.0, 0.0);
-	m_pRigidBody->setAngularFactor(0.0);
+	//m_pRigidBody->setAngularFactor(0.0);
 	m_pRigidBody->setUserPointer(this);
 	
 	InitCollisionShapeDebugDraw(Ogre::ColourValue::Green);

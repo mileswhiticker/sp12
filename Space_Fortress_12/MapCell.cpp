@@ -1,8 +1,9 @@
 #include "MapCell.hpp"
+#include "GravitySource.hpp"
 
 MapCell::MapCell(Ogre::Vector3 a_Position)
 :	m_pMyCellTurf(NULL)
-,	m_CombinedGravity(Ogre::Vector3::ZERO)
+//,	m_CombinedGravity(Ogre::Vector3::ZERO)
 /*,	m_pAdjNorth(0)
 ,	m_pAdjSouth(0)
 ,	m_pAdjEast(0)
@@ -14,17 +15,29 @@ MapCell::MapCell(Ogre::Vector3 a_Position)
 	//
 }
 
-void MapCell::AddGravityForce(Ogre::Vector3 a_AdditiveGravityForce)
-{
-	m_CombinedGravity += a_AdditiveGravityForce;
-}
-
-void MapCell::RemoveGravityForce(Ogre::Vector3 a_SubtractiveGravityForce)
-{
-	m_CombinedGravity -= a_SubtractiveGravityForce;
-}
-
 Ogre::Vector3 MapCell::GetGravity()
 {
-	return m_CombinedGravity;
+	Ogre::Vector3 out = Ogre::Vector3::ZERO;
+	for(auto it = m_GravityAffectors.begin(); it != m_GravityAffectors.end(); ++it)
+	{
+		out += it->first->GetGravity() * it->second;
+	}
+	return out;
+}
+
+void MapCell::AddGravityAffector(GravitySource* a_pGravSource, float a_DistScalar)
+{
+	m_GravityAffectors.push_back( std::pair<GravitySource*,float>(a_pGravSource, a_DistScalar) );
+}
+
+void MapCell::RemoveGravityAffector(GravitySource* a_pGravSource)
+{
+	for(auto it = m_GravityAffectors.begin(); it != m_GravityAffectors.end(); ++it)
+	{
+		if(it->first == a_pGravSource)
+		{
+			m_GravityAffectors.erase(it);
+			return;
+		}
+	}
 }
