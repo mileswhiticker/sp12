@@ -6,6 +6,7 @@
 #include <OGRE\OgreSceneNode.h>
 #include <LinearMath\btTransform.h>
 #include <BulletDynamics\Dynamics\btRigidBody.h>
+#include <cegui\elements\CEGUIGUISheet.h>
 
 #include "BtOgreHelper.hpp"
 
@@ -52,6 +53,7 @@ bool PossessMob::keyReleased( const OIS::KeyEvent &arg )
 					m_pOwnedMob->DisconnectClient();
 				}
 				m_pTargetPossessMob->ConnectClient(pOwnClient);
+				pOwnClient->m_pTopInfoBar->setText("Player mode");
 
 				//todo: delete this->m_pOwnedMob (?)
 				//

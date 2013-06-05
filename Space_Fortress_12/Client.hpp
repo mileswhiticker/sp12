@@ -28,9 +28,9 @@ public:
 	Ogre::SceneNode* m_pCameraNode;
 	Mob* m_pPossessedMob;
 	//
-private:
 	CEGUI::GUISheet* m_pTopInfoBar;
 	CEGUI::GUISheet* m_pFPSCounter;
+private:
 	bool m_HasPersonalCameraNode;
 	//
 };

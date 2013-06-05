@@ -1,6 +1,9 @@
 #include "InputModule_GhostMob.h"
 #include "Observer.hpp"
 #include "AtomManager.hpp"
+#include "Client.hpp"
+
+#include <cegui\elements\CEGUIGUISheet.h>
 #include <OGRE\OgreSceneNode.h>
 
 GhostMob::GhostMob(Mob* a_pOwnedMob, Client* a_pOwnedClient)
@@ -37,6 +40,7 @@ bool GhostMob::keyReleased( const OIS::KeyEvent &arg )
 		{
 			//todo: bitshift spawn dir into the last argument
 			Ogre::Vector3 spawnPos = Ogre::Vector3::ZERO;
+			m_pOwnedClient->m_pTopInfoBar->setText("Observer mode");
 			if(m_pOwnedMob)
 				spawnPos = m_pOwnedMob->m_pAtomRootSceneNode->getPosition();
 			Observer* pTestObserver = (Observer*)AtomManager::GetSingleton().CreateMob(Mob::OBSERVER, spawnPos, NULL, INSTANTIATE_IMMEDIATELY);

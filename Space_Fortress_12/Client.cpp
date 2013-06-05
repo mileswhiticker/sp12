@@ -26,7 +26,7 @@ Client::Client()
 	Application::StaticGetCEGUIWindow().addChildWindow(m_pTopInfoBar);
 	m_pTopInfoBar->setPosition( CEGUI::UVector2( CEGUI::UDim( 0, 0 ), CEGUI::UDim( 0, 0 ) ) );
 	m_pTopInfoBar->setSize( CEGUI::UVector2( CEGUI::UDim( 0.5f, 0 ), CEGUI::UDim( 0.05f, 0 ) ) );
-	m_pTopInfoBar->setText("Observer cam");
+	m_pTopInfoBar->setText("Player mode");
 
 	//fps counter
 	m_pFPSCounter = (CEGUI::GUISheet*)wmgr.createWindow( "TaharezLook/StaticText", "fpsCounter" );

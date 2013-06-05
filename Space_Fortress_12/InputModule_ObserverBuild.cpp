@@ -12,6 +12,7 @@
 #include <Ogre\OgreCamera.h>
 #include <BulletDynamics\Dynamics\btDiscreteDynamicsWorld.h>
 #include <BulletCollision\CollisionDispatch\btCollisionWorld.h>
+#include <cegui\elements\CEGUIGUISheet.h>
 
 #include "Human.hpp"
 #include "AtomManager.hpp"
@@ -171,37 +172,43 @@ bool ObserverBuild::keyPressed( const OIS::KeyEvent &arg )
 	case(OIS::KC_1):
 		{
 			m_TargetStructureTypes = 0;
-			std::cout << "targetting all structures" << std::endl;
+			//std::cout << "targetting all structures" << std::endl;
+			m_pOwnedClient->m_pTopInfoBar->setText("Observer mode (all)");
 			return true;
 		}
 	case(OIS::KC_2):
 		{
 			m_TargetStructureTypes = Structure::GIRDER;
-			std::cout << "targetting GIRDER" << std::endl;
+			//std::cout << "targetting GIRDER" << std::endl;
+			m_pOwnedClient->m_pTopInfoBar->setText("Observer mode (girders)");
 			return true;
 		}
 	case(OIS::KC_3):
 		{
 			m_TargetStructureTypes = Structure::OVERLAYPLATING;
-			std::cout << "targetting OVERLAYPLATING" << std::endl;
+			//std::cout << "targetting OVERLAYPLATING" << std::endl;
+			m_pOwnedClient->m_pTopInfoBar->setText("Observer mode (overlay plating)");
 			return true;
 		}
 	case(OIS::KC_4):
 		{
 			m_TargetStructureTypes = Structure::UNDERLAYPLATING;
-			std::cout << "targetting UNDERLAYPLATING" << std::endl;
+			//std::cout << "targetting UNDERLAYPLATING" << std::endl;
+			m_pOwnedClient->m_pTopInfoBar->setText("Observer mode (underlay plating)");
 			return true;
 		}
 	case(OIS::KC_5):
 		{
 			m_TargetStructureTypes = Structure::LIGHTFIXTURE;
-			std::cout << "targetting LIGHTFIXTURE" << std::endl;
+			//std::cout << "targetting LIGHTFIXTURE" << std::endl;
+			m_pOwnedClient->m_pTopInfoBar->setText("Observer mode (light fixtures)");
 			return true;
 		}
 	case(OIS::KC_6):
 		{
 			m_TargetStructureTypes = Structure::GRAVPLATES;
-			std::cout << "targetting GRAVPLATES" << std::endl;
+			//std::cout << "targetting GRAVPLATES" << std::endl;
+			m_pOwnedClient->m_pTopInfoBar->setText("Observer mode (gravity plates)");
 			return true;
 		}
 	case(OIS::KC_I):
