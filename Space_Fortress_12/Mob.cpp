@@ -65,43 +65,9 @@ void Mob::Update(float a_DeltaT)
 	if(m_UsesGravity && m_pRigidBody->getGravity().length2() > 0 && m_tleftNextGroundRaycast <= 0)
 	{
 		//todo: this whole method is a little crude
-		m_tleftNextGroundRaycast = 0.1f;
+		m_tleftNextGroundRaycast = 0.5f;
+		UpdateOnGround();
 
-		btTransform worldTransform = m_pRigidBody->getWorldTransform();
-		btVector3 startPos = worldTransform.getOrigin();
-		btVector3 castDir = m_pRigidBody->getGravity().normalized() * 0.5f;
-		btCollisionWorld::ClosestRayResultCallback closestHitRayCallback(startPos, startPos + castDir);
-		closestHitRayCallback.m_collisionFilterGroup = COLLISION_BUILDRAYCAST;		//todo: this needs its own collision define, but this one works for now
-		closestHitRayCallback.m_collisionFilterMask = COLLISION_STRUCTURE | COLLISION_OBJ | COLLISION_MOB;
-		
-		btDiscreteDynamicsWorld& bulletWorld = Application::StaticGetDynamicsWorld();
-		bulletWorld.rayTest(startPos, startPos + castDir, closestHitRayCallback);
-		Atom* pHitAtom = NULL;
-
-		float hitDistScalar = 999;
-		if(closestHitRayCallback.hasHit())
-		{
-			m_IsOnGround = true;
-			//all we need to know is if we hit something
-			/*const btCollisionObject* pHitObj = closestHitRayCallback.m_collisionObject;
-			pHitAtom = (Atom*)pHitObj->getUserPointer();
-			//std::cout << index << "/" << rayCallback.m_collisionObjects.size() << " " << pHitAtom << std::endl;
-			if(pHitAtom && pHitAtom->GetAtomType() == Atom::STRUCTURE && (!m_TargetStructureTypes || ((Structure*)pHitAtom)->GetStructureType() == m_TargetStructureTypes))
-			{
-				//grab the hit dist fraction, so we can draw a sphere there later
-				hitDistScalar = closestHitRayCallback.m_closestHitFraction;
-			}
-			else
-			{
-				//reset it, so that if we don't find a matching structure at all the user's selection is reset
-				pHitAtom = NULL;
-			}*/
-		}
-		else
-		{
-			m_IsOnGround = false;
-			m_pRigidBody->activate(true);
-		}
 	}
 
 	//orient physbody to make is upright relative to the direction of gravity
@@ -233,4 +199,29 @@ bool Mob::IsOnGround()
 Ogre::Vector3 Mob::GetCameraModelOffset()
 {
 	return m_CameraModelOffset;
+}
+
+bool Mob::UpdateOnGround()
+{
+	btTransform worldTransform = m_pRigidBody->getWorldTransform();
+	btVector3 startPos = worldTransform.getOrigin();
+	btVector3 castDir = m_pRigidBody->getGravity().normalized() * 0.5f;
+	btCollisionWorld::ClosestRayResultCallback closestHitRayCallback(startPos, startPos + castDir);
+	closestHitRayCallback.m_collisionFilterGroup = COLLISION_BUILDRAYCAST;		//todo: this needs its own collision define, but this one works for now
+	closestHitRayCallback.m_collisionFilterMask = COLLISION_STRUCTURE | COLLISION_OBJ | COLLISION_MOB;
+		
+	btDiscreteDynamicsWorld& bulletWorld = Application::StaticGetDynamicsWorld();
+	bulletWorld.rayTest(startPos, startPos + castDir, closestHitRayCallback);
+	Atom* pHitAtom = NULL;
+
+	if(closestHitRayCallback.hasHit())
+	{
+		m_IsOnGround = true;
+	}
+	else
+	{
+		m_IsOnGround = false;
+		m_pRigidBody->activate(true);
+	}
+	return m_IsOnGround;
 }

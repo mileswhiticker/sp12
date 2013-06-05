@@ -168,17 +168,6 @@ bool ObserverBuild::keyPressed( const OIS::KeyEvent &arg )
 			m_BuildExpansion ? std::cout << "Targetting buildpoints" << std::endl : std::cout << "Targetting existing structures" << std::endl;
 			return true;
 		}
-	case(OIS::KC_H):
-		{
-			btTransform newTransform;
-			newTransform.setIdentity();
-			Ogre::Vector3 newPos = m_pOwnedMob->m_pAtomRootSceneNode->_getDerivedPosition();
-			newTransform.setOrigin( OGRE2BT(newPos) );
-			m_pTestHuman->m_pRigidBody->setLinearVelocity(btVector3(0,0,0));
-			m_pTestHuman->m_pRigidBody->setWorldTransform(newTransform);
-
-			return true;
-		}
 	case(OIS::KC_1):
 		{
 			m_TargetStructureTypes = 0;

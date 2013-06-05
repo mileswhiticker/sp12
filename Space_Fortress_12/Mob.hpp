@@ -50,13 +50,15 @@ public:
 	bool IsOnGround();
 	Ogre::Vector3 GetCameraModelOffset();
 	//
+	bool UpdateOnGround();
+	bool m_IsOnGround;
+	//
 protected:
 	MobType m_MyMobType;
 	std::vector<InputModule*> m_InputModules;
 	Ogre::Vector3 m_CameraModelOffset;
 	//
 private:
-	bool m_IsOnGround;
 	float m_tleftNextGroundRaycast;
 	//
 };

@@ -20,44 +20,33 @@ MobWalk::MobWalk(Mob* a_pOwnedMob, Client* a_pOwnedClient)
 
 void MobWalk::Update(float a_DeltaT)
 {
-	//m_pOwnedMob->m_pRigidBody->wantsSleeping()
 	if(m_pOwnedMob && m_pOwnedMob->m_pRigidBody && m_pOwnedMob->IsOnGround())
 	{
-		/*
-		Ogre::Quaternion moveOrientation = Ogre::Quaternion::IDENTITY;
-		if(m_pOwnedClient && m_pOwnedClient->m_pCamera)
-			moveOrientation = m_pOwnedClient->m_pCamera->getOrientation();
-		//
-		Ogre::Vector3 oldPos = Ogre::Vector3::ZERO;
-		if(m_pOwnedMob && m_pOwnedMob->m_pAtomRootSceneNode)
-			oldPos = m_pOwnedMob->m_pAtomRootSceneNode->getPosition();
-		m_pOwnedMob->m_pAtomRootSceneNode->setPosition(oldPos + moveOrientation * m_RelativeMoveDir * a_DeltaT * m_FlySpeed);
-		*/
+		//grab the direction the body is facing
 		Ogre::Quaternion moveOrientation = m_pOwnedMob->m_pAtomEntitySceneNode->getOrientation();
-		/*if(m_pOwnedMob)
-		{
-			//grab the direction the player is looking
-			moveOrientation = m_pOwnedClient->m_pCamera->getOrientation();
-
-			//turn into a vector to remove the y component (there's probably a better way of doing this)
-			Ogre::Vector3 lookDir = moveOrientation * Ogre::Vector3::UNIT_Z;
-			lookDir.y = 0;
-			//if this isn't normalised, i'm pretty sure that won't be reflected in the quaternion
-
-			//turn back into a quaternion
-			moveOrientation = Ogre::Vector3::UNIT_Z.getRotationTo(lookDir);
-		}*/
-
 		btTransform worldTransform = m_pOwnedMob->m_pRigidBody->getWorldTransform();
 		btVector3 worldPos = worldTransform.getOrigin();
+
+		//walking or running?
 		float moveSpeed = m_WalkSpeed;
 		if(m_IsSprinting)
 		{
 			moveSpeed = m_RunSpeed;
 		}
+
+		//move the transform forward
 		worldPos += OGRE2BT(moveOrientation * m_RelativeMoveDir * (a_DeltaT * moveSpeed));
 		worldTransform.setOrigin(worldPos);
 		m_pOwnedMob->m_pRigidBody->setWorldTransform(worldTransform);
+
+		//check if we're still on the "ground"
+		if(!m_pOwnedMob->UpdateOnGround())
+		{
+			//we walked off the edge, float away
+			m_pOwnedMob->m_pRigidBody->activate(true);
+			m_pOwnedMob->m_pRigidBody->setLinearVelocity(OGRE2BT(moveOrientation * m_RelativeMoveDir) * moveSpeed);
+			m_pOwnedMob->m_pRigidBody->setGravity(btVector3(0,0,0));
+		}
 	}
 }
 
@@ -97,10 +86,11 @@ bool MobWalk::keyPressed( const OIS::KeyEvent &arg )
 			if(m_pOwnedMob->m_pRigidBody && m_pOwnedMob->IsOnGround())
 			{
 				//jump
+				m_pOwnedMob->m_IsOnGround = false;
 				m_pOwnedMob->m_pRigidBody->activate(true);
-				Ogre::Vector3 force(0, (1.0f / m_pOwnedMob->m_pRigidBody->getInvMass()) * 3, 0);
+				//Ogre::Vector3 force(0, (1.0f / m_pOwnedMob->m_pRigidBody->getInvMass()) * 3, 0);
 				//m_pOwnedMob->m_pRigidBody->applyCentralImpulse( OGRE2BT(force) );
-				m_pOwnedMob->m_pRigidBody->setLinearVelocity(btVector3(0, 2, 0));
+				m_pOwnedMob->m_pRigidBody->setLinearVelocity(btVector3(0, 3, 0));
 			}
 			break;
 		}

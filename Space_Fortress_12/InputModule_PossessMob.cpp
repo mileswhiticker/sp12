@@ -4,6 +4,10 @@
 
 #include <OGRE\OgreCamera.h>
 #include <OGRE\OgreSceneNode.h>
+#include <LinearMath\btTransform.h>
+#include <BulletDynamics\Dynamics\btRigidBody.h>
+
+#include "BtOgreHelper.hpp"
 
 PossessMob::PossessMob(Mob* a_pOwnedMob, Client* a_pOwnedClient)
 :	InputModule(a_pOwnedMob, a_pOwnedClient)
@@ -53,6 +57,20 @@ bool PossessMob::keyReleased( const OIS::KeyEvent &arg )
 				//
 			}
 			break;
+		}
+	case(OIS::KC_H):
+		{
+			if(m_pTargetPossessMob)
+			{
+				btTransform newTransform;
+				newTransform.setIdentity();
+				Ogre::Vector3 newPos = m_pOwnedMob->m_pAtomRootSceneNode->_getDerivedPosition();
+				newTransform.setOrigin( OGRE2BT(newPos) );
+				//m_pTestHuman->m_pRigidBody->setLinearVelocity(btVector3(0,0,0));
+				m_pTargetPossessMob->m_pRigidBody->setWorldTransform(newTransform);
+			}
+
+			return true;
 		}
 	}
 	return true;
