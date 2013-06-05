@@ -6,8 +6,8 @@ vertex_program PlainTexture_VS cg
     source build_highlights.cg
     // Use this function for the vertex shader            
     entry_point main_plain_texture_vp    
-    // Compile the shader to vs_1_1 format    
-    profiles arbvp1                    
+    // Compile the shader to vs_1_1 format   //arbvp1 
+    profiles vs_2_0              
  
     // This block saves us from manually setting parameters in code
         default_params                    
@@ -25,8 +25,8 @@ fragment_program ModulateColour_PS cg
     source build_highlights.cg
         // Use this function for the pixel shader    
     entry_point modulate_colour_fp
-        // Compile to ps_1_1 format    
-    profiles arbfp1
+        // Compile to ps_1_1 format  	//arbfp1  
+    profiles ps_2_0
 	
     default_params
     {
