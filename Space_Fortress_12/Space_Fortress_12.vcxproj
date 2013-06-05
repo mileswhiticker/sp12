@@ -32,9 +32,12 @@
     <ClCompile Include="GlueScreen.cpp" />
     <ClCompile Include="guicon.cpp" />
     <ClCompile Include="InputModule.cpp" />
+    <ClCompile Include="InputModule_GhostMob.cpp" />
+    <ClCompile Include="InputModule_MobLook.cpp" />
     <ClCompile Include="InputModule_MobWalk.cpp" />
-    <ClCompile Include="InputModule_MouseLook.cpp" />
+    <ClCompile Include="InputModule_ObserverLook.cpp" />
     <ClCompile Include="InputModule_ObserverFlight.cpp" />
+    <ClCompile Include="InputModule_PossessMob.cpp" />
     <ClCompile Include="LightFixture.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MainMenu.cpp" />
@@ -81,9 +84,12 @@
     <ClInclude Include="GlueScreen.hpp" />
     <ClInclude Include="guicon.h" />
     <ClInclude Include="InputModule.hpp" />
+    <ClInclude Include="InputModule_GhostMob.h" />
+    <ClInclude Include="InputModule_MobLook.hpp" />
     <ClInclude Include="InputModule_MobWalk.hpp" />
-    <ClInclude Include="InputModule_MouseLook.hpp" />
+    <ClInclude Include="InputModule_ObserverLook.hpp" />
     <ClInclude Include="InputModule_ObserverFlight.hpp" />
+    <ClInclude Include="InputModule_PossessMob.hpp" />
     <ClInclude Include="iVector3.h" />
     <ClInclude Include="LightFixture.hpp" />
     <ClInclude Include="MapCell.hpp" />

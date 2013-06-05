@@ -24,6 +24,7 @@
 #include "Client.hpp"
 #include "Mob.hpp"
 #include "Observer.hpp"
+#include "Human.hpp"
 
 #include "AtomManager.hpp"
 #include "Files.hpp"
@@ -270,7 +271,7 @@ void Application::createPhysics()
 
 	m_pBulletDynamicsWorld = new btDiscreteDynamicsWorld (m_pBulletDispatcher, m_pBulletOverlappingPairCache, m_pBulletSolver, collisionConfiguration);
 
-	//m_pBulletDynamicsWorld->setGravity(btVector3(0, -10, 0));
+	//m_pBulletDynamicsWorld->setGravity(btVector3(0, -9.8, 0));
 	m_pBulletDynamicsWorld->setGravity(btVector3(0, 0, 0));	//no gravity in space
 
 	//m_pBulletDynamicsWorld->
@@ -291,8 +292,9 @@ void Application::createTestClient()
 		spawnPos = chosenSpawn->pos;
 		spawnDir = chosenSpawn->dir;
 	}
-	Observer* pTestObserver = (Observer*)AtomManager::GetSingleton().CreateMob(Mob::OBSERVER, spawnPos, NULL, spawnDir | INSTANTIATE_IMMEDIATELY);
-	pTestObserver->ConnectClient(pTestClient);
+	Human* pTestHuman = (Human*)AtomManager::GetSingleton().CreateMob(Mob::HUMAN, Ogre::Vector3::ZERO, NULL, 0 | INSTANTIATE_IMMEDIATELY);
+	//Observer* pTestObserver = (Observer*)AtomManager::GetSingleton().CreateMob(Mob::OBSERVER, spawnPos, NULL, spawnDir | INSTANTIATE_IMMEDIATELY);
+	pTestHuman->ConnectClient(pTestClient);
 }
 
 #undef RESOURCES_CFG

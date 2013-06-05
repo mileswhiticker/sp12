@@ -1,9 +1,9 @@
-#include "InputModule_MouseLook.hpp"
+#include "InputModule_ObserverLook.hpp"
 
 #include "Client.hpp"
 #include <OGRE\OgreCamera.h>
 
-MouseLook::MouseLook(Mob* a_pOwnedMob, Client* a_pOwnedClient)
+ObserverLook::ObserverLook(Mob* a_pOwnedMob, Client* a_pOwnedClient)
 :	InputModule(a_pOwnedMob, a_pOwnedClient)
 ,	m_LookAngle(Ogre::Vector3(0,0,0))
 ,	m_LookOrientation(Ogre::Quaternion::IDENTITY)
@@ -11,12 +11,12 @@ MouseLook::MouseLook(Mob* a_pOwnedMob, Client* a_pOwnedClient)
 	//
 }
 
-void MouseLook::Update(float a_DeltaT)
+void ObserverLook::Update(float a_DeltaT)
 {
 	//
 }
 
-bool MouseLook::mouseMoved( const OIS::MouseEvent &arg )
+bool ObserverLook::mouseMoved( const OIS::MouseEvent &arg )
 {
 	if(m_pOwnedClient && m_pOwnedClient->m_pCamera)
 	{

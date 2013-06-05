@@ -2,8 +2,8 @@
 #define INPUTMODULE_MOBWALK_HPP
 
 #include "InputModule.hpp"
+//#include <LinearMath\btVector3.h>
 #include <OGRE\OgreVector3.h>
-#include <OGRE\OgreQuaternion.h>
 
 namespace Ogre
 {
@@ -21,6 +21,10 @@ public:
 	virtual bool keyReleased( const OIS::KeyEvent &arg );
 	//
 	Ogre::Light* m_pPointLight;
+	Ogre::Vector3 m_RelativeMoveDir;
+	bool m_IsSprinting;
+	float m_WalkSpeed;
+	float m_RunSpeed;
 };
 
 #endif

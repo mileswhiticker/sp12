@@ -4,6 +4,7 @@
 #include <OIS\OISMouse.h>
 #include <OIS\OISKeyboard.h>
 #include <OGRE\OgreVector3.h>
+#include <LinearMath\btQuaternion.h>
 
 #include "Atom.hpp"
 class InputModule;
@@ -26,8 +27,9 @@ public:
 		//
 	};
 	Mob(Ogre::Vector3 a_StartPos, int a_Direction = 0);
+	~Mob();
 	//
-	bool ConnectClient(Client* a_pNewClient);
+	virtual bool ConnectClient(Client* a_pNewClient);
 	bool DisconnectClient();
 	virtual void InstantiateAtom();
 	virtual void SetupInputModules()=0;
@@ -43,9 +45,19 @@ public:
 	//used by input modules
 	Client* m_pPossessingClient;
 	//
+	btQuaternion m_TargetStandingOrientation;
+	float m_tLeftUprightOrientation;
+	bool IsOnGround();
+	Ogre::Vector3 GetCameraModelOffset();
+	//
 protected:
 	MobType m_MyMobType;
 	std::vector<InputModule*> m_InputModules;
+	Ogre::Vector3 m_CameraModelOffset;
+	//
+private:
+	bool m_IsOnGround;
+	float m_tleftNextGroundRaycast;
 	//
 };
 

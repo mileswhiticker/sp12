@@ -26,7 +26,7 @@ ObserverBuild::ObserverBuild(Mob* a_pOwnedMob, Client* a_pOwnedClient)
 ,	m_TargetStructureTypes(0)
 {
 	//create a test human
-	m_pTestHuman = (Human*)AtomManager::GetSingleton().CreateMob(Mob::HUMAN, Ogre::Vector3::ZERO, NULL, 0 | INSTANTIATE_IMMEDIATELY);
+	//m_pTestHuman = (Human*)AtomManager::GetSingleton().CreateMob(Mob::HUMAN, Ogre::Vector3::ZERO, NULL, 0 | INSTANTIATE_IMMEDIATELY);
 }
 
 void ObserverBuild::Update(float a_DeltaT)
@@ -176,6 +176,7 @@ bool ObserverBuild::keyPressed( const OIS::KeyEvent &arg )
 			newTransform.setOrigin( OGRE2BT(newPos) );
 			m_pTestHuman->m_pRigidBody->setLinearVelocity(btVector3(0,0,0));
 			m_pTestHuman->m_pRigidBody->setWorldTransform(newTransform);
+
 			return true;
 		}
 	case(OIS::KC_1):

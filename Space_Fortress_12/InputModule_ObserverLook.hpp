@@ -1,13 +1,13 @@
-#ifndef INPUTMODULE_MOUSELOOK
-#define INPUTMODULE_MOUSELOOK
+#ifndef INPUTMODULE_OBSERVERLOOK
+#define INPUTMODULE_OBSERVERLOOK
 
 #include "InputModule.hpp"
 
-class MouseLook
+class ObserverLook
 :	public InputModule
 {
 public:
-	MouseLook(Mob* a_pOwnedMob, Client* a_pOwnedClient);
+	ObserverLook(Mob* a_pOwnedMob, Client* a_pOwnedClient);
 	virtual void Update(float a_DeltaT);
 	virtual bool mouseMoved( const OIS::MouseEvent &arg );
 	//
@@ -18,4 +18,4 @@ private:
 	//
 };
 
-#endif	INPUTMODULE_MOUSELOOK
+#endif	INPUTMODULE_OBSERVERLOOK

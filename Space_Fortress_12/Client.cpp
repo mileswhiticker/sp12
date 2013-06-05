@@ -62,10 +62,6 @@ void Client::ResetCamera()
 		m_pCamera = sceneManager.createCamera("client_camera");
 		m_pCamera->setNearClipDistance(0.0001f);
 		m_pCamera->setFarClipDistance(9999999.f);
-		int lookDir = 1;
-		if(m_pPossessedMob)
-			lookDir = m_pPossessedMob->GetDirection();
-		m_pCamera->lookAt(GetCoordsInDir(m_pCamera->getDerivedPosition(), lookDir));
 
 		// Create one viewport, entire window
 		Ogre::Viewport* vp = renderWindow.addViewport(m_pCamera);
@@ -74,35 +70,32 @@ void Client::ResetCamera()
 		m_pCamera->setAspectRatio((float)vp->getActualWidth() / (float)vp->getActualHeight());
 	}
 	
-	if(m_pPossessedMob && m_pPossessedMob->m_pAtomRootSceneNode)
+	if(!m_pCameraNode)
 	{
-		//clear out the old node, and use the mob's one
-		if(m_pCameraNode)
-		{
-			m_pCameraNode->detachObject(m_pCamera);
-			if(m_HasPersonalCameraNode)
-			{
-				//we created this one, so we have to delete it
-				Ogre::SceneNode* pCameraNodeParent = m_pCameraNode->getParentSceneNode();
-				if(pCameraNodeParent)
-				{
-					pCameraNodeParent->removeChild(m_pCameraNode);
-				}
-				delete pCameraNodeParent;
-			}
-			m_pCameraNode = NULL;
-		}
-
-		//set the new node
-		m_HasPersonalCameraNode = false;
-		m_pCameraNode = m_pPossessedMob->m_pAtomRootSceneNode;
-		m_pCameraNode->attachObject(m_pCamera);
-	}
-	else if(!m_pCameraNode)
-	{
-		//create our own node
 		m_pCameraNode = rootSceneNode.createChildSceneNode("client_camera_node");
 		m_pCameraNode->attachObject(m_pCamera);
 		m_HasPersonalCameraNode = true;
+	}
+	if(m_pPossessedMob)
+	{
+		if(m_pPossessedMob->m_pAtomRootSceneNode)
+		{
+			//move our old node over to the new mob's root scene node
+			if(m_pCameraNode->getParentSceneNode())
+			{
+				m_pCameraNode->getParentSceneNode()->removeChild(m_pCameraNode);
+			}
+			m_pPossessedMob->m_pAtomRootSceneNode->addChild(m_pCameraNode);
+			m_pCameraNode->setPosition(m_pPossessedMob->GetCameraModelOffset());
+		}
+
+		//reorient the camera to match the direction of the mob
+		Ogre::Vector3 lookDir = m_pPossessedMob->m_pAtomEntitySceneNode->getOrientation() * Ogre::Vector3::NEGATIVE_UNIT_Z;
+		m_pCamera->lookAt(m_pCamera->getDerivedPosition() + lookDir);
+	}
+	else
+	{
+		//this should never occur
+		m_pCamera->lookAt(m_pCamera->getDerivedPosition() + Ogre::Vector3::UNIT_Z);
 	}
 }

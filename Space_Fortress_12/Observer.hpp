@@ -2,6 +2,7 @@
 #define OBSERVER_HPP
 
 #include "Mob.hpp"
+class PossessMob;
 
 class Observer
 :	public Mob
@@ -11,7 +12,10 @@ public:
 	virtual void InstantiateAtom();
 	virtual void SetupInputModules();
 	//
-private:
+	void SetTargetPossessMob(Mob* a_pTargetPossessMob);
+	//
+protected:
+	PossessMob* m_pPossessMobInputModule;
 	//
 };
 
