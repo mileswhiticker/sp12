@@ -52,11 +52,13 @@ public:
 	//
 	bool UpdateOnGround();
 	bool m_IsOnGround;
+	int GetIntent();
 	//
 protected:
 	MobType m_MyMobType;
 	std::vector<InputModule*> m_InputModules;
 	Ogre::Vector3 m_CameraModelOffset;
+	int m_Intent;
 	//
 private:
 	float m_tleftNextGroundRaycast;

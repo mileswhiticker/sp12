@@ -14,7 +14,7 @@
 #include "InputModule_Generic.hpp"
 #include "InputModule_MobLook.hpp"
 #include "InputModule_MobWalk.hpp"
-#include "InputModule_GhostMob.h"
+#include "InputModule_GhostMob.hpp"
 //#include "AtomManager.hpp"
 //#include "MapSuite.hpp"
 

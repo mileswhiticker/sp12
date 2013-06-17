@@ -21,10 +21,11 @@ Mob::Mob(Ogre::Vector3 a_StartPos, int a_Direction)
 ,	m_pPossessingClient(NULL)
 ,	m_MyMobType(UNKNOWN)
 ,	m_tLeftUprightOrientation(0)
-,	m_TargetStandingOrientation(btQuaternion(btVector3(0,1,0),0))
+,	m_TargetStandingOrientation(btQuaternion(0,1,0,0))
 ,	m_tleftNextGroundRaycast(0.5f)
 ,	m_IsOnGround(false)
 ,	m_CameraModelOffset(Ogre::Vector3::ZERO)
+,	m_Intent(0)
 {
 	m_MyAtomType = Atom::MOB;
 	//btQuaternion(btVector3(0,1,0), 0);
@@ -46,7 +47,6 @@ void Mob::Update(float a_DeltaT)
 		(*it)->Update(a_DeltaT);
 	}
 
-	
 	//grab an updated direction for gravity to orient ourselves against
 	if(m_pSourceMapCell)
 	{
@@ -82,7 +82,7 @@ void Mob::Update(float a_DeltaT)
 		//target orientation: standing up
 		//btQuaternion targetOrientation = btQuaternion(btVector3(0,1,0), 0);
 		//currentOrientation = currentOrientation.slerp(m_TargetStandingOrientation, a_DeltaT * 2);
-		currentOrientation = m_TargetStandingOrientation;
+		//currentOrientation = m_TargetStandingOrientation;
 
 		//apply the changes
 		//there is a random crash on this line when starting up, sometimes
@@ -203,25 +203,33 @@ Ogre::Vector3 Mob::GetCameraModelOffset()
 
 bool Mob::UpdateOnGround()
 {
-	btTransform worldTransform = m_pRigidBody->getWorldTransform();
-	btVector3 startPos = worldTransform.getOrigin();
-	btVector3 castDir = m_pRigidBody->getGravity().normalized() * 0.5f;
-	btCollisionWorld::ClosestRayResultCallback closestHitRayCallback(startPos, startPos + castDir);
-	closestHitRayCallback.m_collisionFilterGroup = COLLISION_BUILDRAYCAST;		//todo: this needs its own collision define, but this one works for now
-	closestHitRayCallback.m_collisionFilterMask = COLLISION_STRUCTURE | COLLISION_OBJ | COLLISION_MOB;
+	if(m_pRigidBody)
+	{
+		btTransform worldTransform = m_pRigidBody->getWorldTransform();
+		btVector3 startPos = worldTransform.getOrigin();
+		btVector3 castDir = m_pRigidBody->getGravity().normalized() * 0.5f;
+		btCollisionWorld::ClosestRayResultCallback closestHitRayCallback(startPos, startPos + castDir);
+		closestHitRayCallback.m_collisionFilterGroup = COLLISION_BUILDRAYCAST;		//todo: this needs its own collision define, but this one works for now
+		closestHitRayCallback.m_collisionFilterMask = COLLISION_STRUCTURE | COLLISION_OBJ | COLLISION_MOB;
 		
-	btDiscreteDynamicsWorld& bulletWorld = Application::StaticGetDynamicsWorld();
-	bulletWorld.rayTest(startPos, startPos + castDir, closestHitRayCallback);
-	Atom* pHitAtom = NULL;
+		btDiscreteDynamicsWorld& bulletWorld = Application::StaticGetDynamicsWorld();
+		bulletWorld.rayTest(startPos, startPos + castDir, closestHitRayCallback);
+		Atom* pHitAtom = NULL;
 
-	if(closestHitRayCallback.hasHit())
-	{
-		m_IsOnGround = true;
-	}
-	else
-	{
-		m_IsOnGround = false;
-		m_pRigidBody->activate(true);
+		if(closestHitRayCallback.hasHit())
+		{
+			m_IsOnGround = true;
+		}
+		else
+		{
+			m_IsOnGround = false;
+			m_pRigidBody->activate(true);
+		}
 	}
 	return m_IsOnGround;
+}
+
+int Mob::GetIntent()
+{
+	return m_Intent;
 }
