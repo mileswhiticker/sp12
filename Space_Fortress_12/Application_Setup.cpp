@@ -292,7 +292,7 @@ void Application::createTestClient()
 		spawnPos = chosenSpawn->pos;
 		spawnDir = chosenSpawn->dir;
 	}
-	Human* pTestHuman = (Human*)AtomManager::GetSingleton().CreateMob(Mob::HUMAN, Ogre::Vector3::ZERO, NULL, 0 | INSTANTIATE_IMMEDIATELY);
+	Human* pTestHuman = (Human*)AtomManager::GetSingleton().CreateMob(Mob::HUMAN, Ogre::Vector3::ZERO, 0 | INSTANTIATE_IMMEDIATELY);
 	//Observer* pTestObserver = (Observer*)AtomManager::GetSingleton().CreateMob(Mob::OBSERVER, spawnPos, NULL, spawnDir | INSTANTIATE_IMMEDIATELY);
 	pTestHuman->ConnectClient(pTestClient);
 }

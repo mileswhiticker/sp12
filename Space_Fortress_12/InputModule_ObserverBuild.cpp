@@ -1,6 +1,7 @@
 #include "InputModule_ObserverBuild.hpp"
 #include "Client.hpp"
 #include "Application.hpp"
+#include "MapSuite.hpp"
 
 #include "CollisionDefines.h"
 #include "BtOgreHelper.hpp"
@@ -8,6 +9,7 @@
 #include "EffectManager.hpp"
 #include "Cached.hpp"
 #include "Girder.hpp"
+#include "Events.hpp"
 
 #include <Ogre\OgreCamera.h>
 #include <BulletDynamics\Dynamics\btDiscreteDynamicsWorld.h>
@@ -21,10 +23,11 @@
 
 ObserverBuild::ObserverBuild(Mob* a_pOwnedMob, Client* a_pOwnedClient)
 :	InputModule(a_pOwnedMob, a_pOwnedClient)
-,	m_pCurrentlyTargettedAtom(NULL)
 ,	m_CellBuildRange(1)
 ,	m_BuildExpansion(true)
 ,	m_TargetStructureTypes(0)
+,	m_TargetAtomTypes(0)
+,	m_TargetTurfTypes(0)
 {
 	//create a test human
 	//m_pTestHuman = (Human*)AtomManager::GetSingleton().CreateMob(Mob::HUMAN, Ogre::Vector3::ZERO, NULL, 0 | INSTANTIATE_IMMEDIATELY);
@@ -49,7 +52,7 @@ void ObserverBuild::Update(float a_DeltaT)
 		if(m_BuildExpansion)
 			closestHitRayCallback.m_collisionFilterMask = COLLISION_BUILDPOINT;
 		else
-			closestHitRayCallback.m_collisionFilterMask = COLLISION_STRUCTURE;
+			closestHitRayCallback.m_collisionFilterMask = COLLISION_STRUCTURE | COLLISION_TURF;
 
 		btDiscreteDynamicsWorld& bulletWorld = Application::StaticGetDynamicsWorld();
 		bulletWorld.rayTest(startPos, startPos + rayDir * btScalar(m_CellBuildRange), closestHitRayCallback);
@@ -61,7 +64,7 @@ void ObserverBuild::Update(float a_DeltaT)
 			const btCollisionObject* pHitObj = closestHitRayCallback.m_collisionObject;
 			pHitAtom = (Atom*)pHitObj->getUserPointer();
 			//std::cout << index << "/" << rayCallback.m_collisionObjects.size() << " " << pHitAtom << std::endl;
-			if(pHitAtom && pHitAtom->GetAtomType() == Atom::STRUCTURE && (!m_TargetStructureTypes || ((Structure*)pHitAtom)->GetStructureType() == m_TargetStructureTypes))
+			if(TrySelect(pHitAtom))
 			{
 				//grab the hit dist fraction, so we can draw a sphere there later
 				hitDistScalar = closestHitRayCallback.m_closestHitFraction;
@@ -81,7 +84,7 @@ void ObserverBuild::Update(float a_DeltaT)
 			if(m_BuildExpansion)
 				allHitsRayCallback.m_collisionFilterMask = COLLISION_BUILDPOINT;
 			else
-				allHitsRayCallback.m_collisionFilterMask = COLLISION_STRUCTURE;
+				allHitsRayCallback.m_collisionFilterMask = COLLISION_STRUCTURE | COLLISION_TURF;
 			bulletWorld.rayTest(startPos, startPos + rayDir * btScalar(m_CellBuildRange), allHitsRayCallback);
 			if(allHitsRayCallback.hasHit())
 			{
@@ -91,7 +94,7 @@ void ObserverBuild::Update(float a_DeltaT)
 					Atom* pTestAtom = (Atom*)pHitObj->getUserPointer();
 
 					//check if we've hit a valid target
-					if(pTestAtom && pTestAtom->GetAtomType() == Atom::STRUCTURE && (!m_TargetStructureTypes || ((Structure*)pTestAtom)->GetStructureType() == m_TargetStructureTypes))
+					if(TrySelect(pTestAtom))
 					{
 						//it is, now check if it's closer than the previous valid target
 						float curDist = allHitsRayCallback.m_hitFractions[index];
@@ -116,47 +119,39 @@ void ObserverBuild::Update(float a_DeltaT)
 	}
 }
 
-void ObserverBuild::SelectNewAtom(Atom* a_pNewAtom)
+bool ObserverBuild::TrySelect(Atom* a_pTestAtom)
 {
-	if(a_pNewAtom)
+	if(a_pTestAtom)
 	{
-		if(a_pNewAtom != m_pCurrentlyTargettedAtom)
+		if(!m_TargetAtomTypes)
 		{
-			ClearSelectedAtom();
-			a_pNewAtom->SetFlashingColour(Ogre::ColourValue::Green);
-			m_pCurrentlyTargettedAtom = a_pNewAtom;
-			m_pCurrentlyTargettedAtom->SetEntityVisible();
-			m_pCurrentlyTargettedAtom->Select(this);
-			//std::cout << "new atom targetted" << std::endl;
+			return true;
+		}
+
+		if(a_pTestAtom->GetAtomType() & m_TargetAtomTypes)
+		{
+			switch(a_pTestAtom->GetAtomType())
+			{
+			case(Atom::STRUCTURE):
+				{
+					if((!m_TargetStructureTypes || ((Structure*)a_pTestAtom)->GetStructureType() & m_TargetStructureTypes))
+					{
+						return true;
+					}
+					break;
+				}
+			case(Atom::TURF):
+				{
+					if((!m_TargetTurfTypes || ((Turf*)a_pTestAtom)->GetTurfType() & m_TargetTurfTypes))
+					{
+						return true;
+					}
+					break;
+				}
+			}
 		}
 	}
-	else
-	{
-		ClearSelectedAtom();
-	}
-}
-
-void ObserverBuild::ClearSelectedAtom()
-{
-	if(m_pCurrentlyTargettedAtom)
-	{
-		//std::cout << "clearing selected atom" << std::endl;
-		m_pCurrentlyTargettedAtom->StopFlashingColour();
-		if(m_pCurrentlyTargettedAtom->GetAtomType() == Atom::STRUCTURE && ((Structure*)m_pCurrentlyTargettedAtom)->IsBuildPoint())
-		{
-			m_pCurrentlyTargettedAtom->SetEntityVisible(false);
-		}
-		m_pCurrentlyTargettedAtom->DeSelect(this);
-		m_pCurrentlyTargettedAtom = NULL;
-	}
-}
-
-void ObserverBuild::ForceClearAtomIfSelected(Atom* a_pOtherAtom)
-{
-	if(a_pOtherAtom == m_pCurrentlyTargettedAtom)
-	{
-		ClearSelectedAtom();
-	}
+	return false;
 }
 
 bool ObserverBuild::keyPressed( const OIS::KeyEvent &arg )
@@ -171,20 +166,22 @@ bool ObserverBuild::keyPressed( const OIS::KeyEvent &arg )
 		}
 	case(OIS::KC_1):
 		{
-			m_TargetStructureTypes = 0;
+			m_TargetAtomTypes = 0;
 			//std::cout << "targetting all structures" << std::endl;
 			m_pOwnedClient->m_pTopInfoBar->setText("Observer mode (all)");
 			return true;
 		}
 	case(OIS::KC_2):
 		{
-			m_TargetStructureTypes = Structure::GIRDER;
+			m_TargetAtomTypes = Atom::TURF;
+			m_TargetStructureTypes = Turf::GIRDER;
 			//std::cout << "targetting GIRDER" << std::endl;
 			m_pOwnedClient->m_pTopInfoBar->setText("Observer mode (girders)");
 			return true;
 		}
 	case(OIS::KC_3):
 		{
+			m_TargetAtomTypes = Atom::STRUCTURE;
 			m_TargetStructureTypes = Structure::OVERLAYPLATING;
 			//std::cout << "targetting OVERLAYPLATING" << std::endl;
 			m_pOwnedClient->m_pTopInfoBar->setText("Observer mode (overlay plating)");
@@ -192,6 +189,7 @@ bool ObserverBuild::keyPressed( const OIS::KeyEvent &arg )
 		}
 	case(OIS::KC_4):
 		{
+			m_TargetAtomTypes = Atom::STRUCTURE;
 			m_TargetStructureTypes = Structure::UNDERLAYPLATING;
 			//std::cout << "targetting UNDERLAYPLATING" << std::endl;
 			m_pOwnedClient->m_pTopInfoBar->setText("Observer mode (underlay plating)");
@@ -199,6 +197,7 @@ bool ObserverBuild::keyPressed( const OIS::KeyEvent &arg )
 		}
 	case(OIS::KC_5):
 		{
+			m_TargetAtomTypes = Atom::STRUCTURE;
 			m_TargetStructureTypes = Structure::LIGHTFIXTURE;
 			//std::cout << "targetting LIGHTFIXTURE" << std::endl;
 			m_pOwnedClient->m_pTopInfoBar->setText("Observer mode (light fixtures)");
@@ -206,12 +205,13 @@ bool ObserverBuild::keyPressed( const OIS::KeyEvent &arg )
 		}
 	case(OIS::KC_6):
 		{
+			m_TargetAtomTypes = Atom::STRUCTURE;
 			m_TargetStructureTypes = Structure::GRAVPLATES;
 			//std::cout << "targetting GRAVPLATES" << std::endl;
 			m_pOwnedClient->m_pTopInfoBar->setText("Observer mode (gravity plates)");
 			return true;
 		}
-	case(OIS::KC_I):
+	/*case(OIS::KC_I):
 		{
 			if(m_pCurrentlyTargettedAtom && m_pCurrentlyTargettedAtom->GetAtomType() == Atom::STRUCTURE)
 			{
@@ -221,6 +221,10 @@ bool ObserverBuild::keyPressed( const OIS::KeyEvent &arg )
 					((Structure*)m_pCurrentlyTargettedAtom)->DestroyToBuildPoint();
 			}
 			return true;
+		}*/
+	case(OIS::KC_U):
+		{
+			MapSuite::SaveMapDefaultName();
 		}
 	}
 	
@@ -240,5 +244,21 @@ bool ObserverBuild::mouseMoved( const OIS::MouseEvent &arg )
 			m_CellBuildRange = 6;
 		return true;
 	}
+	return false;
+}
+
+bool ObserverBuild::mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
+{
+	if(m_pCurrentlyTargettedAtom && m_pOwnedMob)
+	{
+		m_pCurrentlyTargettedAtom->Interact(m_pOwnedMob, this, m_pOwnedMob->GetIntent(), Event::TOGGLEBUILD);
+		return true;
+	}
+	return false;
+}
+
+//todo: is this needed?
+bool ObserverBuild::mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
+{
 	return false;
 }

@@ -7,6 +7,7 @@
 
 class Mob;
 class Client;
+class Atom;
 
 class InputModule
 :	public OIS::KeyListener
@@ -23,9 +24,17 @@ public:
 	virtual bool mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id );
 	virtual bool mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id );
 	//
+	void ForceClearAtomIfSelected(Atom* a_pOtherAtom);
+	//
 protected:
 	Mob* m_pOwnedMob;
 	Client* m_pOwnedClient;
+	//
+	void SelectNewAtom(Atom* a_pNewAtom);
+	void ClearSelectedAtom();
+	Atom* m_pCurrentlyTargettedAtom;
+	//
+private:
 	//
 };
 

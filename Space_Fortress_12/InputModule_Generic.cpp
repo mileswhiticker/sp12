@@ -77,7 +77,7 @@ bool Generic::keyReleased( const OIS::KeyEvent &arg )
 		}
 	case(OIS::KC_F):
 		{
-			AtomManager::GetSingleton().ToggleCellFlashing();
+			//AtomManager::GetSingleton().ToggleCellFlashing();
 			break;
 		}
 	case(OIS::KC_ESCAPE):

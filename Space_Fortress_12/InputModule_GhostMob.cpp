@@ -1,4 +1,4 @@
-#include "InputModule_GhostMob.h"
+#include "InputModule_GhostMob.hpp"
 #include "Observer.hpp"
 #include "AtomManager.hpp"
 #include "Client.hpp"
@@ -43,7 +43,7 @@ bool GhostMob::keyReleased( const OIS::KeyEvent &arg )
 			m_pOwnedClient->m_pTopInfoBar->setText("Observer mode");
 			if(m_pOwnedMob)
 				spawnPos = m_pOwnedMob->m_pAtomRootSceneNode->getPosition();
-			Observer* pTestObserver = (Observer*)AtomManager::GetSingleton().CreateMob(Mob::OBSERVER, spawnPos, NULL, INSTANTIATE_IMMEDIATELY);
+			Observer* pTestObserver = (Observer*)AtomManager::GetSingleton().CreateMob(Mob::OBSERVER, spawnPos, INSTANTIATE_IMMEDIATELY);
 			pTestObserver->ConnectClient(m_pOwnedClient);
 
 			pTestObserver->SetTargetPossessMob(m_pOwnedMob);
