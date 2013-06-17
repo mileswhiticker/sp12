@@ -10,6 +10,7 @@
 class Obj;
 class btRigidBody;
 class btBoxShape;
+class InputModule;
 namespace Ogre
 {
 	class SceneNode;
@@ -18,23 +19,25 @@ namespace Ogre
 class MapCell;
 
 class Girder
-:	public Structure
-,	public Turf
+:	public Turf
 {
 public:
 	Girder(MapCell* a_pSourceMapCell);
 	virtual ~Girder();
-	virtual void InstantiateStructure(bool a_IsBuildPoint);
 	//
+	virtual void InstantiateTurf(bool a_IsBuildPoint);
 	virtual void CreateFromBuildPoint();
 	virtual void DestroyToBuildPoint();
+	//
+	//virtual void CreateFromBuildPoint();
+	//virtual void DestroyToBuildPoint();
 	void CreateBuildpointInDir(Structure::StructureType a_BuildPointType, int a_Dir);
 	//
 	void AddFreefloatingObj(std::string a_TypeTag);
+	virtual void Interact(Atom* a_pSourceAtom, InputModule* a_pSourceModule, int a_Intent, int a_Type = 0);
 	//
-	virtual void Select(ObserverBuild* a_pSelectingObserver);
-	virtual void DeSelect(ObserverBuild* a_pSelectingObserver);
-
+	virtual void Select(InputModule* a_pSelectingInputModule);
+	virtual void DeSelect(InputModule* a_pSelectingInputModule);
 	//
 private:
 	std::list<Structure*> m_MountedStructures;

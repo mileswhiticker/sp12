@@ -4,6 +4,7 @@
 #include "Structure.hpp"
 #include <OGRE\OgreVector3.h>
 
+class Turf;
 namespace Ogre
 {
 	class SceneNode;
@@ -13,13 +14,13 @@ class UnderlayPlating
 :	public Structure
 {
 public:
-	UnderlayPlating(MapCell* a_pMapCell, int a_Dir = 0);
+	UnderlayPlating(Turf* a_pLocTurf, int a_Dir = 0);
 	virtual void InstantiateStructure(bool a_IsBuildPoint);
 	virtual void CreateFromBuildPoint();
 	virtual void DestroyToBuildPoint();
 	//
-	virtual void Select(ObserverBuild* a_pSelectingObserver);
-	virtual void DeSelect(ObserverBuild* a_pSelectingObserver);
+	virtual void Select(InputModule* a_pSelectingInputModule);
+	virtual void DeSelect(InputModule* a_pSelectingInputModule);
 	//
 };
 

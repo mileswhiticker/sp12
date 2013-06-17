@@ -10,6 +10,7 @@ class btRigidBody;
 class ObserverBuild;
 struct CachedCube;
 class MapCell;
+class InputModule;
 namespace Ogre
 {
 	class SceneNode;
@@ -25,6 +26,7 @@ public:
 		STRUCTURE,
 		OBJECT,
 		MOB,
+		TURF,
 		//
 	};
 	Atom(Ogre::Vector3 a_Pos, int a_Dir = 0);
@@ -40,6 +42,9 @@ public:
 	std::vector<Atom*> m_AtomContents;
 	void SetEntityVisible(bool a_Visible = true);
 	//
+	virtual void Interact(Atom* a_pSourceAtom, InputModule* a_pSourceModule, int a_Intent, int a_Type = 0);
+	virtual void CancelInteract(Atom* a_pSource, int a_Intent, int a_Type = 0);
+	//
 	Ogre::Entity* m_pAtomEntity;
 	btRigidBody* m_pRigidBody;
 	btBoxShape* m_pCollisionShape;
@@ -49,9 +54,10 @@ public:
 	//
 	AtomType GetAtomType();
 	int GetDirection();
+	MapCell* GetSourceMapCell();
 	//
-	virtual void Select(ObserverBuild* a_pSelectingObserver);
-	virtual void DeSelect(ObserverBuild* a_pSelectingObserver);
+	virtual void Select(InputModule* a_pSelectingInputModule);
+	virtual void DeSelect(InputModule* a_pSelectingInputModule);
 	//
 protected:
 	AtomType m_MyAtomType;
@@ -65,7 +71,7 @@ protected:
 private:
 	float m_ColourModulateLevel;
 	int m_ModulateChangeDir;
-	std::set<ObserverBuild*> m_pSelectingObservers;
+	std::set<InputModule*> m_SelectingInputModules;
 	//
 };
 

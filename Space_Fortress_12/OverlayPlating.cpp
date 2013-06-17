@@ -15,14 +15,15 @@
 #include "OgreHelper.hpp"
 #include "BulletHelper.hpp"
 #include "MapHelper.hpp"
+#include "Turf.hpp"
 
 #include "CollisionDefines.h"
 #include "Direction.h"
 #include "num2string.h"
 #include "UID.hpp"
 
-OverlayPlating::OverlayPlating(MapCell* a_pMapCell, int a_Dir)
-:	Structure(a_pMapCell, a_Dir)
+OverlayPlating::OverlayPlating(Turf* a_pLocTurf, int a_Dir)
+:	Structure(a_pLocTurf, a_Dir)
 {
 	m_MyStructureType = Structure::OVERLAYPLATING;
 }
@@ -153,9 +154,9 @@ void OverlayPlating::DestroyToBuildPoint()
 	}
 }
 
-void OverlayPlating::Select(ObserverBuild* a_pSelectingObserver)
+void OverlayPlating::Select(InputModule* a_pSelectingInputModule)
 {
-	Atom::Select(a_pSelectingObserver);
+	Structure::Select(a_pSelectingInputModule);
 	if(m_pAtomEntity)
 	{
 		if(m_IsBuildPoint)
@@ -165,9 +166,9 @@ void OverlayPlating::Select(ObserverBuild* a_pSelectingObserver)
 	}
 }
 
-void OverlayPlating::DeSelect(ObserverBuild* a_pSelectingObserver)
+void OverlayPlating::DeSelect(InputModule* a_pSelectingInputModule)
 {
-	Atom::DeSelect(a_pSelectingObserver);
+	Structure::DeSelect(a_pSelectingInputModule);
 	if(m_pAtomEntity)
 	{
 		m_pAtomEntity->setMaterialName("over_plating");

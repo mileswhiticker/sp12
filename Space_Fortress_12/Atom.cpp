@@ -22,7 +22,7 @@
 #include "DebugDrawer.h"
 #include "MapCell.hpp"
 #include "MapSuite.hpp"
-
+#include "Events.hpp"
 
 Atom::Atom(Ogre::Vector3 a_Pos, int a_Dir)
 :	m_pAtomEntitySceneNode(NULL)
@@ -49,9 +49,9 @@ Atom::~Atom()
 	Ogre::SceneManager& sceneManager = GetSceneManager();
 	btDiscreteDynamicsWorld& dynamicsWorld = GetDynamicsWorld();
 
-	for(auto it = m_pSelectingObservers.begin(); it != m_pSelectingObservers.end(); ++it)
+	while(m_SelectingInputModules.size())
 	{
-		(*it)->ForceClearAtomIfSelected(this);
+		(*m_SelectingInputModules.begin())->ForceClearAtomIfSelected(this);
 	}
 	
 	//clear physics
@@ -225,25 +225,33 @@ Atom::AtomType Atom::GetAtomType()
 	return m_MyAtomType;
 }
 
+MapCell* Atom::GetSourceMapCell()
+{
+	return m_pSourceMapCell;
+}
+
 bool Atom::ChangeDirection(int a_NewDir)
 {
 	m_Direction = a_NewDir;
 	return true;
 }
 
-void Atom::Select(ObserverBuild* a_pSelectingObserver)
+void Atom::Select(InputModule* a_pSelectingInputModule)
 {
-	if(a_pSelectingObserver)
+	if(a_pSelectingInputModule)
 	{
-		m_pSelectingObservers.insert(m_pSelectingObservers.end(), a_pSelectingObserver);
+		SetFlashingColour(Ogre::ColourValue::Green);
+		SetEntityVisible();
+		m_SelectingInputModules.insert(a_pSelectingInputModule);
 	}
 }
 
-void Atom::DeSelect(ObserverBuild* a_pSelectingObserver)
+void Atom::DeSelect(InputModule* a_pSelectingInputModule)
 {
-	if(a_pSelectingObserver)
+	if(a_pSelectingInputModule)
 	{
-		m_pSelectingObservers.erase(a_pSelectingObserver);
+		m_SelectingInputModules.erase(a_pSelectingInputModule);
+		StopFlashingColour();
 	}
 }
 
@@ -272,4 +280,40 @@ void Atom::InitCollisionShapeDebugDraw(Ogre::ColourValue a_ColourVal)
 		m_pCachedCube = new CachedCube(m_pAtomEntitySceneNode->_getDerivedPosition(), verts, a_ColourVal);
 		EffectManager::GetSingleton().CacheCube(m_pCachedCube);
 	}
+}
+
+void Atom::Interact(Atom* a_pSourceAtom, InputModule* a_pSourceModule, int a_Intent, int a_Type)
+{
+	switch(a_Type)
+	{
+	case(Event::EX_ACT):
+		{
+			//explosion
+			break;
+		}
+	case(Event::EMP_ACT):
+		{
+			//emp
+			break;
+		}
+	default:
+		{
+			//no special type of interaction, just use the default interactions for each intent
+			if(a_Intent)
+			{
+				//hit this atom with a_pSourceAtom 
+			}
+			else
+			{
+				//nothing happens
+			}
+			break;
+		}
+	}
+}
+
+void Atom::CancelInteract(Atom* a_pSource, int a_Intent, int a_Type)
+{
+	//in case we have a case where you have to continually activate something
+	//
 }

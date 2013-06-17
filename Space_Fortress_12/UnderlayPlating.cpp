@@ -14,14 +14,15 @@
 #include "BtOgreHelper.hpp"
 #include "OgreHelper.hpp"
 #include "BulletHelper.hpp"
+#include "Turf.hpp"
 
 #include "CollisionDefines.h"
 #include "Direction.h"
 #include "num2string.h"
 #include "UID.hpp"
 
-UnderlayPlating::UnderlayPlating(MapCell* a_pMapCell, int a_Dir)
-:	Structure(a_pMapCell, a_Dir)
+UnderlayPlating::UnderlayPlating(Turf* a_pLocTurf, int a_Dir)
+	:	Structure(a_pLocTurf, a_Dir)
 {
 	m_MyStructureType = Structure::UNDERLAYPLATING;
 }
@@ -152,9 +153,9 @@ void UnderlayPlating::DestroyToBuildPoint()
 	}
 }
 
-void UnderlayPlating::Select(ObserverBuild* a_pSelectingObserver)
+void UnderlayPlating::Select(InputModule* a_pSelectingInputModule)
 {
-	Atom::Select(a_pSelectingObserver);
+	Structure::Select(a_pSelectingInputModule);
 	if(m_pAtomEntity)
 	{
 		if(m_IsBuildPoint)
@@ -164,9 +165,9 @@ void UnderlayPlating::Select(ObserverBuild* a_pSelectingObserver)
 	}
 }
 
-void UnderlayPlating::DeSelect(ObserverBuild* a_pSelectingObserver)
+void UnderlayPlating::DeSelect(InputModule* a_pSelectingInputModule)
 {
-	Atom::DeSelect(a_pSelectingObserver);
+	Structure::DeSelect(a_pSelectingInputModule);
 	if(m_pAtomEntity)
 	{
 		m_pAtomEntity->setMaterialName("under_plating");

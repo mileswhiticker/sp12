@@ -11,6 +11,7 @@
 #include "OverlayPlating.hpp"
 #include "UnderlayPlating.hpp"
 #include "GravPlates.hpp"
+#include "Turf.hpp"
 
 #include "OgreHelper.hpp"
 #include "Direction.h"
@@ -19,25 +20,6 @@ AtomManager::AtomManager()
 :	cellsFlashing(false)
 {
 	//
-}
-
-void AtomManager::ToggleCellFlashing()
-{
-	/*cellsFlashing = !cellsFlashing;
-	if(cellsFlashing)
-	{
-		for(auto it = m_GirdersInWorld.begin(); it != m_GirdersInWorld.end(); ++it)
-		{
-			(*it)->SetFlashingColour(Ogre::ColourValue(0,0,1,1));
-		}
-	}
-	else
-	{
-		for(auto it = m_GirdersInWorld.begin(); it != m_GirdersInWorld.end(); ++it)
-		{
-			(*it)->StopFlashingColour();
-		}
-	}*/
 }
 
 void AtomManager::Update(float a_DeltaT)
@@ -56,7 +38,7 @@ void AtomManager::Update(float a_DeltaT)
 	}
 }
 
-Object* AtomManager::CreateObject(int a_ObjectType, Ogre::Vector3 a_Pos, Atom** a_ppAtomLocation, int a_AdditionalFlags)
+Object* AtomManager::CreateObject(int a_ObjectType, Ogre::Vector3 a_Pos, int a_AdditionalFlags)
 {
 	Object* pOut = NULL;
 	switch(a_ObjectType)
@@ -86,45 +68,77 @@ Object* AtomManager::CreateObject(int a_ObjectType, Ogre::Vector3 a_Pos, Atom** 
 		}
 	}
 
-	if(a_ppAtomLocation)
-	{
-		*a_ppAtomLocation = pOut;
-	}
 	return pOut;
 }
 
-Structure* AtomManager::CreateStructure(int a_StructureType, MapCell* a_pLocMapCell, Structure** a_ppStructureLocation, int a_AdditionalFlags)
+Turf* AtomManager::CreateTurf(int a_TurfType, MapCell* a_pLocMapCell, int a_AdditionalFlags)
+{
+	Turf* pOut = NULL;
+	if(a_pLocMapCell)
+	{
+		switch(a_TurfType)
+		{
+		case(Turf::GIRDER):
+			{
+				if(a_AdditionalFlags & BUILD_POINT)
+				{
+					if(!a_pLocMapCell->m_pMyCellTurf)
+					{
+						pOut = new Girder(a_pLocMapCell);
+					}
+				}
+				else
+				{
+					ClearMapCell(a_pLocMapCell);
+					pOut = new Girder(a_pLocMapCell);
+					MapSuite::GetInstance().CreateAdjacentGirderBuildpoints(a_pLocMapCell);
+				}
+				//m_GirdersInWorld.push_back((Girder*)pOut);
+				//m_AtomsInWorld.insert(pOut);
+				
+				break;
+			}
+		default:
+			{
+				std::cout << "Unknown turf type: " << a_TurfType << std::endl;
+				break;
+			}
+		}
+
+		//if creation was successful, deal with any extra flags
+		if(pOut)
+		{
+			m_TurfsInWorld.insert(pOut);
+			if(a_AdditionalFlags & INSTANTIATE_IMMEDIATELY)
+			{
+				pOut->InstantiateTurf(a_AdditionalFlags & BUILD_POINT ? true : false);
+			}
+		}
+	}
+
+	return pOut;
+}
+
+Structure* AtomManager::CreateStructure(int a_StructureType, Turf* a_pLocTurf, int a_AdditionalFlags)
 {
 	Structure* pOut = NULL;
 	switch(a_StructureType)
 	{
-	case(Structure::GIRDER):
-		{
-			pOut = new Girder(a_pLocMapCell);
-			//m_GirdersInWorld.push_back((Girder*)pOut);
-			//m_AtomsInWorld.insert(pOut);
-			
-			if( !(a_AdditionalFlags & BUILD_POINT) )
-			{
-				MapSuite::GetInstance().CreateAdjacentGirderBuildpoints(a_pLocMapCell);
-			}
-			break;
-		}
 	case(Structure::OVERLAYPLATING):
 		{
-			pOut = new OverlayPlating(a_pLocMapCell, a_AdditionalFlags & ALLDIRS);
+			pOut = new OverlayPlating(a_pLocTurf, a_AdditionalFlags & ALLDIRS);
 			
 			//m_AtomsInWorld.insert(pOut);
 			break;
 		}
 	case(Structure::UNDERLAYPLATING):
 		{
-			pOut = new UnderlayPlating(a_pLocMapCell, a_AdditionalFlags & ALLDIRS);
+			pOut = new UnderlayPlating(a_pLocTurf, a_AdditionalFlags & ALLDIRS);
 			break;
 		}
 	case(Structure::GRAVPLATES):
 		{
-			pOut = new GravPlates(a_pLocMapCell, a_AdditionalFlags & ALLDIRS);
+			pOut = new GravPlates(a_pLocTurf, a_AdditionalFlags & ALLDIRS);
 			break;
 		}
 	default:
@@ -145,11 +159,6 @@ Structure* AtomManager::CreateStructure(int a_StructureType, MapCell* a_pLocMapC
 		}
 	}
 
-	//update the passed in memaddress, regardless of whether creation was successful or not
-	if(a_ppStructureLocation)
-	{
-		*a_ppStructureLocation = pOut;
-	}
 	return pOut;
 }
 
@@ -159,7 +168,7 @@ void AtomManager::DeleteStructure(Structure* a_pStructureToDel)
 	delete a_pStructureToDel;
 }
 
-Mob* AtomManager::CreateMob(int a_MobType, Ogre::Vector3 a_SpawnPos, Mob** a_ppAtomLocation, int a_AdditionalFlags)
+Mob* AtomManager::CreateMob(int a_MobType, Ogre::Vector3 a_SpawnPos, int a_AdditionalFlags)
 {
 	Mob* pOut = NULL;
 	switch(a_MobType)
@@ -191,11 +200,6 @@ Mob* AtomManager::CreateMob(int a_MobType, Ogre::Vector3 a_SpawnPos, Mob** a_ppA
 		}
 	}
 
-	//update the passed in memaddress, regardless of whether creation was successful or not
-	if(a_ppAtomLocation)
-	{
-		*a_ppAtomLocation = pOut;
-	}
 	return pOut;
 }
 
@@ -205,26 +209,17 @@ void AtomManager::DeleteMob(Mob* a_pMobToDel)
 	delete a_pMobToDel;
 }
 
-/*bool AtomManager::CreateObject(std::string a_TypeTag, Ogre::Vector3 a_Position)
+void AtomManager::DeleteTurf(Turf* a_pTurfToDel)
 {
-	if(!a_TypeTag.compare("box"))
+	if(a_pTurfToDel)
 	{
-		Box* pBox = new Box(a_Position);
-		m_ObjectsInWorld.push_back(pBox);
-		m_AtomsInWorld.push_back(pBox);
-		return true;
+		a_pTurfToDel->GetSourceMapCell()->m_pMyCellTurf = NULL;
+		m_TurfsInWorld.erase(a_pTurfToDel);
+		delete a_pTurfToDel;
 	}
-	else
-	{
-		std::cout << "WARNING: Attempted to create object with Unknown type tag '" << a_TypeTag << "'" << std::endl;
-	}
-	return false;
 }
 
-Cell* AtomManager::CreateCell(Ogre::SceneNode* a_pSceneNode, Ogre::Vector3 a_Pos, std::string a_SkeletonType)
+void AtomManager::ClearMapCell(MapCell* a_pMapCell)
 {
-	m_CellsInWorld.push_back(new Cell(a_pSceneNode, a_Pos, a_SkeletonType));
-	m_AtomsInWorld.push_back(m_CellsInWorld.back());
-
-	return m_CellsInWorld.back();
-}*/
+	DeleteTurf(a_pMapCell->m_pMyCellTurf);
+}

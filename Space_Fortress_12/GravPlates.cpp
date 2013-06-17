@@ -23,8 +23,8 @@
 #include "num2string.h"
 #include "UID.hpp"
 
-GravPlates::GravPlates(MapCell* a_pMapCell, int a_Dir)
-:	Structure(a_pMapCell, a_Dir)
+GravPlates::GravPlates(Turf* a_pLocTurf, int a_Dir)
+:	Structure(a_pLocTurf, a_Dir)
 ,	m_PercentGravityFalloff(0.1f)
 ,	m_GravityActive(false)
 {
@@ -168,9 +168,9 @@ void GravPlates::DestroyToBuildPoint()
 	}
 }
 
-void GravPlates::Select(ObserverBuild* a_pSelectingObserver)
+void GravPlates::Select(InputModule* a_pSelectingInputModule)
 {
-	Atom::Select(a_pSelectingObserver);
+	Structure::Select(a_pSelectingInputModule);
 	if(m_pAtomEntity)
 	{
 		if(m_IsBuildPoint)
@@ -180,9 +180,9 @@ void GravPlates::Select(ObserverBuild* a_pSelectingObserver)
 	}
 }
 
-void GravPlates::DeSelect(ObserverBuild* a_pSelectingObserver)
+void GravPlates::DeSelect(InputModule* a_pSelectingInputModule)
 {
-	Atom::DeSelect(a_pSelectingObserver);
+	Structure::DeSelect(a_pSelectingInputModule);
 	if(m_pAtomEntity)
 	{
 		m_pAtomEntity->setMaterialName("gravplates");

@@ -13,32 +13,26 @@
 #include "AtomManager.hpp"
 #include "MapSuite.hpp"
 #include "Object.hpp"
+#include "MapCell.hpp"
 
 #include "BtOgreHelper.hpp"
 #include "OgreHelper.hpp"
 #include "BulletHelper.hpp"
+#include "MapHelper.hpp"
 
-#include "MapCell.hpp"
 #include "num2string.h"
 #include "UID.hpp"
 #include "Direction.h"
 #include "DebugDrawer.h"
 #include "CollisionDefines.h"
+#include "Events.hpp"
 
 Girder::Girder(MapCell* a_pSourceMapCell)
-:	Structure(a_pSourceMapCell, 0)
-,	Turf()
+:	Turf(a_pSourceMapCell)
 ,	m_PlateOverlayDirs(0)
 ,	m_PlateUnderlays(0)
 {
-	m_MyStructureType = Structure::GIRDER;
-	m_pTurfStructure = this;
-	//
-	if(m_pSourceMapCell)
-	{
-		m_pAtomRootSceneNode->setPosition(m_pSourceMapCell->m_Position);
-		a_pSourceMapCell->m_pMyCellTurf = this;
-	}
+	m_MyTurfType = Turf::GIRDER;
 }
 
 Girder::~Girder()
@@ -47,7 +41,7 @@ Girder::~Girder()
 	DestroyToBuildPoint();
 }
 
-void Girder::InstantiateStructure(bool a_IsBuildPoint)
+void Girder::InstantiateTurf(bool a_IsBuildPoint)
 {
 	m_IsBuildPoint = a_IsBuildPoint;
 
@@ -65,7 +59,7 @@ void Girder::InstantiateStructure(bool a_IsBuildPoint)
 	m_pRigidBody->setUserPointer(this);
 	
 	//todo: is this working?
-	m_pRigidBody->setCollisionFlags(m_pRigidBody->CF_KINEMATIC_OBJECT);
+	//m_pRigidBody->setCollisionFlags(m_pRigidBody->CF_KINEMATIC_OBJECT);
 
 	//add new rigid body to world
 	btDiscreteDynamicsWorld& dynamicsWorld = GetDynamicsWorld();
@@ -78,35 +72,23 @@ void Girder::InstantiateStructure(bool a_IsBuildPoint)
 	}
 	else
 	{
-		dynamicsWorld.addRigidBody(m_pRigidBody, COLLISION_STRUCTURE, COLLISION_BUILDRAYCAST);
+		dynamicsWorld.addRigidBody(m_pRigidBody, COLLISION_TURF, COLLISION_BUILDRAYCAST);
 
 		//create structure buildpoints
 		for(int curDir = 1; curDir <= 32; curDir *= 2)
 		{
 			//std::cout << "direction: " << curDir << std::endl;
-			Structure* pUnusedBuildPoint = AtomManager::GetSingleton().CreateStructure(Structure::OVERLAYPLATING, m_pSourceMapCell, NULL, curDir|BUILD_POINT|INSTANTIATE_IMMEDIATELY);
+			Structure* pUnusedBuildPoint = AtomManager::GetSingleton().CreateStructure(Structure::OVERLAYPLATING, this, curDir|BUILD_POINT|INSTANTIATE_IMMEDIATELY);
 			m_InvisibleBuildPoints.push_back(pUnusedBuildPoint);
 
-			pUnusedBuildPoint = AtomManager::GetSingleton().CreateStructure(Structure::UNDERLAYPLATING, m_pSourceMapCell, NULL, curDir|BUILD_POINT|INSTANTIATE_IMMEDIATELY);
+			pUnusedBuildPoint = AtomManager::GetSingleton().CreateStructure(Structure::UNDERLAYPLATING, this, curDir|BUILD_POINT|INSTANTIATE_IMMEDIATELY);
 			m_InvisibleBuildPoints.push_back(pUnusedBuildPoint);
 
-			pUnusedBuildPoint = AtomManager::GetSingleton().CreateStructure(Structure::GRAVPLATES, m_pSourceMapCell, NULL, curDir|BUILD_POINT|INSTANTIATE_IMMEDIATELY);
+			pUnusedBuildPoint = AtomManager::GetSingleton().CreateStructure(Structure::GRAVPLATES, this, curDir|BUILD_POINT|INSTANTIATE_IMMEDIATELY);
 			m_InvisibleBuildPoints.push_back(pUnusedBuildPoint);
 		}
 	}
 	InitCollisionShapeDebugDraw(Ogre::ColourValue(1,0,1,1));
-}
-
-void Girder::AddFreefloatingObj(std::string a_TypeTag)
-{
-	if(m_pAtomRootSceneNode)
-	{
-		AtomManager::GetSingleton().CreateObject(Object::BOX, m_pAtomRootSceneNode->_getDerivedPosition());
-	}
-	else
-	{
-		std::cout << "WARNING: Trying to add object of type '" << a_TypeTag << "' to empty (uninitialised?) cell." << std::endl;
-	}
 }
 
 void Girder::CreateFromBuildPoint()
@@ -118,19 +100,19 @@ void Girder::CreateFromBuildPoint()
 		//update the collision flags
 		btDiscreteDynamicsWorld& dynamicsWorld = GetDynamicsWorld();
 		dynamicsWorld.removeRigidBody(m_pRigidBody);
-		dynamicsWorld.addRigidBody(m_pRigidBody, COLLISION_STRUCTURE, COLLISION_BUILDRAYCAST);
+		dynamicsWorld.addRigidBody(m_pRigidBody, COLLISION_TURF, COLLISION_BUILDRAYCAST);
 
 		//create structure buildpoints
 		for(int curDir = 1; curDir <= 32; curDir *= 2)
 		{
 			//std::cout << "direction: " << curDir << std::endl;
-			Structure* pUnusedBuildPoint = AtomManager::GetSingleton().CreateStructure(Structure::OVERLAYPLATING, m_pSourceMapCell, NULL, curDir|BUILD_POINT|INSTANTIATE_IMMEDIATELY);
+			Structure* pUnusedBuildPoint = AtomManager::GetSingleton().CreateStructure(Structure::OVERLAYPLATING, this, curDir|BUILD_POINT|INSTANTIATE_IMMEDIATELY);
 			m_InvisibleBuildPoints.push_back(pUnusedBuildPoint);
 
-			pUnusedBuildPoint = AtomManager::GetSingleton().CreateStructure(Structure::UNDERLAYPLATING, m_pSourceMapCell, NULL, curDir|BUILD_POINT|INSTANTIATE_IMMEDIATELY);
+			pUnusedBuildPoint = AtomManager::GetSingleton().CreateStructure(Structure::UNDERLAYPLATING, this, curDir|BUILD_POINT|INSTANTIATE_IMMEDIATELY);
 			m_InvisibleBuildPoints.push_back(pUnusedBuildPoint);
 
-			pUnusedBuildPoint = AtomManager::GetSingleton().CreateStructure(Structure::GRAVPLATES, m_pSourceMapCell, NULL, curDir|BUILD_POINT|INSTANTIATE_IMMEDIATELY);
+			pUnusedBuildPoint = AtomManager::GetSingleton().CreateStructure(Structure::GRAVPLATES, this, curDir|BUILD_POINT|INSTANTIATE_IMMEDIATELY);
 			m_InvisibleBuildPoints.push_back(pUnusedBuildPoint);
 		}
 
@@ -162,7 +144,7 @@ void Girder::DestroyToBuildPoint()
 		//delete all mounted structures
 		for(auto it = m_MountedStructures.begin(); it != m_MountedStructures.end(); ++it)
 		{
-			(*it)->DestroyToBuildPoint();
+			//(*it)->DestroyToBuildPoint();
 			AtomManager::GetSingleton().DeleteStructure(*it);
 		}
 		m_MountedStructures.erase(m_MountedStructures.begin(), m_MountedStructures.end());
@@ -172,16 +154,49 @@ void Girder::DestroyToBuildPoint()
 		{
 			//just in case an actual structure made it in here
 			//note that at the moment, buildpoints aren't being moved out of here when they're turned into structures7
-			(*it)->DestroyToBuildPoint();
+			//(*it)->DestroyToBuildPoint();
 			AtomManager::GetSingleton().DeleteStructure(*it);
 		}
 		m_InvisibleBuildPoints.erase(m_InvisibleBuildPoints.begin(), m_InvisibleBuildPoints.end());
 		
-		//done
+		//last stuff
 		SetEntityVisible(false);
 		m_IsBuildPoint = true;
 
 		MapSuite::GetInstance().ClearDependantAdjacentGirderBuildpoints(m_pSourceMapCell);
+		
+		//check if we should leave a build point behind
+		bool adjacent = false;
+		for(int curDir = 1; curDir <= 32; curDir *= 2)
+		{
+			Ogre::Vector3 targetCoords = GetCoordsInDir(m_pSourceMapCell->m_Position, curDir);
+			MapCell* pCurrentCell = MapSuite::GetInstance().GetCellAtCoordsOrNull(targetCoords);
+
+			//only add a buildpoint if the cell doesn't have something there already
+			if(pCurrentCell->m_pMyCellTurf && !pCurrentCell->m_pMyCellTurf->IsBuildPoint())
+			{
+				adjacent = true;
+				break;
+			}
+		}
+
+		//delete us (don't leave a build point behind)
+		if(!adjacent)
+		{
+			AtomManager::GetSingleton().DeleteTurf(this);
+		}
+	}
+}
+
+void Girder::AddFreefloatingObj(std::string a_TypeTag)
+{
+	if(m_pAtomRootSceneNode)
+	{
+		AtomManager::GetSingleton().CreateObject(Object::BOX, m_pAtomRootSceneNode->_getDerivedPosition());
+	}
+	else
+	{
+		std::cout << "WARNING: Trying to add object of type '" << a_TypeTag << "' to empty (uninitialised?) cell." << std::endl;
 	}
 }
 
@@ -196,11 +211,7 @@ void Girder::CreateBuildpointInDir(Structure::StructureType a_BuildPointType, in
 		{
 			if(!success)
 			{
-				//if it's a build point, create it
-				if((*it)->IsBuildPoint())
-				{
-					(*it)->CreateFromBuildPoint();
-				}
+				(*it)->Interact(NULL, NULL, Event::UNKNOWN_INTENT, Event::BUILD);
 
 				//now move it over to the list of 'created' build points
 				m_MountedStructures.push_back(*it);
@@ -221,9 +232,9 @@ void Girder::CreateBuildpointInDir(Structure::StructureType a_BuildPointType, in
 	}
 }
 
-void Girder::Select(ObserverBuild* a_pSelectingObserver)
+void Girder::Select(InputModule* a_pSelectingInputModule)
 {
-	Atom::Select(a_pSelectingObserver);
+	Turf::Select(a_pSelectingInputModule);
 	if(m_pAtomEntity)
 	{
 		if(m_IsBuildPoint)
@@ -233,11 +244,17 @@ void Girder::Select(ObserverBuild* a_pSelectingObserver)
 	}
 }
 
-void Girder::DeSelect(ObserverBuild* a_pSelectingObserver)
+void Girder::DeSelect(InputModule* a_pSelectingInputModule)
 {
-	Atom::DeSelect(a_pSelectingObserver);
+	Turf::DeSelect(a_pSelectingInputModule);
 	if(m_pAtomEntity)
 	{
 		m_pAtomEntity->setMaterialName("girder_material");
 	}
+}
+
+void Girder::Interact(Atom* a_pSourceAtom, InputModule* a_pSourceModule, int a_Intent, int a_Type)
+{
+	//just pass it up the chain
+	Turf::Interact(a_pSourceAtom, a_pSourceModule, a_Intent, a_Type);
 }

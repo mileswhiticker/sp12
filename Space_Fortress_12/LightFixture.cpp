@@ -18,8 +18,8 @@
 #include "CollisionDefines.h"
 #include "Direction.h"
 
-LightFixture::LightFixture(MapCell* m_pMapCell, int a_Dir)
-:	Structure(m_pMapCell, a_Dir)
+LightFixture::LightFixture(Turf* m_pLocTurf, int a_Dir)
+:	Structure(m_pLocTurf, a_Dir)
 {
 	m_MyStructureType = Structure::LIGHTFIXTURE;
 }
@@ -129,18 +129,18 @@ void LightFixture::DestroyToBuildPoint()
 	}*/
 }
 
-void LightFixture::Select(ObserverBuild* a_pSelectingObserver)
+void LightFixture::Select(InputModule* a_pSelectingInputModule)
 {
-	Atom::Select(a_pSelectingObserver);
+	Structure::Select(a_pSelectingInputModule);
 	if(m_pAtomEntity)
 	{
 		m_pAtomEntity->setMaterialName("light_fixture_modulate");
 	}
 }
 
-void LightFixture::DeSelect(ObserverBuild* a_pSelectingObserver)
+void LightFixture::DeSelect(InputModule* a_pSelectingInputModule)
 {
-	Atom::DeSelect(a_pSelectingObserver);
+	Structure::DeSelect(a_pSelectingInputModule);
 	if(m_pAtomEntity)
 	{
 		m_pAtomEntity->setMaterialName("light_fixture");
