@@ -20,6 +20,7 @@
     <ClCompile Include="AtomManager.cpp" />
     <ClCompile Include="BulletHelper.cpp" />
     <ClCompile Include="Button.cpp" />
+    <ClCompile Include="Events.cpp" />
     <ClCompile Include="Girder.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="DebugDrawer.cpp" />
@@ -44,6 +45,8 @@
     <ClCompile Include="MapCell.cpp" />
     <ClCompile Include="MapHelper.cpp" />
     <ClCompile Include="MapSuite.cpp" />
+    <ClCompile Include="MapSuite_LoadMap.cpp" />
+    <ClCompile Include="MapSuite_SaveMap.cpp" />
     <ClCompile Include="MeshStrider.cpp" />
     <ClCompile Include="Mob.cpp" />
     <ClCompile Include="mtrand.cpp" />
@@ -69,6 +72,7 @@
     <ClInclude Include="BulletHelper.hpp" />
     <ClInclude Include="Button.hpp" />
     <ClInclude Include="Cached.hpp" />
+    <ClInclude Include="Events.hpp" />
     <ClInclude Include="Girder.hpp" />
     <ClInclude Include="Client.hpp" />
     <ClInclude Include="CollisionDefines.h" />
@@ -84,7 +88,7 @@
     <ClInclude Include="GlueScreen.hpp" />
     <ClInclude Include="guicon.h" />
     <ClInclude Include="InputModule.hpp" />
-    <ClInclude Include="InputModule_GhostMob.h" />
+    <ClInclude Include="InputModule_GhostMob.hpp" />
     <ClInclude Include="InputModule_MobLook.hpp" />
     <ClInclude Include="InputModule_MobWalk.hpp" />
     <ClInclude Include="InputModule_ObserverLook.hpp" />

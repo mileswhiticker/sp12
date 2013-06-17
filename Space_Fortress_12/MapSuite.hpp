@@ -33,6 +33,9 @@ public:
 	//
 	PlayerSpawn* GetRandomPlayerSpawn();
 	//
+	static bool SaveMapDefaultName();
+	static bool SaveMap(std::string a_FileName);
+	//
 private:
 	MapSuite();
 	std::vector<Station*> m_MapStations;

@@ -228,6 +228,15 @@
     <ClCompile Include="InputModule_MobLook.cpp">
       <Filter>Source Files\InputModule</Filter>
     </ClCompile>
+    <ClCompile Include="MapSuite_SaveMap.cpp">
+      <Filter>Source Files\MapSuite</Filter>
+    </ClCompile>
+    <ClCompile Include="MapSuite_LoadMap.cpp">
+      <Filter>Source Files\MapSuite</Filter>
+    </ClCompile>
+    <ClCompile Include="Events.cpp">
+      <Filter>Source Files\Config</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GlueScreen.hpp">
@@ -374,9 +383,6 @@
     <ClInclude Include="GravitySource.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="InputModule_GhostMob.h">
-      <Filter>Header Files\InputModule</Filter>
-    </ClInclude>
     <ClInclude Include="InputModule_PossessMob.hpp">
       <Filter>Header Files\InputModule</Filter>
     </ClInclude>
@@ -385,6 +391,12 @@
     </ClInclude>
     <ClInclude Include="InputModule_MobLook.hpp">
       <Filter>Header Files\InputModule</Filter>
+    </ClInclude>
+    <ClInclude Include="InputModule_GhostMob.hpp">
+      <Filter>Header Files\InputModule</Filter>
+    </ClInclude>
+    <ClInclude Include="Events.hpp">
+      <Filter>Header Files\Config</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

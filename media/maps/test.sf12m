@@ -85,10 +85,6 @@
 			<underlay plating="grey_default" dir="32"></underlay>
 		</cell>
 		
-		<cell x="1" y="4" z="3">
-			<obj tag="box"></obj>
-		</cell>
-		
 		<playerspawn x="2" y="2" z="5" type="observer" dir="2"></playerspawn>
 		<playerspawn x="2" y="2" z="-2" type="observer" dir="1"></playerspawn>
 		<playerspawn x="5" y="2" z="2" type="observer" dir="8"></playerspawn>
