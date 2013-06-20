@@ -163,12 +163,8 @@ MapCell* MapSuite::GetCellInDirOrCreate(MapCell* a_pSourceMapCell, int a_Directi
 
 MapCell* MapSuite::GetCellAtCoordsOrCreate(int a_X, int a_Y, int a_Z)
 {
-	MapCell* pOut = NULL;
-	try
-	{
-		pOut = m_MapCellGrid.at(GetCoordsString(a_X, a_Y, a_Z));
-	}
-	catch (const std::out_of_range& oor)
+	MapCell* pOut = GetCellAtCoordsOrNull(a_X, a_Y, a_Z);
+	if(!pOut)
 	{
 		//if it doesn't exist, just create it
 		pOut = CreateNewMapCell(a_X, a_Y, a_Z);
@@ -184,6 +180,15 @@ MapCell* MapSuite::GetCellAtCoordsOrCreate(Ogre::Vector3 a_Coords)
 MapCell* MapSuite::GetCellAtCoordsOrNull(int a_X, int a_Y, int a_Z)
 {
 	MapCell* pOut = NULL;
+
+	//offset due to rounding when casting from float to integer
+	/*if(a_X < 0)
+		a_X -= 1;
+	if(a_Y < 0)
+		a_Y -= 1;
+	if(a_Z < 0)
+		a_Z -= 1;*/
+
 	try
 	{
 		pOut = m_MapCellGrid.at(GetCoordsString(a_X, a_Y, a_Z));
@@ -191,6 +196,7 @@ MapCell* MapSuite::GetCellAtCoordsOrNull(int a_X, int a_Y, int a_Z)
 	catch (const std::out_of_range& oor)
 	{
 		//nothing
+		pOut = NULL;
 	}
 	return pOut;
 }
