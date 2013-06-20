@@ -71,7 +71,7 @@ void Human::InstantiateAtom()
 
 	//add new rigid body to world
 	btDiscreteDynamicsWorld& dynamicsWorld = GetDynamicsWorld();
-	dynamicsWorld.addRigidBody(m_pRigidBody, COLLISION_MOB, COLLISION_STRUCTURE | COLLISION_MOB);
+	dynamicsWorld.addRigidBody(m_pRigidBody, COLLISION_MOB, COLLISION_STRUCTURE|COLLISION_OBJ|COLLISION_MOB);
 	
 	Mob::InstantiateAtom();
 }

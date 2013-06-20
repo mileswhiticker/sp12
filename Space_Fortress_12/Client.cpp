@@ -76,6 +76,7 @@ void Client::ResetCamera()
 		m_pCameraNode->attachObject(m_pCamera);
 		m_HasPersonalCameraNode = true;
 	}
+	m_pCameraNode->setOrientation(Ogre::Quaternion::IDENTITY);
 	if(m_pPossessedMob)
 	{
 		if(m_pPossessedMob->m_pAtomRootSceneNode)
@@ -91,7 +92,8 @@ void Client::ResetCamera()
 
 		//reorient the camera to match the direction of the mob
 		Ogre::Vector3 lookDir = m_pPossessedMob->m_pAtomEntitySceneNode->getOrientation() * Ogre::Vector3::NEGATIVE_UNIT_Z;
-		m_pCamera->lookAt(m_pCamera->getDerivedPosition() + lookDir);
+		//m_pCamera->lookAt(m_pCamera->getDerivedPosition() + lookDir);
+		m_pCamera->setOrientation(m_pPossessedMob->m_pAtomEntitySceneNode->getOrientation());
 	}
 	else
 	{

@@ -93,7 +93,7 @@ void Box::InstantiateAtom()
 
 	//add new rigid body to world
 	btDiscreteDynamicsWorld& dynamicsWorld = GetDynamicsWorld();
-	dynamicsWorld.addRigidBody(m_pRigidBody, COLLISION_OBJ, COLLISION_OBJ|COLLISION_STRUCTURE);
+	dynamicsWorld.addRigidBody(m_pRigidBody, COLLISION_OBJ, COLLISION_OBJ|COLLISION_MOB|COLLISION_STRUCTURE);
 	
 	InitCollisionShapeDebugDraw(Ogre::ColourValue::Blue);
 	
