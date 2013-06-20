@@ -39,7 +39,6 @@ Atom::Atom(Ogre::Vector3 a_Pos, int a_Dir)
 ,	m_pCachedCube(NULL)
 ,	m_pSourceMapCell(NULL)
 ,	m_UsesGravity(true)
-,	m_RegularPositionUpdates(false)
 ,	m_tLeftUpdateCell(0)
 {
 	m_pAtomRootSceneNode = NewSceneNode();
@@ -130,7 +129,7 @@ void Atom::Update(float a_DeltaT)
 	//--- update current map cell ---//
 	
 	m_tLeftUpdateCell -= a_DeltaT;
-	if(m_RegularPositionUpdates && m_pAtomRootSceneNode && m_tLeftUpdateCell <= 0)
+	if(m_pAtomRootSceneNode && m_tLeftUpdateCell <= 0)
 	{
 		m_tLeftUpdateCell = 0.5f;
 		//update the map cell we're currently in

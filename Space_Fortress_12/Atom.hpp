@@ -69,7 +69,6 @@ protected:
 	//
 	void InitCollisionShapeDebugDraw(Ogre::ColourValue a_ColourVal);
 	bool m_UsesGravity;
-	bool m_RegularPositionUpdates;
 	MapCell* m_pSourceMapCell;		//for handling gravity
 	//
 private:

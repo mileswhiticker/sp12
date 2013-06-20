@@ -29,7 +29,6 @@ Mob::Mob(Ogre::Vector3 a_StartPos, int a_Direction)
 ,	m_Intent(0)
 {
 	m_MyAtomType = Atom::MOB;
-	m_RegularPositionUpdates = true;
 	//btQuaternion(btVector3(0,1,0), 0);
 }
 
