@@ -53,6 +53,8 @@ public:
 	bool UpdateOnGround();
 	bool m_IsOnGround;
 	int GetIntent();
+	virtual bool OnGravityChange();
+	virtual void UpdateOrientation(float a_DeltaT);
 	//
 protected:
 	MobType m_MyMobType;

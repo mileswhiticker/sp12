@@ -2,8 +2,12 @@
 #define MAP_CELL_HPP
 
 #include <OGRE/OgreVector3.h>
-class Turf;
 class GravitySource;
+class Atom;
+class Turf;
+class Mob;
+class Object;
+class Structure;
 
 class MapCell
 {
@@ -16,6 +20,17 @@ public:
 	void RemoveGravityAffector(GravitySource* a_pGravSource);
 	Ogre::Vector3 GetGravity();
 	//
+	void AtomLeaveCell(Atom* a_pLeavingAtom);
+	void AtomEnterCell(Atom* a_pEnteringAtom);
+	void OnGravityChange();
+	//
+	std::vector<Mob*> m_MobsInCell;
+	std::vector<Atom*> m_AtomsInCell;
+	std::vector<Turf*> m_TurfsInCell;
+	std::vector<Object*> m_ObjsInCell;
+	std::vector<Structure*> m_StructuresInCell;
+	//
+	std::vector<Atom*> m_AtomsWantingGravUpdates;
 private:
 	std::vector< std::pair<GravitySource*,float> > m_GravityAffectors;
 	//

@@ -16,6 +16,7 @@
 #include "BulletHelper.hpp"
 #include "RandHelper.h"
 #include "BtOgreHelper.hpp"
+#include "Mob.hpp"
 
 #include "EffectManager.hpp"
 #include "Cached.hpp"
@@ -38,6 +39,8 @@ Atom::Atom(Ogre::Vector3 a_Pos, int a_Dir)
 ,	m_pCachedCube(NULL)
 ,	m_pSourceMapCell(NULL)
 ,	m_UsesGravity(true)
+,	m_RegularPositionUpdates(false)
+,	m_tLeftUpdateCell(0)
 {
 	m_pAtomRootSceneNode = NewSceneNode();
 	m_pAtomRootSceneNode->setPosition(a_Pos);
@@ -104,15 +107,81 @@ void Atom::Update(float a_DeltaT)
 		btTransform& transform = m_pRigidBody->getWorldTransform();
 		btVector3& origin = transform.getOrigin();
 		btQuaternion& rotation = transform.getRotation();
+		
+		//hard limit on velocity to 30 m/s
+		if(m_pRigidBody->getLinearVelocity().length2() > 900.0f)
+		{
+			btVector3 newVelocity = m_pRigidBody->getLinearVelocity().normalized() * 30.0f;
+			m_pRigidBody->setLinearVelocity(newVelocity);
+		}
 
 		if(m_UseRigidbodyPosition && m_pAtomRootSceneNode)
 		{
 			m_pAtomRootSceneNode->setPosition(origin.getX(), origin.getY(), origin.getZ());
 			m_pAtomRootSceneNode->setOrientation(rotation.w(), rotation.x(), rotation.y(), rotation.z());
+			//m_pAtomEntitySceneNode->setOrientation(Ogre::Quaternion::IDENTITY);
 		}
 		if(m_pCachedCube)
 		{
 			m_pCachedCube->pos = BT2OGRE(origin);
+		}
+	}
+	
+	//--- update current map cell ---//
+	
+	m_tLeftUpdateCell -= a_DeltaT;
+	if(m_RegularPositionUpdates && m_pAtomRootSceneNode && m_tLeftUpdateCell <= 0)
+	{
+		m_tLeftUpdateCell = 0.5f;
+		//update the map cell we're currently in
+		Ogre::Vector3 curPos = m_pAtomRootSceneNode->getPosition();// + Ogre::Vector3(0.5f,0.5f,0.5f);
+		if(curPos.x > 0)
+			curPos.x += 0.5f;
+		else
+			curPos.x -= 0.5f;
+		if(curPos.y > 0)
+			curPos.y += 0.5f;
+		else
+			curPos.y -= 0.5f;
+		if(curPos.z > 0)
+			curPos.z += 0.5f;
+		else
+			curPos.z -= 0.5f;
+		MapCell* pNewMapCell = MapSuite::GetInstance().GetCellAtCoordsOrNull(curPos);
+		bool check = false;
+		if(pNewMapCell != m_pSourceMapCell)
+		{
+			//std::cout << "cells don't match, updating..." << std::endl;
+			check = true;
+		}
+		else if(m_pSourceMapCell && m_pSourceMapCell->m_Position.squaredDistance(curPos) > 1)
+		{
+			//std::cout << "dist too far from previous cell, updating..." << std::endl;
+			//check = true;
+		}
+
+		if(check)
+		{
+			/*if(((Mob*)(this))->GetMobType() == Mob::HUMAN)
+				std::cout << "human position update" << std::endl;
+			else
+				std::cout << "observer position update" << std::endl;*/
+			if(m_pSourceMapCell)
+			{
+				m_pSourceMapCell->AtomLeaveCell(this);
+				//std::cout << "	leaving cell" << std::endl;
+			}
+			m_pSourceMapCell = pNewMapCell;
+			if(pNewMapCell)
+			{
+				m_pSourceMapCell->AtomEnterCell(this);
+				//std::cout << "	cell " << m_pSourceMapCell->m_Position << " | " << m_pAtomRootSceneNode->getPosition() << std::endl;
+			}
+			else
+			{
+				//std::cout << "	environment reset" << std::endl;
+				ResetEnvironment();
+			}
 		}
 	}
 
@@ -139,27 +208,6 @@ void Atom::Update(float a_DeltaT)
 		{
 			//only need to give it a scalar, but for some reason can only pass in float4 params?
 			m_pAtomEntity->getSubEntity(i)->setCustomParameter(1, Ogre::Vector4(m_ColourModulateLevel, 1, 1, 1));
-		}
-	}
-	
-	//--- Gravity ---//
-	
-	if(m_UsesGravity && m_pRigidBody)
-	{
-		//update the map cell we're currently in
-		Ogre::Vector3 curPos = BT2OGRE( m_pRigidBody->getWorldTransform().getOrigin() );
-		if(!m_pSourceMapCell || m_pSourceMapCell->m_Position.squaredDistance(curPos) > 0.25f)
-		{
-			//if we've moved far enough away from the current cell (or it doesn't exist) get a new one
-			m_pSourceMapCell = MapSuite::GetInstance().GetCellAtCoordsOrNull(curPos + Ogre::Vector3(0.5f,0.5f,0.5f));	//Ogre::Vector3(0.5f,0.5f,0.5f)
-		}
-
-		//apply gravity of the current cell
-		if(m_pSourceMapCell)
-		{
-			m_pRigidBody->setGravity( OGRE2BT(m_pSourceMapCell->GetGravity()) );
-			//Ogre::Vector3 force = (1.0f / m_pRigidBody->getInvMass()) * m_pSourceMapCell->GetGravity();
-			//m_pRigidBody->applyCentralImpulse( OGRE2BT(force * a_DeltaT) );
 		}
 	}
 }
@@ -316,4 +364,38 @@ void Atom::CancelInteract(Atom* a_pSource, int a_Intent, int a_Type)
 {
 	//in case we have a case where you have to continually activate something
 	//
+}
+
+//returns true if gravity has actually changed
+bool Atom::OnGravityChange()
+{
+	if(m_UsesGravity && m_pRigidBody)
+	{
+		btVector3 oldGravity = m_pRigidBody->getGravity();
+		if(m_pSourceMapCell)
+		{
+			btVector3 newGravity = OGRE2BT(m_pSourceMapCell->GetGravity());
+			if(newGravity != oldGravity)
+			{
+				//apply gravity of the current cell
+				m_pRigidBody->setGravity( OGRE2BT(m_pSourceMapCell->GetGravity()) );
+				std::cout << "gravity updated" << std::endl;
+				return true;
+			}
+		}
+		else if(oldGravity.length2())
+		{
+			m_pRigidBody->setGravity(btVector3(0,0,0));
+			std::cout << "gravity nulled" << std::endl;
+			return true;
+		}
+		return false;
+	}
+	return false;
+}
+
+void Atom::ResetEnvironment()
+{
+	//todo: grab the ambient environmental values for space
+	OnGravityChange();
 }

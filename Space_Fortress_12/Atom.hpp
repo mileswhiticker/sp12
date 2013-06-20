@@ -52,6 +52,9 @@ public:
 	Ogre::SceneNode* m_pAtomRootSceneNode;
 	CachedCube* m_pCachedCube;	//used to draw the collision shape, assuming it's a cube
 	//
+	virtual bool OnGravityChange();
+	virtual void ResetEnvironment();
+	//
 	AtomType GetAtomType();
 	int GetDirection();
 	MapCell* GetSourceMapCell();
@@ -66,10 +69,12 @@ protected:
 	//
 	void InitCollisionShapeDebugDraw(Ogre::ColourValue a_ColourVal);
 	bool m_UsesGravity;
+	bool m_RegularPositionUpdates;
 	MapCell* m_pSourceMapCell;		//for handling gravity
 	//
 private:
 	float m_ColourModulateLevel;
+	float m_tLeftUpdateCell;
 	int m_ModulateChangeDir;
 	std::set<InputModule*> m_SelectingInputModules;
 	//

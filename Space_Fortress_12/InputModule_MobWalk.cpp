@@ -20,10 +20,10 @@ MobWalk::MobWalk(Mob* a_pOwnedMob, Client* a_pOwnedClient)
 
 void MobWalk::Update(float a_DeltaT)
 {
-	if(m_pOwnedMob && m_pOwnedMob->m_pRigidBody && m_pOwnedMob->IsOnGround())
+	if(m_pOwnedMob && m_pOwnedMob->m_pRigidBody && m_pOwnedMob->IsOnGround() && m_RelativeMoveDir.squaredLength())
 	{
 		//grab the direction the body is facing
-		Ogre::Quaternion moveOrientation = m_pOwnedMob->m_pAtomEntitySceneNode->getOrientation();
+		Ogre::Quaternion moveOrientation = m_pOwnedMob->m_pAtomRootSceneNode->getOrientation();
 		btTransform worldTransform = m_pOwnedMob->m_pRigidBody->getWorldTransform();
 		btVector3 worldPos = worldTransform.getOrigin();
 
@@ -83,14 +83,15 @@ bool MobWalk::keyPressed( const OIS::KeyEvent &arg )
 		}
 	case(OIS::KC_SPACE):
 		{
-			if(m_pOwnedMob->m_pRigidBody && m_pOwnedMob->IsOnGround())
+			if(m_pOwnedMob && m_pOwnedMob->m_pRigidBody && m_pOwnedMob->IsOnGround())
 			{
 				//jump
 				m_pOwnedMob->m_IsOnGround = false;
 				m_pOwnedMob->m_pRigidBody->activate(true);
 				//Ogre::Vector3 force(0, (1.0f / m_pOwnedMob->m_pRigidBody->getInvMass()) * 3, 0);
 				//m_pOwnedMob->m_pRigidBody->applyCentralImpulse( OGRE2BT(force) );
-				m_pOwnedMob->m_pRigidBody->setLinearVelocity(btVector3(0, 3, 0));
+				btVector3 gravityDir = m_pOwnedMob->m_pRigidBody->getGravity().normalized();
+				m_pOwnedMob->m_pRigidBody->setLinearVelocity(-gravityDir * 2);
 			}
 			break;
 		}

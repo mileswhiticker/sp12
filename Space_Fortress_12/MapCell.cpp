@@ -1,5 +1,6 @@
 #include "MapCell.hpp"
 #include "GravitySource.hpp"
+#include "Atom.hpp"
 
 MapCell::MapCell(Ogre::Vector3 a_Position)
 :	m_pMyCellTurf(NULL)
@@ -28,6 +29,7 @@ Ogre::Vector3 MapCell::GetGravity()
 void MapCell::AddGravityAffector(GravitySource* a_pGravSource, float a_DistScalar)
 {
 	m_GravityAffectors.push_back( std::pair<GravitySource*,float>(a_pGravSource, a_DistScalar) );
+	OnGravityChange();
 }
 
 void MapCell::RemoveGravityAffector(GravitySource* a_pGravSource)
@@ -37,7 +39,34 @@ void MapCell::RemoveGravityAffector(GravitySource* a_pGravSource)
 		if(it->first == a_pGravSource)
 		{
 			m_GravityAffectors.erase(it);
-			return;
+			break;
 		}
+	}
+	OnGravityChange();
+}
+
+void MapCell::AtomEnterCell(Atom* a_pEnteringAtom)
+{
+	m_AtomsInCell.push_back(a_pEnteringAtom);
+	a_pEnteringAtom->OnGravityChange();
+}
+
+void MapCell::AtomLeaveCell(Atom* a_pLeavingAtom)
+{
+	for(auto it = m_AtomsInCell.begin(); it != m_AtomsInCell.end(); ++it)
+	{
+		if(*it == a_pLeavingAtom)
+		{
+			m_AtomsInCell.erase(it);
+			break;
+		}
+	}
+}
+
+void MapCell::OnGravityChange()
+{
+	for(auto it = m_AtomsInCell.begin(); it != m_AtomsInCell.end(); ++it)
+	{
+		(*it)->OnGravityChange();
 	}
 }

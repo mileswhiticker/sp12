@@ -213,6 +213,13 @@ void GravPlates::ToggleGravity()
 			while(percentLeft > 0)
 			{
 				pCurMapCell->RemoveGravityAffector(this);
+
+				//update atoms in that cell
+				for(auto it = pCurMapCell->m_AtomsInCell.begin(); it != pCurMapCell->m_AtomsInCell.end(); ++it)
+				{
+					(*it)->OnGravityChange();
+				}
+
 				//
 				pCurMapCell = MapSuite::GetInstance().GetCellInDirOrCreate(pCurMapCell, m_Direction);
 				percentLeft -= m_PercentGravityFalloff;
@@ -228,6 +235,13 @@ void GravPlates::ToggleGravity()
 			while(percentLeft > 0)
 			{
 				pCurMapCell->AddGravityAffector(this, percentLeft);
+				
+				//update atoms in that cell
+				for(auto it = pCurMapCell->m_AtomsInCell.begin(); it != pCurMapCell->m_AtomsInCell.end(); ++it)
+				{
+					(*it)->OnGravityChange();
+				}
+
 				//
 				pCurMapCell = MapSuite::GetInstance().GetCellInDirOrCreate(pCurMapCell, m_Direction);
 				percentLeft -= m_PercentGravityFalloff;

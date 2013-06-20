@@ -15,19 +15,21 @@
 #include "OgreHelper.hpp"
 #include "RandHelper.h"
 #include "BtOgreHelper.hpp"
+#include "DebugDrawer.h"
 
 Mob::Mob(Ogre::Vector3 a_StartPos, int a_Direction)
 :	Atom(a_StartPos, a_Direction)
 ,	m_pPossessingClient(NULL)
 ,	m_MyMobType(UNKNOWN)
 ,	m_tLeftUprightOrientation(0)
-,	m_TargetStandingOrientation(btQuaternion(0,1,0,0))
+,	m_TargetStandingOrientation(btQuaternion(0,0,0))
 ,	m_tleftNextGroundRaycast(0.5f)
 ,	m_IsOnGround(false)
 ,	m_CameraModelOffset(Ogre::Vector3::ZERO)
 ,	m_Intent(0)
 {
 	m_MyAtomType = Atom::MOB;
+	m_RegularPositionUpdates = true;
 	//btQuaternion(btVector3(0,1,0), 0);
 }
 
@@ -47,48 +49,16 @@ void Mob::Update(float a_DeltaT)
 		(*it)->Update(a_DeltaT);
 	}
 
-	//grab an updated direction for gravity to orient ourselves against
-	if(m_pSourceMapCell)
-	{
-		//todo: remove the normalise here
-		Ogre::Vector3 gravityDir = m_pSourceMapCell->GetGravity().normalisedCopy();
-		m_TargetStandingOrientation = OGRE2BT(Ogre::Vector3::NEGATIVE_UNIT_Y.getRotationTo(gravityDir));
-
-		/*Ogre::Quaternion targetOrientation;
-		targetOrientation.FromAngleAxis(Ogre::Degree(360), gravityDir);
-		m_TargetStandingOrientation = OGRE2BT(targetOrientation);
-		m_TargetStandingOrientation = btQuaternion(OGRE2BT(gravityDir), 0);*/
-	}
-
 	//if we're "falling", raycast down to see if we're on the "ground"
 	m_tleftNextGroundRaycast -= a_DeltaT;
-	if(m_UsesGravity && m_pRigidBody->getGravity().length2() > 0 && m_tleftNextGroundRaycast <= 0)
+	if(m_pRigidBody && m_UsesGravity && m_pRigidBody->getGravity().length2() > 0 && m_tleftNextGroundRaycast <= 0)
 	{
 		//todo: this whole method is a little crude
 		m_tleftNextGroundRaycast = 0.5f;
 		UpdateOnGround();
-
 	}
 
-	//orient physbody to make is upright relative to the direction of gravity
-	if(m_pRigidBody && m_tLeftUprightOrientation < 1)
-	{
-		//just instantly snap to the right direction for now
-		//m_tLeftUprightOrientation += a_DeltaT;
-
-		btTransform currentTransform = m_pRigidBody->getWorldTransform();
-		btQuaternion currentOrientation = currentTransform.getRotation();
-
-		//target orientation: standing up
-		//btQuaternion targetOrientation = btQuaternion(btVector3(0,1,0), 0);
-		//currentOrientation = currentOrientation.slerp(m_TargetStandingOrientation, a_DeltaT * 2);
-		//currentOrientation = m_TargetStandingOrientation;
-
-		//apply the changes
-		//there is a random crash on this line when starting up, sometimes
-		currentTransform.setRotation(currentOrientation);
-		m_pRigidBody->setWorldTransform(currentTransform);
-	}
+	UpdateOrientation(a_DeltaT);
 }
 
 bool Mob::ConnectClient(Client* a_pNewClient)
@@ -218,6 +188,8 @@ bool Mob::UpdateOnGround()
 
 		if(closestHitRayCallback.hasHit())
 		{
+			/*if(!m_IsOnGround)
+				m_tLeftUprightOrientation = 0;*/
 			m_IsOnGround = true;
 		}
 		else
@@ -232,4 +204,107 @@ bool Mob::UpdateOnGround()
 int Mob::GetIntent()
 {
 	return m_Intent;
+}
+
+bool Mob::OnGravityChange()
+{
+	if(Atom::OnGravityChange())
+	{
+		//grab an updated direction for gravity to orient ourselves against
+		Ogre::Vector3 newGravityDir = Ogre::Vector3::ZERO;
+		if(m_pSourceMapCell)
+		{
+			//grab a direction vector for gravity
+			newGravityDir = m_pSourceMapCell->GetGravity().normalisedCopy();
+			m_TargetStandingOrientation = OGRE2BT(Ogre::Vector3::NEGATIVE_UNIT_Y.getRotationTo(newGravityDir));
+
+			//grab a quaternion representing a partially correct orientation
+			//it's correct because it's upright relative to the current direction of gravity
+			//it's incorrect because it doesn't retain the relative Y/Z angle of the mob
+			/*Ogre::Quaternion targetIdentityOrientation = (m_pAtomRootSceneNode->getOrientation() * Ogre::Vector3::UNIT_Y).getRotationTo(newGravityDir);
+			Ogre::Radian targetPitch = targetIdentityOrientation.getPitch();
+			Ogre::Radian targetYaw = m_pAtomRootSceneNode->getOrientation().getYaw();
+			Ogre::Radian targetRoll = m_pAtomRootSceneNode->getOrientation().getRoll();
+			m_TargetStandingOrientation.setEuler(targetYaw.valueRadians(), targetPitch.valueRadians(), targetRoll.valueRadians());*/
+		
+			//let's grab the euler angles from it then via a matrix
+			/*Ogre::Matrix3 targetIdentityOrientationMatrix;
+			targetIdentityOrientation.ToRotationMatrix(targetIdentityOrientationMatrix);
+			Ogre::Radian targetIdentityEulerX;
+			Ogre::Radian targetIdentityEulerY;
+			Ogre::Radian targetIdentityEulerZ;
+			targetIdentityOrientationMatrix.ToEulerAnglesXYZ(targetIdentityEulerX, targetIdentityEulerY, targetIdentityEulerZ);
+		
+			//we want to reuse the current mob orientation for Z- and Y- axes, so lets get their euler angles as well (also via matrices)
+			Ogre::Matrix3 currentOrientationMatrix;
+			m_pAtomRootSceneNode->getOrientation().ToRotationMatrix(currentOrientationMatrix);
+			Ogre::Radian currentEulerX;
+			Ogre::Radian currentEulerY;
+			Ogre::Radian currentEulerZ;
+			currentOrientationMatrix.ToEulerAnglesXYZ(currentEulerX, currentEulerY, currentEulerZ);
+		
+			//turn the euler angles -> matrix -> ogre quaternion -> bullet quaternion
+			Ogre::Matrix3 targetOrientationMatrix;
+			targetOrientationMatrix.FromEulerAnglesXYZ(targetIdentityEulerX, currentEulerY, currentEulerZ);
+			Ogre::Quaternion targetOrientation;
+			targetOrientation.FromRotationMatrix(targetOrientationMatrix);
+			m_TargetStandingOrientation = OGRE2BT(targetOrientation);
+			m_TargetStandingOrientation = OGRE2BT(targetIdentityOrientation);*/
+		}
+	
+		//check to see if we're facing the wrong way according to the new gravity
+		//perpendicular checks won't work, so we'll have to directly compare the upwards vector
+		bool reorient = false;
+		if(newGravityDir.squaredLength())
+		{
+			Ogre::Vector3 upDir = m_pAtomRootSceneNode->getOrientation() * Ogre::Vector3::UNIT_Y;
+			if(upDir != newGravityDir)
+			{
+				reorient = true;
+				std::cout << "	reorienting" << std::endl;
+			}
+			else
+			{
+				std::cout << "	down vectors match" << std::endl;
+			}
+		}
+
+		if(reorient)
+		{
+			m_tLeftUprightOrientation = 0;
+			return true;
+		}
+	}
+	return false;
+}
+
+void Mob::UpdateOrientation(float a_DeltaT)
+{
+	//orient physbody to make is upright relative to the direction of gravity
+	if(m_pRigidBody && m_tLeftUprightOrientation < 1)
+	{
+		//just instantly snap to the right direction for now
+		//float tValue = a_DeltaT * 2;
+		//m_tLeftUprightOrientation += a_DeltaT;
+		m_tLeftUprightOrientation = 1;
+		/*if(m_tLeftUprightOrientation >= 1)
+			tValue = 1;*/
+
+		btTransform currentTransform = m_pRigidBody->getWorldTransform();
+
+		//stand up over half a second
+		btQuaternion currentOrientation = m_TargetStandingOrientation;//currentTransform.getRotation();
+		//currentOrientation = currentOrientation.slerp(m_TargetStandingOrientation, tValue);
+
+		//orient the rigidbody
+		currentTransform.setRotation(currentOrientation);
+		m_pRigidBody->setWorldTransform(currentTransform);
+		
+		//reset the model orientation
+		//m_pAtomEntitySceneNode->setOrientation(Ogre::Quaternion::IDENTITY);
+
+		//reset the camera orientation
+		/*if(m_pPossessingClient && m_pPossessingClient->m_pCamera)
+			m_pPossessingClient->m_pCamera->setOrientation( BT2OGRE(currentOrientation) );*/
+	}
 }
