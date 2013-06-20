@@ -1,6 +1,7 @@
 = Movement =
 WASD - Forwards, backwards, strafe left, strafe right (all relative to look direction)
-Space, Lctrl - move up, move down (relative to look dir)
+Space, Lctrl - AS GHOST move up, move down (relative to look dir)
+Space - AS HUMAN jump
 LShift - Hold to sprint (double move speed)
 
 = Building =
@@ -17,7 +18,7 @@ Mouse click - "Instantiate" currently targetted buildpoint or structure (toggle 
 = Misc =
 G - Swap between "ghost" and "human" mode
 H - If in ghost mode, move the player to the current player position
-L - Create a point light at the player position (framerate will probably drop)
+L - Create a point light at the player position
 O - Force rebuild of the debug drawer
 N - Create a floating box at the player position
 P - Print coordinates to debug console

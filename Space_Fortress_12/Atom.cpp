@@ -379,14 +379,14 @@ bool Atom::OnGravityChange()
 			{
 				//apply gravity of the current cell
 				m_pRigidBody->setGravity( OGRE2BT(m_pSourceMapCell->GetGravity()) );
-				std::cout << "gravity updated" << std::endl;
+				//std::cout << "gravity updated" << std::endl;
 				return true;
 			}
 		}
 		else if(oldGravity.length2())
 		{
 			m_pRigidBody->setGravity(btVector3(0,0,0));
-			std::cout << "gravity nulled" << std::endl;
+			//std::cout << "gravity nulled" << std::endl;
 			return true;
 		}
 		return false;

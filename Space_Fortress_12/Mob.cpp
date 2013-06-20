@@ -261,11 +261,11 @@ bool Mob::OnGravityChange()
 			if(upDir != newGravityDir)
 			{
 				reorient = true;
-				std::cout << "	reorienting" << std::endl;
+				//std::cout << "	reorienting" << std::endl;
 			}
 			else
 			{
-				std::cout << "	down vectors match" << std::endl;
+				//std::cout << "	down vectors match" << std::endl;
 			}
 		}
 
