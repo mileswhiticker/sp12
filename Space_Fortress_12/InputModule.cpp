@@ -12,6 +12,10 @@ InputModule::InputModule(Mob* a_pOwnedMob, Client* a_pOwnedClient)
 void InputModule::SetClient(Client* a_pClient)
 {
 	m_pOwnedClient = a_pClient;
+	if(!m_pOwnedClient)
+	{
+		ClearSelectedAtom();
+	}
 }
 
 bool InputModule::keyPressed( const OIS::KeyEvent &arg )

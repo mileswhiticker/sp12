@@ -36,6 +36,10 @@ void AtomManager::Update(float a_DeltaT)
 	{
 		(*it)->Update(a_DeltaT);
 	}
+	for(auto it = m_TurfsInWorld.begin(); it != m_TurfsInWorld.end(); ++it)
+	{
+		(*it)->Update(a_DeltaT);
+	}
 }
 
 Object* AtomManager::CreateObject(int a_ObjectType, Ogre::Vector3 a_Pos, int a_AdditionalFlags)

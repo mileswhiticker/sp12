@@ -25,6 +25,7 @@ public:
 	Girder(MapCell* a_pSourceMapCell);
 	virtual ~Girder();
 	//
+	virtual void Update(float a_DeltaT);
 	virtual void InstantiateTurf(bool a_IsBuildPoint);
 	virtual void CreateFromBuildPoint();
 	virtual void DestroyToBuildPoint();

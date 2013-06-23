@@ -6,8 +6,8 @@ vertex_program PlainTexture_VS cg
     source build_highlights.cg
     // Use this function for the vertex shader            
     entry_point main_plain_texture_vp    
-    // Compile the shader to vs_1_1 format   //arbvp1 
-    profiles vs_2_0              
+    // Let Ogre decide the best format to compile to
+    profiles vs_2_0 vs_1_1 arbvp1
  
     // This block saves us from manually setting parameters in code
         default_params                    
@@ -21,12 +21,12 @@ vertex_program PlainTexture_VS cg
 // CG Pixel shader definition
 fragment_program ModulateColour_PS cg
 {
-        // Look in this source file for shader code
+    // Look in this source file for shader code
     source build_highlights.cg
-        // Use this function for the pixel shader    
+    // Use this function for the pixel shader    
     entry_point modulate_colour_fp
-        // Compile to ps_1_1 format  	//arbfp1  
-    profiles ps_2_0
+    // Let Ogre decide the best format to compile to
+    profiles ps_2_0 ps_1_1 arbfp1
 	
     default_params
     {

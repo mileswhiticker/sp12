@@ -127,6 +127,11 @@ void Girder::CreateFromBuildPoint()
 	}
 }
 
+void Girder::Update(float a_DeltaT)
+{
+	Turf::Update(a_DeltaT);
+}
+
 void Girder::DestroyToBuildPoint()
 {
 	if(!m_IsBuildPoint)
