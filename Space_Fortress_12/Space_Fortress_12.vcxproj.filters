@@ -67,9 +67,6 @@
     <Filter Include="Source Files\Atoms\Object">
       <UniqueIdentifier>{71ea2d70-bd1b-439b-a413-092cf3e1a55d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Effects">
-      <UniqueIdentifier>{8abf2ea7-0b97-40a8-aaea-6ebdb479aff8}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Effects">
       <UniqueIdentifier>{dd650f0f-d23c-4bbf-9949-cf9c73ee95ca}</UniqueIdentifier>
     </Filter>
@@ -78,6 +75,15 @@
     </Filter>
     <Filter Include="Header Files\Atoms\Structure">
       <UniqueIdentifier>{11e4e69b-6956-4de9-926b-282de6d0c726}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Atoms\Turf">
+      <UniqueIdentifier>{d1f21db8-bea3-424a-92da-b9140fdf39b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Atoms\Turf">
+      <UniqueIdentifier>{dc850d90-70a3-486f-a1f9-ffd0076b9694}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Effects">
+      <UniqueIdentifier>{8abf2ea7-0b97-40a8-aaea-6ebdb479aff8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -156,9 +162,6 @@
     <ClCompile Include="Object.cpp">
       <Filter>Source Files\Atoms\Object</Filter>
     </ClCompile>
-    <ClCompile Include="Client.cpp">
-      <Filter>Source Files\Atoms</Filter>
-    </ClCompile>
     <ClCompile Include="Atom.cpp">
       <Filter>Source Files\Atoms</Filter>
     </ClCompile>
@@ -180,17 +183,11 @@
     <ClCompile Include="BulletHelper.cpp">
       <Filter>Source Files\Utils and helpers</Filter>
     </ClCompile>
-    <ClCompile Include="Girder.cpp">
-      <Filter>Source Files\Atoms\Structure</Filter>
-    </ClCompile>
     <ClCompile Include="OverlayPlating.cpp">
       <Filter>Source Files\Atoms\Structure</Filter>
     </ClCompile>
     <ClCompile Include="Structure.cpp">
       <Filter>Source Files\Atoms\Structure</Filter>
-    </ClCompile>
-    <ClCompile Include="Turf.cpp">
-      <Filter>Source Files\Atoms</Filter>
     </ClCompile>
     <ClCompile Include="MapHelper.cpp">
       <Filter>Source Files\Utils and helpers</Filter>
@@ -236,6 +233,15 @@
     </ClCompile>
     <ClCompile Include="Events.cpp">
       <Filter>Source Files\Config</Filter>
+    </ClCompile>
+    <ClCompile Include="Girder.cpp">
+      <Filter>Source Files\Atoms\Turf</Filter>
+    </ClCompile>
+    <ClCompile Include="Turf.cpp">
+      <Filter>Source Files\Atoms\Turf</Filter>
+    </ClCompile>
+    <ClCompile Include="Client.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -308,9 +314,6 @@
     <ClInclude Include="Object.hpp">
       <Filter>Header Files\Atoms\Object</Filter>
     </ClInclude>
-    <ClInclude Include="Client.hpp">
-      <Filter>Header Files\Atoms</Filter>
-    </ClInclude>
     <ClInclude Include="PlayerSpawn.hpp">
       <Filter>Header Files\MapSuite</Filter>
     </ClInclude>
@@ -344,9 +347,6 @@
     <ClInclude Include="BulletHelper.hpp">
       <Filter>Header Files\Utils and helpers</Filter>
     </ClInclude>
-    <ClInclude Include="Girder.hpp">
-      <Filter>Header Files\Atoms\Structure</Filter>
-    </ClInclude>
     <ClInclude Include="OverlayPlating.hpp">
       <Filter>Header Files\Atoms\Structure</Filter>
     </ClInclude>
@@ -355,9 +355,6 @@
     </ClInclude>
     <ClInclude Include="MapDefines.h">
       <Filter>Header Files\Config</Filter>
-    </ClInclude>
-    <ClInclude Include="Turf.hpp">
-      <Filter>Header Files\Atoms</Filter>
     </ClInclude>
     <ClInclude Include="MapHelper.hpp">
       <Filter>Header Files\Utils and helpers</Filter>
@@ -397,6 +394,15 @@
     </ClInclude>
     <ClInclude Include="Events.hpp">
       <Filter>Header Files\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="Client.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Turf.hpp">
+      <Filter>Header Files\Atoms\Turf</Filter>
+    </ClInclude>
+    <ClInclude Include="Girder.hpp">
+      <Filter>Header Files\Atoms\Turf</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
