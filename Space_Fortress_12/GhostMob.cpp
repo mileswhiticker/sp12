@@ -1,4 +1,4 @@
-#include "InputModule_GhostMob.hpp"
+#include "MobGhost.hpp"
 #include "Observer.hpp"
 #include "AtomManager.hpp"
 #include "Client.hpp"
@@ -6,33 +6,33 @@
 #include <cegui\elements\CEGUIGUISheet.h>
 #include <OGRE\OgreSceneNode.h>
 
-GhostMob::GhostMob(Mob* a_pOwnedMob, Client* a_pOwnedClient)
-:	InputModule(a_pOwnedMob, a_pOwnedClient)
+MobGhost::MobGhost(Mob* a_pOwnedMob, Client* a_pOwnedClient)
+:	Component(a_pOwnedMob, a_pOwnedClient)
 {
 	//
 }
 
-void GhostMob::Update(float a_DeltaT)
+void MobGhost::Update(float a_DeltaT)
 {
 	//
 }
 
-bool GhostMob::mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
+bool MobGhost::mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
 {
 	return false;
 }
 
-bool GhostMob::mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
+bool MobGhost::mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
 {
 	return false;
 }
 
-bool GhostMob::keyPressed( const OIS::KeyEvent &arg )
+bool MobGhost::keyPressed( const OIS::KeyEvent &arg )
 {
 	return true;
 }
 
-bool GhostMob::keyReleased( const OIS::KeyEvent &arg )
+bool MobGhost::keyReleased( const OIS::KeyEvent &arg )
 {
 	switch(arg.key)
 	{
@@ -54,7 +54,7 @@ bool GhostMob::keyReleased( const OIS::KeyEvent &arg )
 	return true;
 }
 
-bool GhostMob::mouseMoved( const OIS::MouseEvent &arg )
+bool MobGhost::mouseMoved( const OIS::MouseEvent &arg )
 {
 	return true;
 }

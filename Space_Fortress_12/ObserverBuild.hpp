@@ -1,12 +1,12 @@
 #ifndef	OBSERVERBUILD_HPP
 #define	OBSERVERBUILD_HPP
 
-#include "InputModule.hpp"
+#include "Component.hpp"
 class Atom;
 class Human;
 
 class ObserverBuild
-:	public InputModule
+:	public Component
 {
 public:
 	ObserverBuild(Mob* a_pOwnedMob, Client* a_pOwnedClient);

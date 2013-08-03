@@ -4,7 +4,7 @@
 
 	<station name = "Test Station 13">
 	
-		<cell x="3" y="2" z="1" skeleton="tile_girder">
+		<turf x="3" y="2" z="1" type_text="girder">
 			<overlay plating="grey_default" dir="2"></overlay>
 			<overlay plating="grey_default" dir="8"></overlay>
 			<overlay plating="grey_default" dir="32"></overlay>
@@ -14,9 +14,9 @@
 			<underlay plating="grey_default" dir="2"></underlay>
 			<underlay plating="grey_default" dir="8"></underlay>
 			<underlay plating="grey_default" dir="32"></underlay>
-		</cell>
+		</turf>
 
-		<cell x="3" y="2" z="2" skeleton="tile_girder">
+		<turf x="3" y="2" z="2" type_text="girder">
 			<overlay plating="grey_default" dir="8"></overlay>
 			<overlay plating="grey_default" dir="32"></overlay>
 			
@@ -24,8 +24,8 @@
 			
 			<underlay plating="grey_default" dir="8"></underlay>
 			<underlay plating="grey_default" dir="32"></underlay>
-		</cell>
-		<cell x="3" y="2" z="3" skeleton="tile_girder" filling="grey_default">
+		</turf>
+		<turf x="3" y="2" z="3" type_text="girder" filling="grey_default">
 			<overlay plating="grey_default" dir="8"></overlay>
 			<overlay plating="grey_default" dir="32"></overlay>
 			
@@ -33,29 +33,29 @@
 			
 			<underlay plating="grey_default" dir="8"></underlay>
 			<underlay plating="grey_default" dir="32"></underlay>
-		</cell>
+		</turf>
 		
-		<cell x="2" y="1" z="1" skeleton="tile_girder">
+		<turf x="2" y="1" z="1" type_text="girder">
 			<overlay plating="grey_default" dir="16"></overlay>
 			
 			<underlay plating="grey_default" dir="16"></underlay>
-		</cell>
-		<cell x="2" y="1" z="2" skeleton="tile_girder">
+		</turf>
+		<turf x="2" y="1" z="2" type_text="girder">
 			<overlay plating="grey_default" dir="16"></overlay>
 			
 			<obj tag="box"></obj>
 			
 			<underlay plating="grey_default" dir="16"></underlay>
-		</cell>
-		<cell x="2" y="1" z="3" skeleton="tile_girder">
+		</turf>
+		<turf x="2" y="1" z="3" type_text="girder">
 			<overlay plating="grey_default" dir="16"></overlay>
 			
 			<obj tag="box"></obj>
 			
 			<underlay plating="grey_default" dir="16"></underlay>
-		</cell>
+		</turf>
 		
-		<cell x="1" y="2" z="1" skeleton="tile_girder" filling="grey_default">
+		<turf x="1" y="2" z="1" type_text="girder" filling="grey_default">
 			<overlay plating="grey_default" dir="4"></overlay>
 			<overlay plating="grey_default" dir="32"></overlay>
 			
@@ -63,8 +63,8 @@
 			
 			<underlay plating="grey_default" dir="4"></underlay>
 			<underlay plating="grey_default" dir="32"></underlay>
-		</cell>
-		<cell x="1" y="2" z="2" skeleton="tile_girder">
+		</turf>
+		<turf x="1" y="2" z="2" type_text="girder">
 			<overlay plating="grey_default" dir="4"></overlay>
 			<overlay plating="grey_default" dir="32"></overlay>
 			
@@ -72,8 +72,8 @@
 			
 			<underlay plating="grey_default" dir="4"></underlay>
 			<underlay plating="grey_default" dir="32"></underlay>
-		</cell>
-		<cell x="1" y="2" z="3" skeleton="tile_girder">
+		</turf>
+		<turf x="1" y="2" z="3" type_text="girder">
 			<overlay plating="grey_default" dir="1"></overlay>
 			<overlay plating="grey_default" dir="4"></overlay>
 			<overlay plating="grey_default" dir="32"></overlay>
@@ -83,7 +83,7 @@
 			<underlay plating="grey_default" dir="4"></underlay>
 			<underlay plating="grey_default" dir="1"></underlay>
 			<underlay plating="grey_default" dir="32"></underlay>
-		</cell>
+		</turf>
 		
 		<playerspawn x="2" y="2" z="5" type="observer" dir="2"></playerspawn>
 		<playerspawn x="2" y="2" z="-2" type="observer" dir="1"></playerspawn>

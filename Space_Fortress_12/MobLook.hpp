@@ -1,10 +1,10 @@
 #ifndef INPUTMODULE_MOBLOOK
 #define INPUTMODULE_MOBLOOK
 
-#include "InputModule.hpp"
+#include "Component.hpp"
 
 class MobLook
-:	public InputModule
+:	public Component
 {
 public:
 	MobLook(Mob* a_pOwnedMob, Client* a_pOwnedClient);

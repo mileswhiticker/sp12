@@ -15,9 +15,6 @@ public:
 	virtual void CreateFromBuildPoint();
 	virtual void DestroyToBuildPoint();
 	//
-	virtual void Select(InputModule* a_pSelectingInputModule);
-	virtual void DeSelect(InputModule* a_pSelectingInputModule);
-	//
 	void ToggleGravity();
 	void SetGravity(bool a_Active = true);
 	void SetPercentGravityFalloff(float a_NewLinearFallof);

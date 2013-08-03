@@ -1,4 +1,4 @@
-#include "InputModule_MobLook.hpp"
+#include "MobLook.hpp"
 
 #include "Client.hpp"
 #include "Mob.hpp"
@@ -9,7 +9,7 @@
 #include "BtOgreHelper.hpp"
 
 MobLook::MobLook(Mob* a_pOwnedMob, Client* a_pOwnedClient)
-:	InputModule(a_pOwnedMob, a_pOwnedClient)
+:	Component(a_pOwnedMob, a_pOwnedClient)
 ,	m_LookAngle(Ogre::Vector3(0,0,0))
 ,	m_LookOrientation(Ogre::Quaternion::IDENTITY)
 {

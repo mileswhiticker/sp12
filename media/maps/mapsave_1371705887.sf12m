@@ -1,0 +1,18 @@
+<sf12m>
+    <!--Experimental map format for Space Fortress 12-->
+    <!--Use discrete integers for coordinatess-->
+    <station name="main_station">
+        <cell x="2" y="2" z="1"/>
+        <cell x="3" y="2" z="1"/>
+        <cell x="3" y="2" z="2"/>
+        <cell x="3" y="2" z="3"/>
+        <cell x="2" y="2" z="2"/>
+        <cell x="2" y="2" z="3"/>
+        <cell x="2" y="1" z="1"/>
+        <cell x="2" y="1" z="2"/>
+        <cell x="2" y="1" z="3"/>
+        <cell x="1" y="2" z="1"/>
+        <cell x="1" y="2" z="2"/>
+        <cell x="1" y="2" z="3"/>
+    </station>
+</sf12m>

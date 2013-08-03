@@ -6,7 +6,7 @@
 #include "Human.hpp"
 #include "Observer.hpp"
 #include "Object.hpp"
-#include "Girder.hpp"
+//#include "Girder.hpp"
 #include "Structure.hpp"
 #include "OverlayPlating.hpp"
 #include "UnderlayPlating.hpp"
@@ -75,49 +75,12 @@ Object* AtomManager::CreateObject(int a_ObjectType, Ogre::Vector3 a_Pos, int a_A
 	return pOut;
 }
 
-Turf* AtomManager::CreateTurf(int a_TurfType, MapCell* a_pLocMapCell, int a_AdditionalFlags)
+Turf* AtomManager::CreateTurf(int a_TurfType, Ogre::Vector3 a_SpawnPos, int a_AdditionalFlags)
 {
-	Turf* pOut = NULL;
-	if(a_pLocMapCell)
+	Turf* pOut = new Turf(a_SpawnPos);
+	if(a_AdditionalFlags & INSTANTIATE_IMMEDIATELY)
 	{
-		switch(a_TurfType)
-		{
-		case(Turf::GIRDER):
-			{
-				if(a_AdditionalFlags & BUILD_POINT)
-				{
-					if(!a_pLocMapCell->m_pMyCellTurf)
-					{
-						pOut = new Girder(a_pLocMapCell);
-					}
-				}
-				else
-				{
-					ClearMapCell(a_pLocMapCell);
-					pOut = new Girder(a_pLocMapCell);
-					MapSuite::GetInstance().CreateAdjacentGirderBuildpoints(a_pLocMapCell);
-				}
-				//m_GirdersInWorld.push_back((Girder*)pOut);
-				//m_AtomsInWorld.insert(pOut);
-				
-				break;
-			}
-		default:
-			{
-				std::cout << "Unknown turf type: " << a_TurfType << std::endl;
-				break;
-			}
-		}
-
-		//if creation was successful, deal with any extra flags
-		if(pOut)
-		{
-			m_TurfsInWorld.insert(pOut);
-			if(a_AdditionalFlags & INSTANTIATE_IMMEDIATELY)
-			{
-				pOut->InstantiateTurf(a_AdditionalFlags & BUILD_POINT ? true : false);
-			}
-		}
+		pOut->Instantiate((Turf::TurfType)a_TurfType);
 	}
 
 	return pOut;
@@ -217,7 +180,6 @@ void AtomManager::DeleteTurf(Turf* a_pTurfToDel)
 {
 	if(a_pTurfToDel)
 	{
-		a_pTurfToDel->GetSourceMapCell()->m_pMyCellTurf = NULL;
 		m_TurfsInWorld.erase(a_pTurfToDel);
 		delete a_pTurfToDel;
 	}

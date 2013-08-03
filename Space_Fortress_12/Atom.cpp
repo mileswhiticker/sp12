@@ -1,11 +1,13 @@
 #include "Atom.hpp"
-#include "InputModule_ObserverBuild.hpp"
+#include "ObserverBuild.hpp"
+
+#include "Mob.hpp"
+#include "Turf.hpp"
 
 #include <OGRE\OgreEntity.h>
 #include <OGRE\OgreSubEntity.h>
 #include <OGRE\OgreVector4.h>
 #include <OGRE\OgreSceneNode.h>
-
 
 #include <BulletCollision\CollisionShapes\btBoxShape.h>
 #include <BulletDynamics\Dynamics\btDiscreteDynamicsWorld.h>
@@ -16,14 +18,12 @@
 #include "BulletHelper.hpp"
 #include "RandHelper.h"
 #include "BtOgreHelper.hpp"
-#include "Mob.hpp"
+#include "UID.hpp"
 
 #include "EffectManager.hpp"
 #include "Cached.hpp"
 #include "DebugDrawer.h"
-#include "MapCell.hpp"
 #include "MapSuite.hpp"
-#include "Events.hpp"
 
 Atom::Atom(Ogre::Vector3 a_Pos, int a_Dir)
 :	m_pAtomEntitySceneNode(NULL)
@@ -33,13 +33,20 @@ Atom::Atom(Ogre::Vector3 a_Pos, int a_Dir)
 ,	m_ModulateChangeDir(0)
 ,	m_pRigidBody(NULL)
 ,	m_pCollisionShape(NULL)
-,	m_MyAtomType(UNKNOWN)
+,	m_MyAtomType(UNKNOWN_ATOMTYPE)
 ,	m_Direction(a_Dir)
 ,	m_UseRigidbodyPosition(true)
 ,	m_pCachedCube(NULL)
-,	m_pSourceMapCell(NULL)
+,	m_pCurrentTurf(NULL)
 ,	m_UsesGravity(true)
 ,	m_tLeftUpdateCell(0)
+,	m_AtomFlags(UNKNOWN_ATOMFLAG)
+,	m_AtomID(NewUID())
+	//remove this shit
+,	m_MaterialName("defaultLambert")		//todo
+,	m_SelectMaterialName("defaultLambert")	//todo
+,	m_VirtualSelectMaterialName("cell_highlight_material")
+,	m_AtomTextName("Unknown object")
 {
 	m_pAtomRootSceneNode = NewSceneNode();
 	m_pAtomRootSceneNode->setPosition(a_Pos);
@@ -146,14 +153,14 @@ void Atom::Update(float a_DeltaT)
 			curPos.z += 0.5f;
 		else
 			curPos.z -= 0.5f;
-		MapCell* pNewMapCell = MapSuite::GetInstance().GetCellAtCoordsOrNull(curPos);
+		Turf* pNewTurf = MapSuite::GetInstance().GetTurfAtCoordsOrNull(curPos);
 		bool check = false;
-		if(pNewMapCell != m_pSourceMapCell)
+		if(pNewTurf != m_pCurrentTurf)
 		{
 			//std::cout << "cells don't match, updating..." << std::endl;
 			check = true;
 		}
-		else if(m_pSourceMapCell && m_pSourceMapCell->m_Position.squaredDistance(curPos) > 1)
+		else if(m_pCurrentTurf && m_pCurrentTurf->m_pAtomRootSceneNode->getPosition().squaredDistance(curPos) > 1)
 		{
 			//std::cout << "dist too far from previous cell, updating..." << std::endl;
 			//check = true;
@@ -165,15 +172,15 @@ void Atom::Update(float a_DeltaT)
 				std::cout << "human position update" << std::endl;
 			else
 				std::cout << "observer position update" << std::endl;*/
-			if(m_pSourceMapCell)
+			if(m_pCurrentTurf)
 			{
-				m_pSourceMapCell->AtomLeaveCell(this);
+				m_pCurrentTurf->AtomLeave(this);
 				//std::cout << "	leaving cell" << std::endl;
 			}
-			m_pSourceMapCell = pNewMapCell;
-			if(pNewMapCell)
+			m_pCurrentTurf = pNewTurf;
+			if(pNewTurf)
 			{
-				m_pSourceMapCell->AtomEnterCell(this);
+				m_pCurrentTurf->AtomEnter(this);
 				//std::cout << "	cell " << m_pSourceMapCell->m_Position << " | " << m_pAtomRootSceneNode->getPosition() << std::endl;
 			}
 			else
@@ -182,6 +189,12 @@ void Atom::Update(float a_DeltaT)
 				ResetEnvironment();
 			}
 		}
+	}
+	
+	//components
+	for(auto it = m_AllComponents.begin(); it != m_AllComponents.end(); ++it)
+	{
+		(*it)->Update(a_DeltaT);
 	}
 
 	//--- highlights shader ---//
@@ -272,9 +285,9 @@ Atom::AtomType Atom::GetAtomType()
 	return m_MyAtomType;
 }
 
-MapCell* Atom::GetSourceMapCell()
+Turf* Atom::GetCurrentTurf()
 {
-	return m_pSourceMapCell;
+	return m_pCurrentTurf;
 }
 
 bool Atom::ChangeDirection(int a_NewDir)
@@ -283,21 +296,21 @@ bool Atom::ChangeDirection(int a_NewDir)
 	return true;
 }
 
-void Atom::Select(InputModule* a_pSelectingInputModule)
+void Atom::Select(Component* a_pSourceComponent)
 {
-	if(a_pSelectingInputModule)
+	if(a_pSourceComponent)
 	{
 		SetFlashingColour(Ogre::ColourValue::Green);
 		SetEntityVisible();
-		m_SelectingInputModules.insert(a_pSelectingInputModule);
+		m_SelectingInputModules.insert(a_pSourceComponent);
 	}
 }
 
-void Atom::DeSelect(InputModule* a_pSelectingInputModule)
+void Atom::DeSelect(Component* a_pSourceComponent)
 {
-	if(a_pSelectingInputModule)
+	if(a_pSourceComponent)
 	{
-		m_SelectingInputModules.erase(a_pSelectingInputModule);
+		m_SelectingInputModules.erase(a_pSourceComponent);
 		StopFlashingColour();
 	}
 }
@@ -329,40 +342,46 @@ void Atom::InitCollisionShapeDebugDraw(Ogre::ColourValue a_ColourVal)
 	}
 }
 
-void Atom::Interact(Atom* a_pSourceAtom, InputModule* a_pSourceModule, int a_Intent, int a_Type)
+bool Atom::Interact(Mob* a_pSourceMob, Context* a_pSourceContext, int a_InteractType, Atom* a_pUsedAtom)
 {
-	switch(a_Type)
+	std::cout << "DEBUG: Atom::Interact()" << std::endl;
+	if(a_pSourceMob && a_pSourceContext && a_InteractType == Mob::INTERACT)
 	{
-	case(Event::EX_ACT):
+		if(a_pUsedAtom)
 		{
-			//explosion
-			break;
+			a_pSourceMob->SendClientMessage("You hit " + this->GetAtomTextName() + " with " + a_pUsedAtom->GetAtomTextName() + ", but nothing interesting happens.");
 		}
-	case(Event::EMP_ACT):
+		else
 		{
-			//emp
-			break;
-		}
-	default:
-		{
-			//no special type of interaction, just use the default interactions for each intent
-			if(a_Intent)
+			std::string verb;
+			switch(a_pSourceMob->GetIntent())
 			{
-				//hit this atom with a_pSourceAtom 
+			case(Mob::HELP):
+				{
+					verb = "touch";
+					break;
+				}
+			case(Mob::DISARM):
+				{
+					verb = "shove";
+					break;
+				}
+			case(Mob::GRAB):
+				{
+					verb = "grip";
+					break;
+				}
+			case(Mob::HARM):
+				{
+					verb = "hit";
+					break;
+				}
 			}
-			else
-			{
-				//nothing happens
-			}
-			break;
+			a_pSourceMob->SendClientMessage("You " + verb + " the " + this->GetAtomTextName() + ", but nothing interesting happens.");
 		}
 	}
-}
 
-void Atom::CancelInteract(Atom* a_pSource, int a_Intent, int a_Type)
-{
-	//in case we have a case where you have to continually activate something
-	//
+	return true;
 }
 
 //returns true if gravity has actually changed
@@ -371,13 +390,13 @@ bool Atom::OnGravityChange()
 	if(m_UsesGravity && m_pRigidBody)
 	{
 		btVector3 oldGravity = m_pRigidBody->getGravity();
-		if(m_pSourceMapCell)
+		if(m_pCurrentTurf)
 		{
-			btVector3 newGravity = OGRE2BT(m_pSourceMapCell->GetGravity());
+			btVector3 newGravity = OGRE2BT(m_pCurrentTurf->GetGravity());
 			if(newGravity != oldGravity)
 			{
 				//apply gravity of the current cell
-				m_pRigidBody->setGravity( OGRE2BT(m_pSourceMapCell->GetGravity()) );
+				m_pRigidBody->setGravity( OGRE2BT(m_pCurrentTurf->GetGravity()) );
 				//std::cout << "gravity updated" << std::endl;
 				return true;
 			}
@@ -397,4 +416,29 @@ void Atom::ResetEnvironment()
 {
 	//todo: grab the ambient environmental values for space
 	OnGravityChange();
+}
+
+void Atom::BuildTurf(Turf* a_pTarget, bool a_Virtual)
+{
+	//
+}
+
+void Atom::BuildStructure(Turf* a_pTarget, bool a_Virtual)
+{
+	//
+}
+
+int Atom::GetAtomFlags()
+{
+	return m_AtomFlags;
+}
+
+int Atom::GetAtomUID()
+{
+	return m_AtomID;
+}
+
+std::string Atom::GetAtomTextName()
+{
+	return m_AtomTextName;
 }

@@ -1,11 +1,12 @@
 #include "MapSuite.hpp"
 
-#include "MapCell.hpp"
+#include "Turf.hpp"
 #include "MapHelper.hpp"
 #include "AtomManager.hpp"
 #include "Structure.hpp"
-#include "Turf.hpp"
 #include "RandHelper.h"
+
+#include <OGRE\OgreSceneNode.h>
 
 MapSuite::MapSuite()
 {
@@ -27,30 +28,30 @@ Station* MapSuite::GetStartingStation()
 	return NULL;
 }
 
-MapCell* MapSuite::CreateNewMapCell(int a_X, int a_Y, int a_Z)
+Turf* MapSuite::CreateTurf(int a_X, int a_Y, int a_Z, int a_TurfType)
 {
-	return CreateNewMapCell(Ogre::Vector3(Ogre::Real(a_X),Ogre::Real(a_Y),Ogre::Real(a_Z)));
+	return CreateTurf(Ogre::Vector3(Ogre::Real(a_X),Ogre::Real(a_Y),Ogre::Real(a_Z)), a_TurfType);
 }
 
-MapCell* MapSuite::CreateNewMapCell(Ogre::Vector3 a_Coords)
+Turf* MapSuite::CreateTurf(Ogre::Vector3 a_Coords, int a_TurfType)
 {
-	MapCell* pNewMapCell = new MapCell(a_Coords);
+	Turf* pNewTurf = AtomManager::GetSingleton().CreateTurf(a_TurfType, a_Coords, INSTANTIATE_IMMEDIATELY);
 	//second param is false if it already exists
 
-	std::pair<std::unordered_map<std::string, MapCell*>::iterator, bool> result = m_MapCellGrid.emplace(std::make_pair(GetCoordsString(a_Coords), pNewMapCell));
+	std::pair<std::unordered_map<std::string, Turf*>::iterator, bool> result = m_TurfGrid.emplace(std::make_pair(GetCoordsString(a_Coords), pNewTurf));
 	if(!result.second)
 	{
-		delete pNewMapCell;
-		pNewMapCell = result.first->second;
+		delete pNewTurf;
+		pNewTurf = result.first->second;
 	}
 
-	return pNewMapCell;
+	return pNewTurf;
 }
 
-int MapSuite::CreateAdjacentGirderBuildpoints(MapCell* a_pCenterMapCell)
+int MapSuite::CreateAdjacentGirderBuildpoints(Turf* a_pCenterTurf)
 {
 	int numCreated = 0;
-	if(a_pCenterMapCell)
+	if(a_pCenterTurf)
 	{
 		//limit the world size so that players can't crash the server by endlessly expanding
 		//eventually, there should be some kind of instancing/IC mechanic to handle this, instead of an arbitrary invisible force field
@@ -61,14 +62,19 @@ int MapSuite::CreateAdjacentGirderBuildpoints(MapCell* a_pCenterMapCell)
 		//loop through cardinal directions and add girder build points in them
 		for(int curDir = 1; curDir <= 32; curDir *= 2)
 		{
-			Ogre::Vector3 targetCoords = GetCoordsInDir(a_pCenterMapCell->m_Position, curDir);
-			MapCell* pCurrentCell = GetCellAtCoordsOrCreate(targetCoords);
-
+			Ogre::Vector3 targetCoords = GetCoordsInDir(a_pCenterTurf->m_pAtomRootSceneNode->getPosition(), curDir);
+			Turf* pCurrentTurf = GetTurfAtCoordsOrCreate(targetCoords);
+			
 			//only add a buildpoint if the cell doesn't have something there already
-			if(!pCurrentCell->m_pMyCellTurf)
+			if(pCurrentTurf)
 			{
-				AtomManager::GetSingleton().CreateTurf(Turf::GIRDER, pCurrentCell, INSTANTIATE_IMMEDIATELY|BUILD_POINT);
+				pCurrentTurf->SetBuildable();
+				//AtomManager::GetSingleton().CreateTurf(Turf::GIRDER, pCurrentTurf, INSTANTIATE_IMMEDIATELY|BUILD_POINT);
 				numCreated++;
+			}
+			else
+			{
+				std::cout << "WARNING: Unable to create turf at " << targetCoords << std::endl;
 			}
 		}
 	}
@@ -77,22 +83,21 @@ int MapSuite::CreateAdjacentGirderBuildpoints(MapCell* a_pCenterMapCell)
 	return numCreated;
 }
 
-int MapSuite::ClearDependantAdjacentGirderBuildpoints(MapCell* a_pLocMapCell)
+int MapSuite::ClearDependantAdjacentGirderBuildpoints(Turf* a_pCenterTurf)
 {
 	int numCleared = 0;
-	if(a_pLocMapCell)
+	if(a_pCenterTurf)
 	{
 		//loop through cardinal directions and delete girder build points if they have no other connected turfs
 		for(int curAdjDir = 1; curAdjDir <= 32; curAdjDir *= 2)
 		{
-			Ogre::Vector3 targetCoords = GetCoordsInDir(a_pLocMapCell->m_Position, curAdjDir);
-			MapCell* pCurrentCell = GetCellAtCoordsOrNull(targetCoords);
+			Ogre::Vector3 targetCoords = GetCoordsInDir(a_pCenterTurf->m_pAtomRootSceneNode->getPosition(), curAdjDir);
+			Turf* pCurrentTurf = GetTurfAtCoordsOrNull(targetCoords);
 
 			//check if there's a girder build point there
-			if(pCurrentCell \
-				&& pCurrentCell->m_pMyCellTurf \
-				&& pCurrentCell->m_pMyCellTurf->GetTurfType() == Turf::GIRDER \
-				&& pCurrentCell->m_pMyCellTurf->IsBuildPoint())
+			if(pCurrentTurf \
+				&& pCurrentTurf->GetTurfType() == Turf::GIRDER \
+				&& pCurrentTurf->IsBuildPoint())
 			{
 				//see if there are any adjacent turfs other than the source cell
 				int sourceDir = ReverseDir(curAdjDir);
@@ -102,9 +107,8 @@ int MapSuite::ClearDependantAdjacentGirderBuildpoints(MapCell* a_pLocMapCell)
 					if(curCheckDir != sourceDir)
 					{
 						//see if there is a turf in that direction we can cling on to
-						MapCell* pCheckCellForTurf = GetCellInDirOrNull(pCurrentCell, curCheckDir);
-						if(pCheckCellForTurf && pCheckCellForTurf->m_pMyCellTurf \
-							&& !pCheckCellForTurf->m_pMyCellTurf->IsBuildPoint())
+						Turf* pCheckTurf = GetTurfInDirOrNull(pCheckTurf, curCheckDir);
+						if(pCheckTurf && !pCheckTurf->IsBuildPoint())
 						{
 							turfAdjacent = true;
 							break;
@@ -117,7 +121,8 @@ int MapSuite::ClearDependantAdjacentGirderBuildpoints(MapCell* a_pLocMapCell)
 				//the things we're deleting will make sure their own deletion is safe
 				if(!turfAdjacent)
 				{
-					AtomManager::GetSingleton().DeleteTurf(pCurrentCell->m_pMyCellTurf);
+					pCurrentTurf->SetBuildable(false);
+					//AtomManager::GetSingleton().DeleteTurf(pCheckTurf);
 					numCleared++;
 					//leave the mapcell, gravity needs it
 					//m_MapCellGrid.erase(GetCoordsString(pCurrentCell->m_Position));
@@ -131,16 +136,16 @@ int MapSuite::ClearDependantAdjacentGirderBuildpoints(MapCell* a_pLocMapCell)
 	return numCleared;
 }
 
-MapCell* MapSuite::GetCellInDirOrNull(MapCell* a_pSourceMapCell, int a_Direction)
+Turf* MapSuite::GetTurfInDirOrNull(Turf* a_pSourceTurf, int a_Direction)
 {
-	MapCell* pOut = NULL;
-	if(a_pSourceMapCell)
+	Turf* pOut = NULL;
+	if(a_pSourceTurf)
 	{
-		Ogre::Vector3 newCoords = GetCoordsInDir(a_pSourceMapCell->m_Position, a_Direction);
+		Ogre::Vector3 newCoords = GetCoordsInDir(a_pSourceTurf->m_pAtomRootSceneNode->getPosition(), a_Direction);
 		
 		try
 		{
-			pOut = m_MapCellGrid.at(GetCoordsString(newCoords));
+			pOut = m_TurfGrid.at(GetCoordsString(newCoords));
 		}
 		catch (const std::out_of_range& oor)
 		{
@@ -150,36 +155,36 @@ MapCell* MapSuite::GetCellInDirOrNull(MapCell* a_pSourceMapCell, int a_Direction
 	return pOut;
 }
 
-MapCell* MapSuite::GetCellInDirOrCreate(MapCell* a_pSourceMapCell, int a_Direction)
+Turf* MapSuite::GetTurfInDirOrCreate(Turf* a_pSourceTurf, int a_Direction)
 {
-	MapCell* pOut = NULL;
-	if(a_pSourceMapCell)
+	Turf* pOut = NULL;
+	if(a_pSourceTurf)
 	{
-		Ogre::Vector3 newCoords = GetCoordsInDir(a_pSourceMapCell->m_Position, a_Direction);
-		pOut = GetCellAtCoordsOrCreate(newCoords);
+		Ogre::Vector3 newCoords = GetCoordsInDir(a_pSourceTurf->m_pAtomRootSceneNode->getPosition(), a_Direction);
+		pOut = GetTurfAtCoordsOrCreate(newCoords);
 	}
 	return pOut;
 }
 
-MapCell* MapSuite::GetCellAtCoordsOrCreate(int a_X, int a_Y, int a_Z)
+Turf* MapSuite::GetTurfAtCoordsOrCreate(int a_X, int a_Y, int a_Z)
 {
-	MapCell* pOut = GetCellAtCoordsOrNull(a_X, a_Y, a_Z);
+	Turf* pOut = GetTurfAtCoordsOrNull(a_X, a_Y, a_Z);
 	if(!pOut)
 	{
 		//if it doesn't exist, just create it
-		pOut = CreateNewMapCell(a_X, a_Y, a_Z);
+		pOut = CreateTurf(a_X, a_Y, a_Z);
 	}
 	return pOut;
 }
 
-MapCell* MapSuite::GetCellAtCoordsOrCreate(Ogre::Vector3 a_Coords)
+Turf* MapSuite::GetTurfAtCoordsOrCreate(Ogre::Vector3 a_Coords)
 {
-	return GetCellAtCoordsOrCreate(a_Coords.x, a_Coords.y, a_Coords.z);
+	return GetTurfAtCoordsOrCreate(a_Coords.x, a_Coords.y, a_Coords.z);
 }
 
-MapCell* MapSuite::GetCellAtCoordsOrNull(int a_X, int a_Y, int a_Z)
+Turf* MapSuite::GetTurfAtCoordsOrNull(int a_X, int a_Y, int a_Z)
 {
-	MapCell* pOut = NULL;
+	Turf* pOut = NULL;
 
 	//offset due to rounding when casting from float to integer
 	/*if(a_X < 0)
@@ -191,7 +196,7 @@ MapCell* MapSuite::GetCellAtCoordsOrNull(int a_X, int a_Y, int a_Z)
 
 	try
 	{
-		pOut = m_MapCellGrid.at(GetCoordsString(a_X, a_Y, a_Z));
+		pOut = m_TurfGrid.at(GetCoordsString(a_X, a_Y, a_Z));
 	}
 	catch (const std::out_of_range& oor)
 	{
@@ -201,9 +206,9 @@ MapCell* MapSuite::GetCellAtCoordsOrNull(int a_X, int a_Y, int a_Z)
 	return pOut;
 }
 
-MapCell* MapSuite::GetCellAtCoordsOrNull(Ogre::Vector3 a_Coords)
+Turf* MapSuite::GetTurfAtCoordsOrNull(Ogre::Vector3 a_Coords)
 {
-	return GetCellAtCoordsOrNull(a_Coords.x, a_Coords.y, a_Coords.z);
+	return GetTurfAtCoordsOrNull(a_Coords.x, a_Coords.y, a_Coords.z);
 }
 
 PlayerSpawn* MapSuite::GetRandomPlayerSpawn()

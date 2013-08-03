@@ -1,4 +1,4 @@
-#include "InputModule_Generic.hpp"
+#include "PlayerGeneric.hpp"
 
 #include <OGRE\OgreCamera.h>
 #include <OGRE\OgreSceneNode.h>
@@ -12,8 +12,8 @@
 #include "EffectManager.hpp"
 #include "Object.hpp"
 
-Generic::Generic(Mob* a_pOwnedMob, Client* a_pOwnedClient)
-:	InputModule(a_pOwnedMob, a_pOwnedClient)
+PlayerGeneric::PlayerGeneric(Mob* a_pOwnedMob, Client* a_pOwnedClient)
+:	Component(a_pOwnedMob, a_pOwnedClient)
 {
 	//point light for testing
 	Ogre::SceneManager& sceneMgr = GetSceneManager();
@@ -25,27 +25,27 @@ Generic::Generic(Mob* a_pOwnedMob, Client* a_pOwnedClient)
 	m_pPointLight->setAttenuation(25, 0, 1, 0);
 }
 
-void Generic::Update(float a_DeltaT)
+void PlayerGeneric::Update(float a_DeltaT)
 {
 	//
 }
 
-bool Generic::mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
+bool PlayerGeneric::mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
 {
 	return false;
 }
 
-bool Generic::mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
+bool PlayerGeneric::mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
 {
 	return false;
 }
 
-bool Generic::keyPressed( const OIS::KeyEvent &arg )
+bool PlayerGeneric::keyPressed( const OIS::KeyEvent &arg )
 {
 	return true;
 }
 
-bool Generic::keyReleased( const OIS::KeyEvent &arg )
+bool PlayerGeneric::keyReleased( const OIS::KeyEvent &arg )
 {
 	switch(arg.key)
 	{
@@ -89,7 +89,7 @@ bool Generic::keyReleased( const OIS::KeyEvent &arg )
 	return true;
 }
 
-bool Generic::mouseMoved( const OIS::MouseEvent &arg )
+bool PlayerGeneric::mouseMoved( const OIS::MouseEvent &arg )
 {
 	return true;
 }

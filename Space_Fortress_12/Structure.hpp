@@ -29,9 +29,9 @@ public:
 	virtual void DestroyToBuildPoint()=0;
 	virtual bool IsBuildPoint();
 	//
-	virtual void Interact(Atom* a_pSourceAtom, InputModule* a_pSourceModule, int a_Intent, int a_Type = 0);
-	virtual void Select(InputModule* a_pSelectingInputModule);
-	virtual void DeSelect(InputModule* a_pSelectingInputModule);
+	virtual bool Interact(Mob* a_pSourceMob, Context* a_pSourceContext, int a_InteractType = 3, Atom* a_pUsedAtom = NULL);
+	virtual void Select(Component* a_pSourceComponent);
+	virtual void DeSelect(Component* a_pSourceComponent);
 	//
 	bool MountOnGirder(Girder* a_pMountTarget);
 	bool UnmountFromGirder();
@@ -43,6 +43,7 @@ protected:
 	Girder* m_pMountedGirder;
 	Structure* m_pMountedOnStructure;
 	bool m_IsBuildPoint;
+	//
 	//
 };
 

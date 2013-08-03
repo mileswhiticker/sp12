@@ -1,10 +1,10 @@
-#include "InputModule_ObserverLook.hpp"
+#include "ObserverLook.hpp"
 
 #include "Client.hpp"
 #include <OGRE\OgreCamera.h>
 
 ObserverLook::ObserverLook(Mob* a_pOwnedMob, Client* a_pOwnedClient)
-:	InputModule(a_pOwnedMob, a_pOwnedClient)
+:	Component(a_pOwnedMob, a_pOwnedClient)
 ,	m_LookAngle(Ogre::Vector3(0,0,0))
 ,	m_LookOrientation(Ogre::Quaternion::IDENTITY)
 {

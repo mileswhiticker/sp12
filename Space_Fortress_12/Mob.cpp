@@ -1,10 +1,13 @@
 #include "Mob.hpp"
 
-#include "InputModule.hpp"
+#include "Component.hpp"
 #include "Client.hpp"
 #include "MapSuite.hpp"
-#include "MapCell.hpp"
+//#include "MapCell.hpp"
 #include "Application.hpp"
+#include "Turf.hpp"
+#include "Mob.hpp"
+#include "Object.hpp"
 
 #include <LinearMath\btVector3.h>
 #include <BulletDynamics\Dynamics\btDiscreteDynamicsWorld.h>
@@ -26,7 +29,8 @@ Mob::Mob(Ogre::Vector3 a_StartPos, int a_Direction)
 ,	m_tleftNextGroundRaycast(0.5f)
 ,	m_IsOnGround(false)
 ,	m_CameraModelOffset(Ogre::Vector3::ZERO)
-,	m_Intent(0)
+,	m_Intent(HELP)
+,	m_pHeldObject(NULL)
 {
 	m_MyAtomType = Atom::MOB;
 	//btQuaternion(btVector3(0,1,0), 0);
@@ -43,10 +47,6 @@ Mob::~Mob()
 void Mob::Update(float a_DeltaT)
 {
 	Atom::Update(a_DeltaT);
-	for(auto it = m_InputModules.begin(); it != m_InputModules.end(); ++it)
-	{
-		(*it)->Update(a_DeltaT);
-	}
 
 	//if we're "falling", raycast down to see if we're on the "ground"
 	m_tleftNextGroundRaycast -= a_DeltaT;
@@ -71,7 +71,7 @@ bool Mob::ConnectClient(Client* a_pNewClient)
 		RegisterKeyListener(this);
 		RegisterMouseListener(this);
 		
-		for(auto it = m_InputModules.begin(); it != m_InputModules.end(); ++it)
+		for(auto it = m_AllComponents.begin(); it != m_AllComponents.end(); ++it)
 		{
 			(*it)->SetClient(a_pNewClient);
 		}
@@ -95,7 +95,7 @@ bool Mob::DisconnectClient()
 	{
 		m_pPossessingClient = NULL;
 
-		for(auto it = m_InputModules.begin(); it != m_InputModules.end(); ++it)
+		for(auto it = m_AllComponents.begin(); it != m_AllComponents.end(); ++it)
 		{
 			(*it)->SetClient(NULL);
 		}
@@ -107,7 +107,7 @@ bool Mob::DisconnectClient()
 
 bool Mob::keyPressed( const OIS::KeyEvent &arg )
 {
-	for(auto it = m_InputModules.begin(); it != m_InputModules.end(); ++it)
+	for(auto it = m_AllComponents.begin(); it != m_AllComponents.end(); ++it)
 	{
 		(*it)->keyPressed(arg);
 	}
@@ -117,7 +117,7 @@ bool Mob::keyPressed( const OIS::KeyEvent &arg )
 
 bool Mob::keyReleased( const OIS::KeyEvent &arg )
 {
-	for(auto it = m_InputModules.begin(); it != m_InputModules.end(); ++it)
+	for(auto it = m_AllComponents.begin(); it != m_AllComponents.end(); ++it)
 	{
 		(*it)->keyReleased(arg);
 	}
@@ -127,7 +127,7 @@ bool Mob::keyReleased( const OIS::KeyEvent &arg )
 
 bool Mob::mouseMoved( const OIS::MouseEvent &arg )
 {
-	for(auto it = m_InputModules.begin(); it != m_InputModules.end(); ++it)
+	for(auto it = m_AllComponents.begin(); it != m_AllComponents.end(); ++it)
 	{
 		(*it)->mouseMoved(arg);
 	}
@@ -137,7 +137,7 @@ bool Mob::mouseMoved( const OIS::MouseEvent &arg )
 
 bool Mob::mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
 {
-	for(auto it = m_InputModules.begin(); it != m_InputModules.end(); ++it)
+	for(auto it = m_AllComponents.begin(); it != m_AllComponents.end(); ++it)
 	{
 		(*it)->mousePressed(arg, id);
 	}
@@ -147,7 +147,7 @@ bool Mob::mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
 
 bool Mob::mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
 {
-	for(auto it = m_InputModules.begin(); it != m_InputModules.end(); ++it)
+	for(auto it = m_AllComponents.begin(); it != m_AllComponents.end(); ++it)
 	{
 		(*it)->mouseReleased(arg, id);
 	}
@@ -178,7 +178,7 @@ bool Mob::UpdateOnGround()
 		btVector3 startPos = worldTransform.getOrigin();
 		btVector3 castDir = m_pRigidBody->getGravity().normalized() * 0.5f;
 		btCollisionWorld::ClosestRayResultCallback closestHitRayCallback(startPos, startPos + castDir);
-		closestHitRayCallback.m_collisionFilterGroup = COLLISION_BUILDRAYCAST;		//todo: this needs its own collision define, but this one works for now
+		closestHitRayCallback.m_collisionFilterGroup = RAYCAST_BUILD;		//todo: this needs its own collision define, but this one works for now
 		closestHitRayCallback.m_collisionFilterMask = COLLISION_STRUCTURE | COLLISION_OBJ | COLLISION_MOB;
 		
 		btDiscreteDynamicsWorld& bulletWorld = Application::StaticGetDynamicsWorld();
@@ -200,7 +200,7 @@ bool Mob::UpdateOnGround()
 	return m_IsOnGround;
 }
 
-int Mob::GetIntent()
+Mob::IntentType Mob::GetIntent()
 {
 	return m_Intent;
 }
@@ -211,10 +211,10 @@ bool Mob::OnGravityChange()
 	{
 		//grab an updated direction for gravity to orient ourselves against
 		Ogre::Vector3 newGravityDir = Ogre::Vector3::ZERO;
-		if(m_pSourceMapCell)
+		if(m_pCurrentTurf)
 		{
 			//grab a direction vector for gravity
-			newGravityDir = m_pSourceMapCell->GetGravity().normalisedCopy();
+			newGravityDir = m_pCurrentTurf->GetGravity().normalisedCopy();
 			m_TargetStandingOrientation = OGRE2BT(Ogre::Vector3::NEGATIVE_UNIT_Y.getRotationTo(newGravityDir));
 
 			//grab a quaternion representing a partially correct orientation
@@ -305,5 +305,36 @@ void Mob::UpdateOrientation(float a_DeltaT)
 		//reset the camera orientation
 		/*if(m_pPossessingClient && m_pPossessingClient->m_pCamera)
 			m_pPossessingClient->m_pCamera->setOrientation( BT2OGRE(currentOrientation) );*/
+	}
+}
+
+void Mob::AddObjectToInventory(Object* a_pObject)
+{
+	//if this object is held by another mob, it will be forcibly removed from that one
+	//if we already hold this object, it'll do nothing
+	a_pObject->AddToMobInventory(this);
+
+	//only add it to our inventory if we don't hold it already
+	const int atomUID = a_pObject->GetAtomUID();
+	if(m_Contents.count(atomUID) == 0)
+	{
+		m_Contents[atomUID] = a_pObject;
+	}
+}
+
+void Mob::RemoveObjectFromInventory(Object* a_pObject)
+{
+	const int atomUID = a_pObject->GetAtomUID();
+	if(m_Contents.count(atomUID) == 1)
+	{
+		m_Contents.erase(atomUID);
+	}
+}
+
+void Mob::SendClientMessage(std::string a_Message, int a_MsgType)
+{
+	if(m_pPossessingClient)
+	{
+		m_pPossessingClient->DisplayMessage(a_Message, (Client::MessageType)a_MsgType);
 	}
 }

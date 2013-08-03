@@ -1,4 +1,4 @@
-#include "InputModule_PossessMob.hpp"
+#include "PossessMob.hpp"
 #include "Mob.hpp"
 #include "Client.hpp"
 
@@ -11,7 +11,7 @@
 #include "BtOgreHelper.hpp"
 
 PossessMob::PossessMob(Mob* a_pOwnedMob, Client* a_pOwnedClient)
-:	InputModule(a_pOwnedMob, a_pOwnedClient)
+:	Component(a_pOwnedMob, a_pOwnedClient)
 ,	m_pTargetPossessMob(NULL)
 {
 	//

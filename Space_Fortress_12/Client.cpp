@@ -101,3 +101,34 @@ void Client::ResetCamera()
 		m_pCamera->lookAt(m_pCamera->getDerivedPosition() + Ogre::Vector3::UNIT_Z);
 	}
 }
+
+
+void Client::DisplayMessage(std::string a_Message, MessageType a_MsgType)
+{
+	//todo
+	std::string verb;
+	switch(a_MsgType)
+	{
+	case(Client::FRIENDLY):
+		{
+			verb = "FRIENDLY ";
+			break;
+		}
+	case(Client::NEUTRAL):
+		{
+			verb = "NEUTRAL ";
+			break;
+		}
+	case(Client::WARNING):
+		{
+			verb = "WARNING ";
+			break;
+		}
+	case(Client::HOSTILE):
+		{
+			verb = "HOSTILE ";
+			break;
+		}
+	}
+	std::cout << verb << "MESSAGE: " << a_Message << std::endl;
+}

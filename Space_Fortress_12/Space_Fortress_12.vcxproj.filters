@@ -85,6 +85,12 @@
     <Filter Include="Source Files\Effects">
       <UniqueIdentifier>{8abf2ea7-0b97-40a8-aaea-6ebdb479aff8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Atoms\AtomComponents">
+      <UniqueIdentifier>{ca45a6cf-0604-4d20-af3a-1e37292c5ccd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Atoms\AtomComponents">
+      <UniqueIdentifier>{5938bf56-14ac-4116-8410-a3b2d64b1ff9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -150,15 +156,6 @@
     <ClCompile Include="OgreHelper.cpp">
       <Filter>Source Files\Utils and helpers</Filter>
     </ClCompile>
-    <ClCompile Include="InputModule.cpp">
-      <Filter>Source Files\InputModule</Filter>
-    </ClCompile>
-    <ClCompile Include="InputModule_ObserverFlight.cpp">
-      <Filter>Source Files\InputModule</Filter>
-    </ClCompile>
-    <ClCompile Include="InputModule_ObserverBuild.cpp">
-      <Filter>Source Files\InputModule</Filter>
-    </ClCompile>
     <ClCompile Include="Object.cpp">
       <Filter>Source Files\Atoms\Object</Filter>
     </ClCompile>
@@ -170,9 +167,6 @@
     </ClCompile>
     <ClCompile Include="DebugDrawer.cpp">
       <Filter>Source Files\Utils and helpers</Filter>
-    </ClCompile>
-    <ClCompile Include="InputModule_Generic.cpp">
-      <Filter>Source Files\InputModule</Filter>
     </ClCompile>
     <ClCompile Include="EffectManager.cpp">
       <Filter>Source Files\Effects</Filter>
@@ -207,23 +201,8 @@
     <ClCompile Include="Human.cpp">
       <Filter>Source Files\Atoms\Mob</Filter>
     </ClCompile>
-    <ClCompile Include="InputModule_MobWalk.cpp">
-      <Filter>Source Files\InputModule</Filter>
-    </ClCompile>
     <ClCompile Include="GravitySource.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="InputModule_GhostMob.cpp">
-      <Filter>Source Files\InputModule</Filter>
-    </ClCompile>
-    <ClCompile Include="InputModule_PossessMob.cpp">
-      <Filter>Source Files\InputModule</Filter>
-    </ClCompile>
-    <ClCompile Include="InputModule_ObserverLook.cpp">
-      <Filter>Source Files\InputModule</Filter>
-    </ClCompile>
-    <ClCompile Include="InputModule_MobLook.cpp">
-      <Filter>Source Files\InputModule</Filter>
     </ClCompile>
     <ClCompile Include="MapSuite_SaveMap.cpp">
       <Filter>Source Files\MapSuite</Filter>
@@ -234,14 +213,53 @@
     <ClCompile Include="Events.cpp">
       <Filter>Source Files\Config</Filter>
     </ClCompile>
-    <ClCompile Include="Girder.cpp">
-      <Filter>Source Files\Atoms\Turf</Filter>
-    </ClCompile>
     <ClCompile Include="Turf.cpp">
       <Filter>Source Files\Atoms\Turf</Filter>
     </ClCompile>
     <ClCompile Include="Client.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Objects_Build.cpp">
+      <Filter>Source Files\Atoms\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Component_old.cpp">
+      <Filter>Source Files\Atoms\AtomComponents</Filter>
+    </ClCompile>
+    <ClCompile Include="Component.cpp">
+      <Filter>Source Files\InputModule</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerGeneric.cpp">
+      <Filter>Source Files\InputModule</Filter>
+    </ClCompile>
+    <ClCompile Include="MobLook.cpp">
+      <Filter>Source Files\InputModule</Filter>
+    </ClCompile>
+    <ClCompile Include="MobWalk.cpp">
+      <Filter>Source Files\InputModule</Filter>
+    </ClCompile>
+    <ClCompile Include="ObserverBuild.cpp">
+      <Filter>Source Files\InputModule</Filter>
+    </ClCompile>
+    <ClCompile Include="ObserverFlight.cpp">
+      <Filter>Source Files\InputModule</Filter>
+    </ClCompile>
+    <ClCompile Include="ObserverLook.cpp">
+      <Filter>Source Files\InputModule</Filter>
+    </ClCompile>
+    <ClCompile Include="PossessMob.cpp">
+      <Filter>Source Files\InputModule</Filter>
+    </ClCompile>
+    <ClCompile Include="GhostMob.cpp">
+      <Filter>Source Files\InputModule</Filter>
+    </ClCompile>
+    <ClCompile Include="Context.cpp">
+      <Filter>Source Files\Atoms\AtomComponents</Filter>
+    </ClCompile>
+    <ClCompile Include="GirderBuild.cpp">
+      <Filter>Source Files\Atoms\AtomComponents</Filter>
+    </ClCompile>
+    <ClCompile Include="Interact.cpp">
+      <Filter>Source Files\Atoms\AtomComponents</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -302,15 +320,6 @@
     <ClInclude Include="Observer.hpp">
       <Filter>Header Files\Atoms\Mob</Filter>
     </ClInclude>
-    <ClInclude Include="InputModule.hpp">
-      <Filter>Header Files\InputModule</Filter>
-    </ClInclude>
-    <ClInclude Include="InputModule_ObserverFlight.hpp">
-      <Filter>Header Files\InputModule</Filter>
-    </ClInclude>
-    <ClInclude Include="InputModule_ObserverBuild.hpp">
-      <Filter>Header Files\InputModule</Filter>
-    </ClInclude>
     <ClInclude Include="Object.hpp">
       <Filter>Header Files\Atoms\Object</Filter>
     </ClInclude>
@@ -328,9 +337,6 @@
     </ClInclude>
     <ClInclude Include="DebugDrawer.h">
       <Filter>Header Files\Utils and helpers</Filter>
-    </ClInclude>
-    <ClInclude Include="InputModule_Generic.hpp">
-      <Filter>Header Files\InputModule</Filter>
     </ClInclude>
     <ClInclude Include="EffectManager.hpp">
       <Filter>Header Files\Effects</Filter>
@@ -359,9 +365,6 @@
     <ClInclude Include="MapHelper.hpp">
       <Filter>Header Files\Utils and helpers</Filter>
     </ClInclude>
-    <ClInclude Include="MapCell.hpp">
-      <Filter>Header Files\MapSuite</Filter>
-    </ClInclude>
     <ClInclude Include="UnderlayPlating.hpp">
       <Filter>Header Files\Atoms\Structure</Filter>
     </ClInclude>
@@ -374,26 +377,8 @@
     <ClInclude Include="Human.hpp">
       <Filter>Header Files\Atoms\Mob</Filter>
     </ClInclude>
-    <ClInclude Include="InputModule_MobWalk.hpp">
-      <Filter>Header Files\InputModule</Filter>
-    </ClInclude>
     <ClInclude Include="GravitySource.hpp">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="InputModule_PossessMob.hpp">
-      <Filter>Header Files\InputModule</Filter>
-    </ClInclude>
-    <ClInclude Include="InputModule_ObserverLook.hpp">
-      <Filter>Header Files\InputModule</Filter>
-    </ClInclude>
-    <ClInclude Include="InputModule_MobLook.hpp">
-      <Filter>Header Files\InputModule</Filter>
-    </ClInclude>
-    <ClInclude Include="InputModule_GhostMob.hpp">
-      <Filter>Header Files\InputModule</Filter>
-    </ClInclude>
-    <ClInclude Include="Events.hpp">
-      <Filter>Header Files\Config</Filter>
     </ClInclude>
     <ClInclude Include="Client.hpp">
       <Filter>Header Files</Filter>
@@ -401,8 +386,59 @@
     <ClInclude Include="Turf.hpp">
       <Filter>Header Files\Atoms\Turf</Filter>
     </ClInclude>
-    <ClInclude Include="Girder.hpp">
+    <ClInclude Include="Buildpoint.hpp">
       <Filter>Header Files\Atoms\Turf</Filter>
+    </ClInclude>
+    <ClInclude Include="MapCell.hpp">
+      <Filter>Header Files\MapSuite</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects_Build.hpp">
+      <Filter>Header Files\Atoms\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Component.hpp">
+      <Filter>Header Files\Atoms\AtomComponents</Filter>
+    </ClInclude>
+    <ClInclude Include="Component_old.hpp">
+      <Filter>Header Files\InputModule</Filter>
+    </ClInclude>
+    <ClInclude Include="Component.hpp">
+      <Filter>Header Files\InputModule</Filter>
+    </ClInclude>
+    <ClInclude Include="MobGhost.hpp">
+      <Filter>Header Files\InputModule</Filter>
+    </ClInclude>
+    <ClInclude Include="MobLook.hpp">
+      <Filter>Header Files\InputModule</Filter>
+    </ClInclude>
+    <ClInclude Include="ObserverBuild.hpp">
+      <Filter>Header Files\InputModule</Filter>
+    </ClInclude>
+    <ClInclude Include="ObserverFlight.hpp">
+      <Filter>Header Files\InputModule</Filter>
+    </ClInclude>
+    <ClInclude Include="ObserverLook.hpp">
+      <Filter>Header Files\InputModule</Filter>
+    </ClInclude>
+    <ClInclude Include="PossessMob.hpp">
+      <Filter>Header Files\InputModule</Filter>
+    </ClInclude>
+    <ClInclude Include="MobWalk.hpp">
+      <Filter>Header Files\InputModule</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerGeneric.hpp">
+      <Filter>Header Files\InputModule</Filter>
+    </ClInclude>
+    <ClInclude Include="Context.hpp">
+      <Filter>Header Files\Atoms\AtomComponents</Filter>
+    </ClInclude>
+    <ClInclude Include="GirderBuild.hpp">
+      <Filter>Header Files\Atoms\AtomComponents</Filter>
+    </ClInclude>
+    <ClInclude Include="Interact.hpp">
+      <Filter>Header Files\Atoms\AtomComponents</Filter>
+    </ClInclude>
+    <ClInclude Include="Events.hpp">
+      <Filter>Header Files\Config</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

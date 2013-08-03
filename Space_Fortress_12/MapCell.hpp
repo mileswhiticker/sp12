@@ -8,6 +8,10 @@ class Turf;
 class Mob;
 class Object;
 class Structure;
+namespace Ogre
+{
+	class SceneNode;
+};
 
 class MapCell
 {
@@ -31,6 +35,7 @@ public:
 	std::vector<Structure*> m_StructuresInCell;
 	//
 	std::vector<Atom*> m_AtomsWantingGravUpdates;
+	Ogre::SceneNode* m_pCellSceneNode;
 private:
 	std::vector< std::pair<GravitySource*,float> > m_GravityAffectors;
 	//

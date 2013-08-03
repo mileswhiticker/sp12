@@ -19,9 +19,6 @@ public:
 	virtual void CreateFromBuildPoint();
 	virtual void DestroyToBuildPoint();
 	//
-	virtual void Select(InputModule* a_pSelectingInputModule);
-	virtual void DeSelect(InputModule* a_pSelectingInputModule);
-	//
 };
 
 #endif	OVERLAY_PLATING_HPP

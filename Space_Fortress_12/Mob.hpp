@@ -5,11 +5,14 @@
 #include <OIS\OISKeyboard.h>
 #include <OGRE\OgreVector3.h>
 #include <LinearMath\btQuaternion.h>
+#include <map>
 
 #include "Atom.hpp"
+
 class InputModule;
 class ObserverFlight;
 class Client;
+class Object;
 
 class Mob
 :	public OIS::KeyListener
@@ -25,6 +28,28 @@ public:
 		ROBOT_DRONE,
 		ALIEN_PENGUIN
 		//
+	};
+	enum IntentType
+	{
+		INTENT_UNKNOWN = 0,
+		//
+		HELP,
+		DISARM,
+		GRAB,
+		HARM,
+		//
+		INTENT_MAX
+	};
+	enum InteractType
+	{
+		INTERACT_UNKNOWN = 0,
+		//
+		TARGET,
+		UNTARGET,
+		INTERACT,
+		INTERACT_END,
+		//
+		INTERACT_MAX
 	};
 	Mob(Ogre::Vector3 a_StartPos, int a_Direction = 0);
 	~Mob();
@@ -52,15 +77,21 @@ public:
 	//
 	bool UpdateOnGround();
 	bool m_IsOnGround;
-	int GetIntent();
+	IntentType GetIntent();
 	virtual bool OnGravityChange();
 	virtual void UpdateOrientation(float a_DeltaT);
 	//
+	void AddObjectToInventory(Object* a_pObject);
+	void RemoveObjectFromInventory(Object* a_pObject);
+	//
+	void SendClientMessage(std::string a_Message, int a_MsgType = 2);
+	//
 protected:
 	MobType m_MyMobType;
-	std::vector<InputModule*> m_InputModules;
+	//std::vector<InputModule*> m_InputModules;
 	Ogre::Vector3 m_CameraModelOffset;
-	int m_Intent;
+	IntentType m_Intent;
+	Object* m_pHeldObject;
 	//
 private:
 	float m_tleftNextGroundRaycast;

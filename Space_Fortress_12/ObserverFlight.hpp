@@ -1,12 +1,12 @@
 #ifndef OBSERVER_FLIGHT_HPP
 #define OBSERVER_FLIGHT_HPP
 
-#include "InputModule.hpp"
+#include "Component.hpp"
 #include <OGRE\OgreVector3.h>
 #include <OGRE\OgreQuaternion.h>
 
 class ObserverFlight
-:	public InputModule
+:	public Component
 {
 public:
 	ObserverFlight(Mob* a_pOwnedMob, Client* a_pOwnedClient);

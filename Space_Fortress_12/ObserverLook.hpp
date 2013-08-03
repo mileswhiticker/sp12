@@ -1,10 +1,10 @@
 #ifndef INPUTMODULE_OBSERVERLOOK
 #define INPUTMODULE_OBSERVERLOOK
 
-#include "InputModule.hpp"
+#include "Component.hpp"
 
 class ObserverLook
-:	public InputModule
+:	public Component
 {
 public:
 	ObserverLook(Mob* a_pOwnedMob, Client* a_pOwnedClient);

@@ -11,6 +11,8 @@
 #include <LinearMath\btDefaultMotionState.h>
 #include <LinearMath\btVector3.h>
 
+#include "Turf.hpp"
+
 #include "OgreHelper.hpp"
 #include "BulletHelper.hpp"
 #include "BtOgreHelper.hpp"
@@ -21,7 +23,6 @@
 #include "CollisionDefines.h"
 #include "Direction.h"
 #include "num2string.h"
-#include "UID.hpp"
 
 GravPlates::GravPlates(Turf* a_pLocTurf, int a_Dir)
 :	Structure(a_pLocTurf, a_Dir)
@@ -29,6 +30,8 @@ GravPlates::GravPlates(Turf* a_pLocTurf, int a_Dir)
 ,	m_GravityActive(false)
 {
 	m_MyStructureType = Structure::GRAVPLATES;
+	m_MaterialName = "gravplates";
+	m_SelectMaterialName = "gravplates_modulate";
 }
 
 void GravPlates::InstantiateStructure(bool a_IsBuildPoint)
@@ -40,7 +43,7 @@ void GravPlates::InstantiateStructure(bool a_IsBuildPoint)
 	//std::cout << "instantiating OverlayPlating with direction " << m_Direction << std::endl;
 	
 	//create entity
-	m_pAtomEntity = sceneManager.createEntity("gravplates_" + num2string(NewUID()), "gravplates.mesh");
+	m_pAtomEntity = sceneManager.createEntity("gravplates_" + num2string(m_AtomID), "gravplates.mesh");
 	m_pAtomEntitySceneNode->attachObject(m_pAtomEntity);
 	StopFlashingColour();
 
@@ -109,14 +112,14 @@ void GravPlates::InstantiateStructure(bool a_IsBuildPoint)
 	{
 		SetEntityVisible(false);
 		m_pAtomEntity->setMaterialName("cell_highlight_material");
-		dynamicsWorld.addRigidBody(m_pRigidBody, COLLISION_BUILDPOINT, COLLISION_BUILDRAYCAST);
+		dynamicsWorld.addRigidBody(m_pRigidBody, COLLISION_BUILDPOINT, RAYCAST_BUILD);
 
 		//todo: is this working?
 		//m_pRigidBody->setCollisionFlags(m_pRigidBody->CF_NO_CONTACT_RESPONSE);
 	}
 	else
 	{
-		dynamicsWorld.addRigidBody(m_pRigidBody, COLLISION_STRUCTURE, COLLISION_BUILDRAYCAST);
+		dynamicsWorld.addRigidBody(m_pRigidBody, COLLISION_STRUCTURE, RAYCAST_BUILD);
 
 		//activate gravity
 		ToggleGravity();
@@ -132,7 +135,7 @@ void GravPlates::CreateFromBuildPoint()
 		//first, reset the collision flags for build raycasting
 		btDiscreteDynamicsWorld& dynamicsWorld = GetDynamicsWorld();
 		dynamicsWorld.removeRigidBody(m_pRigidBody);
-		dynamicsWorld.addRigidBody(m_pRigidBody, COLLISION_STRUCTURE, COLLISION_BUILDRAYCAST);
+		dynamicsWorld.addRigidBody(m_pRigidBody, COLLISION_STRUCTURE, RAYCAST_BUILD);
 		//m_pRigidBody->setCollisionFlags(m_pRigidBody->CF_STATIC_OBJECT);
 		
 		//reset the material
@@ -154,7 +157,7 @@ void GravPlates::DestroyToBuildPoint()
 		//reset the rigidbody's collision flags for build raycasting
 		btDiscreteDynamicsWorld& dynamicsWorld = GetDynamicsWorld();
 		dynamicsWorld.removeRigidBody(m_pRigidBody);
-		dynamicsWorld.addRigidBody(m_pRigidBody, COLLISION_BUILDPOINT, COLLISION_BUILDRAYCAST);
+		dynamicsWorld.addRigidBody(m_pRigidBody, COLLISION_BUILDPOINT, RAYCAST_BUILD);
 		
 		//reset the material
 		m_pAtomEntity->setMaterialName("cell_highlight_material");
@@ -168,27 +171,6 @@ void GravPlates::DestroyToBuildPoint()
 	}
 }
 
-void GravPlates::Select(InputModule* a_pSelectingInputModule)
-{
-	Structure::Select(a_pSelectingInputModule);
-	if(m_pAtomEntity)
-	{
-		if(m_IsBuildPoint)
-			m_pAtomEntity->setMaterialName("cell_highlight_material");
-		else
-			m_pAtomEntity->setMaterialName("gravplates_modulate");
-	}
-}
-
-void GravPlates::DeSelect(InputModule* a_pSelectingInputModule)
-{
-	Structure::DeSelect(a_pSelectingInputModule);
-	if(m_pAtomEntity)
-	{
-		m_pAtomEntity->setMaterialName("gravplates");
-	}
-}
-
 void GravPlates::SetGravity(bool a_Active)
 {
 	if(m_GravityActive != a_Active)
@@ -198,30 +180,30 @@ void GravPlates::SetGravity(bool a_Active)
 void GravPlates::ToggleGravity()
 {
 	//toggle gravity
-	if(!m_pSourceMapCell)
+	if(!m_pCurrentTurf)
 	{
-		m_pSourceMapCell = MapSuite::GetInstance().GetCellAtCoordsOrNull(m_pAtomRootSceneNode->_getDerivedPosition());
+		m_pCurrentTurf = MapSuite::GetInstance().GetTurfAtCoordsOrCreate(m_pAtomRootSceneNode->_getDerivedPosition());
 	}
-	if(m_pSourceMapCell)
+	if(m_pCurrentTurf)
 	{
 		if(m_GravityActive)
 		{
 			m_Gravity = Ogre::Vector3::ZERO;
 			//
-			MapCell* pCurMapCell = m_pSourceMapCell;
+			Turf* pCurTurf = m_pCurrentTurf;
 			float percentLeft = 1.0f;
 			while(percentLeft > 0)
 			{
-				pCurMapCell->RemoveGravityAffector(this);
+				pCurTurf->RemoveGravityAffector(this);
 
 				//update atoms in that cell
-				for(auto it = pCurMapCell->m_AtomsInCell.begin(); it != pCurMapCell->m_AtomsInCell.end(); ++it)
+				for(auto it = pCurTurf->m_AtomContents.begin(); it != pCurTurf->m_AtomContents.end(); ++it)
 				{
 					(*it)->OnGravityChange();
 				}
 
 				//
-				pCurMapCell = MapSuite::GetInstance().GetCellInDirOrCreate(pCurMapCell, m_Direction);
+				pCurTurf = MapSuite::GetInstance().GetTurfInDirOrCreate(pCurTurf, m_Direction);
 				percentLeft -= m_PercentGravityFalloff;
 			}
 			m_GravityActive = true;
@@ -230,20 +212,20 @@ void GravPlates::ToggleGravity()
 		{
 			m_Gravity = GetUnitVectorFromDir(ReverseDir(m_Direction)) * 9.8f;
 			//
-			MapCell* pCurMapCell = m_pSourceMapCell;
+			Turf* pCurTurf = m_pCurrentTurf;
 			float percentLeft = 1.0f;
 			while(percentLeft > 0)
 			{
-				pCurMapCell->AddGravityAffector(this, percentLeft);
+				pCurTurf->AddGravityAffector(this, percentLeft);
 				
 				//update atoms in that cell
-				for(auto it = pCurMapCell->m_AtomsInCell.begin(); it != pCurMapCell->m_AtomsInCell.end(); ++it)
+				for(auto it = pCurTurf->m_AtomContents.begin(); it != pCurTurf->m_AtomContents.end(); ++it)
 				{
 					(*it)->OnGravityChange();
 				}
 
 				//
-				pCurMapCell = MapSuite::GetInstance().GetCellInDirOrCreate(pCurMapCell, m_Direction);
+				pCurTurf = MapSuite::GetInstance().GetTurfInDirOrCreate(pCurTurf, m_Direction);
 				percentLeft -= m_PercentGravityFalloff;
 			}
 			m_GravityActive = true;

@@ -1,7 +1,7 @@
 #ifndef INPUTMODULE_MOBWALK_HPP
 #define INPUTMODULE_MOBWALK_HPP
 
-#include "InputModule.hpp"
+#include "Component.hpp"
 //#include <LinearMath\btVector3.h>
 #include <OGRE\OgreVector3.h>
 
@@ -11,7 +11,7 @@ namespace Ogre
 };
 
 class MobWalk
-:	public InputModule
+:	public Component
 {
 public:
 	MobWalk(Mob* a_pOwnedMob, Client* a_pOwnedClient);

@@ -3,10 +3,12 @@
 #include "Turf.hpp"
 #include "Events.hpp"
 
+#include <OGRE\OgreSceneNode.h>
 #include <OGRE\OgreVector3.h>
+#include <OGRE\OgreEntity.h>
 
 Structure::Structure(Turf* a_pLocTurf, int a_Dir)
-:	Atom(a_pLocTurf->GetSourceMapCell()->m_Position, a_Dir)
+:	Atom(a_pLocTurf->m_pAtomRootSceneNode->getPosition(), a_Dir)
 ,	m_MyStructureType(UNKNOWN)
 ,	m_IsBuildPoint(false)
 //,	m_pMountedOnStructure(NULL)
@@ -50,9 +52,9 @@ bool Structure::UnmountFromGirder()
 	return false;
 }
 
-void Structure::Interact(Atom* a_pSourceAtom, InputModule* a_pSourceModule, int a_Intent, int a_Type)
+bool Structure::Interact(Mob* a_pSourceMob, Context* a_pSourceContext, int a_InteractType, Atom* a_pUsedAtom)
 {
-	switch(a_Type)
+	/*switch(a_Type)
 	{
 	case(Event::TOGGLEBUILD):
 		{
@@ -76,8 +78,8 @@ void Structure::Interact(Atom* a_pSourceAtom, InputModule* a_pSourceModule, int 
 			DestroyToBuildPoint();
 			return;
 		}
-	}
-	Atom::Interact(a_pSourceAtom, a_pSourceModule, a_Intent, a_Type);
+	}*/
+	return Atom::Interact(a_pSourceMob, a_pSourceContext, a_InteractType, a_pUsedAtom);
 }
 
 bool Structure::IsBuildPoint()
@@ -85,14 +87,25 @@ bool Structure::IsBuildPoint()
 	return m_IsBuildPoint;
 }
 
-void Structure::Select(InputModule* a_pSelectingInputModule)
+void Structure::Select(Component* a_pSourceComponent)
 {
-	Atom::Select(a_pSelectingInputModule);
+	Atom::Select(a_pSourceComponent);
+	if(m_pAtomEntity)
+	{
+		if(m_IsBuildPoint)
+			m_pAtomEntity->setMaterialName(m_VirtualSelectMaterialName);
+		else
+			m_pAtomEntity->setMaterialName(m_SelectMaterialName);
+	}
 }
 
-void Structure::DeSelect(InputModule* a_pSelectingInputModule)
+void Structure::DeSelect(Component* a_pSourceComponent)
 {
-	Atom::DeSelect(a_pSelectingInputModule);
+	Atom::DeSelect(a_pSourceComponent);
+	if(m_pAtomEntity)
+	{
+		m_pAtomEntity->setMaterialName(m_MaterialName);
+	}
 	if(m_IsBuildPoint)
 	{
 		SetEntityVisible(false);

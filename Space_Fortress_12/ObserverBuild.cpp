@@ -1,4 +1,4 @@
-#include "InputModule_ObserverBuild.hpp"
+#include "ObserverBuild.hpp"
 #include "Client.hpp"
 #include "Application.hpp"
 #include "MapSuite.hpp"
@@ -8,8 +8,9 @@
 #include "DebugDrawer.h"
 #include "EffectManager.hpp"
 #include "Cached.hpp"
-#include "Girder.hpp"
+#include "Turf.hpp"
 #include "Events.hpp"
+#include "Structure.hpp"
 
 #include <Ogre\OgreCamera.h>
 #include <BulletDynamics\Dynamics\btDiscreteDynamicsWorld.h>
@@ -22,7 +23,7 @@
 #include <OGRE\OgreSceneNode.h>
 
 ObserverBuild::ObserverBuild(Mob* a_pOwnedMob, Client* a_pOwnedClient)
-:	InputModule(a_pOwnedMob, a_pOwnedClient)
+:	Component(a_pOwnedMob, a_pOwnedClient)
 ,	m_CellBuildRange(1)
 ,	m_BuildExpansion(true)
 ,	m_TargetStructureTypes(0)
@@ -48,7 +49,7 @@ void ObserverBuild::Update(float a_DeltaT)
 		//DebugDrawer::getSingleton().drawLine(Ogre::Vector3::ZERO, Ogre::Vector3::UNIT_X * 10, Ogre::ColourValue::Green);
 
 		btCollisionWorld::ClosestRayResultCallback closestHitRayCallback(startPos, startPos + rayDir * btScalar(m_CellBuildRange));
-		closestHitRayCallback.m_collisionFilterGroup = COLLISION_BUILDRAYCAST;
+		closestHitRayCallback.m_collisionFilterGroup = RAYCAST_BUILD;
 		if(m_BuildExpansion)
 			closestHitRayCallback.m_collisionFilterMask = COLLISION_BUILDPOINT;
 		else
@@ -80,7 +81,7 @@ void ObserverBuild::Update(float a_DeltaT)
 		if(!pHitAtom)
 		{
 			btCollisionWorld::AllHitsRayResultCallback allHitsRayCallback(startPos, startPos + rayDir * btScalar(m_CellBuildRange));
-			allHitsRayCallback.m_collisionFilterGroup = COLLISION_BUILDRAYCAST;
+			allHitsRayCallback.m_collisionFilterGroup = RAYCAST_BUILD;
 			if(m_BuildExpansion)
 				allHitsRayCallback.m_collisionFilterMask = COLLISION_BUILDPOINT;
 			else
@@ -121,7 +122,7 @@ void ObserverBuild::Update(float a_DeltaT)
 
 bool ObserverBuild::TrySelect(Atom* a_pTestAtom)
 {
-	if(a_pTestAtom)
+	if(a_pTestAtom)	//&& !a_pTestAtom->IsBuildpoint()
 	{
 		if(!m_TargetAtomTypes)
 		{
@@ -249,11 +250,12 @@ bool ObserverBuild::mouseMoved( const OIS::MouseEvent &arg )
 
 bool ObserverBuild::mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
 {
-	if(m_pCurrentlyTargettedAtom && m_pOwnedMob)
+	//todo: raycast forward and loop over contexts until a valid one is found
+	/*if(m_pCurrentlyTargettedAtom && m_pOwnedMob)
 	{
 		m_pCurrentlyTargettedAtom->Interact(m_pOwnedMob, this, m_pOwnedMob->GetIntent(), Event::TOGGLEBUILD);
 		return true;
-	}
+	}*/
 	return false;
 }
 

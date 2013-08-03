@@ -1,20 +1,13 @@
-#ifndef INPUTMODULE_GENERIC_HPP
-#define INPUTMODULE_GENERIC_HPP
+#ifndef INPUTMODULE_POSSESSMOB_HPP
+#define INPUTMODULE_POSSESSMOB_HPP
 
-#include "InputModule.hpp"
-#include <OGRE\OgreVector3.h>
-#include <OGRE\OgreQuaternion.h>
+#include "Component.hpp"
 
-namespace Ogre
-{
-	class Light;
-};
-
-class Generic
-:	public InputModule
+class PossessMob
+:	public Component
 {
 public:
-	Generic(Mob* a_pOwnedMob, Client* a_pOwnedClient);
+	PossessMob(Mob* a_pOwnedMob, Client* a_pOwnedClient);
 	virtual void Update(float a_DeltaT);
 	//
 	virtual bool keyPressed( const OIS::KeyEvent &arg );
@@ -23,7 +16,11 @@ public:
 	virtual bool mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id );
 	virtual bool mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id );
 	//
-	Ogre::Light* m_pPointLight;
+	void SetTargetMob(Mob* a_pTargetPossessMob);
+	//
+private:
+	Mob* m_pTargetPossessMob;
+	//
 };
 
-#endif	INPUTMODULE_GENERIC_HPP
+#endif	INPUTMODULE_POSSESSMOB_HPP

@@ -1,5 +1,5 @@
-#ifndef INPUT_MODULE_HPP
-#define INPUT_MODULE_HPP
+#ifndef COMPONENT_HPP
+#define COMPONENT_HPP
 
 #include <OIS\OISMouse.h>
 #include <OIS\OISKeyboard.h>
@@ -8,13 +8,14 @@
 class Mob;
 class Client;
 class Atom;
+class btRigidBody;
 
-class InputModule
+class Component
 :	public OIS::KeyListener
 ,	public OIS::MouseListener
 {
 public:
-	InputModule(Mob* a_pOwnedMob, Client* a_pOwnedClient);
+	Component(Mob* a_pOwnedMob, Client* a_pOwnedClient);
 	virtual void Update(float a_DeltaT)=0;
 	void SetClient(Client* a_pClient);
 	//
@@ -26,6 +27,8 @@ public:
 	//
 	void ForceClearAtomIfSelected(Atom* a_pOtherAtom);
 	//
+	void CheckInteraction(Atom* a_pSourceAtom, Atom* a_pMethodAtom);
+	//
 protected:
 	Mob* m_pOwnedMob;
 	Client* m_pOwnedClient;
@@ -33,9 +36,10 @@ protected:
 	void SelectNewAtom(Atom* a_pNewAtom);
 	void ClearSelectedAtom();
 	Atom* m_pCurrentlyTargettedAtom;
+	std::vector<btRigidBody*> m_InteractBodies;
 	//
 private:
 	//
 };
 
-#endif INPUT_MODULE_HPP
+#endif COMPONENT_HPP

@@ -11,10 +11,10 @@
 #include <BulletDynamics\Dynamics\btRigidBody.h>
 #include <LinearMath\btDefaultMotionState.h>
 
-#include "InputModule_Generic.hpp"
-#include "InputModule_MobLook.hpp"
-#include "InputModule_MobWalk.hpp"
-#include "InputModule_GhostMob.hpp"
+#include "PlayerGeneric.hpp"
+#include "MobLook.hpp"
+#include "MobWalk.hpp"
+#include "MobGhost.hpp"
 //#include "AtomManager.hpp"
 //#include "MapSuite.hpp"
 
@@ -25,7 +25,6 @@
 
 #include "MapCell.hpp"
 #include "num2string.h"
-#include "UID.hpp"
 #include "Direction.h"
 #include "DebugDrawer.h"
 #include "CollisionDefines.h"
@@ -47,7 +46,7 @@ void Human::InstantiateAtom()
 {
 	//a single cuboid girder to cover this cell
 	Ogre::SceneManager& sceneManager = GetSceneManager();
-	m_pAtomEntity = sceneManager.createEntity("human_" + num2string(NewUID()), "ninja.mesh");
+	m_pAtomEntity = sceneManager.createEntity("human_" + num2string(m_AtomID), "ninja.mesh");
 	m_pAtomEntitySceneNode->attachObject(m_pAtomEntity);
 	m_pAtomEntitySceneNode->scale(0.004f, 0.004f, 0.004f);
 	m_pAtomEntitySceneNode->setPosition(0, -0.4f, 0);
@@ -78,9 +77,9 @@ void Human::InstantiateAtom()
 
 void Human::SetupInputModules()
 {
-	m_InputModules.push_back(new Generic(this, NULL));
-	m_InputModules.push_back(new MobLook(this, NULL));
-	m_InputModules.push_back(new MobWalk(this, NULL));
-	m_InputModules.push_back(new GhostMob(this, NULL));
+	m_AllComponents.push_back(new PlayerGeneric(this, NULL));
+	m_AllComponents.push_back(new MobLook(this, NULL));
+	m_AllComponents.push_back(new MobWalk(this, NULL));
+	m_AllComponents.push_back(new MobGhost(this, NULL));
 }
 

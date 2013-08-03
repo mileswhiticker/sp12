@@ -1,0 +1,16 @@
+<sf12m>
+    <!--Experimental map format for Space Fortress 12-->
+    <!--Use discrete integers for coordinatess-->
+    <station name="main_station">
+        <girder x="3" y="2" z="1"/>
+        <girder x="3" y="2" z="2"/>
+        <girder x="3" y="2" z="3"/>
+        <girder x="2" y="1" z="1"/>
+        <girder x="2" y="1" z="2"/>
+        <girder x="2" y="1" z="3"/>
+        <girder x="1" y="2" z="1"/>
+        <girder x="1" y="2" z="2"/>
+        <girder x="1" y="2" z="3"/>
+        <girder x="1" y="4" z="3"/>
+    </station>
+</sf12m>

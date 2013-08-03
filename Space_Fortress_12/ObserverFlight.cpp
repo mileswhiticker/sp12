@@ -1,4 +1,4 @@
-#include "InputModule_ObserverFlight.hpp"
+#include "ObserverFlight.hpp"
 
 #include "Mob.hpp"
 #include "Client.hpp"
@@ -7,7 +7,7 @@
 #include <OGRE\OgreCamera.h>
 
 ObserverFlight::ObserverFlight(Mob* a_pOwnedMob, Client* a_pOwnedClient)
-:	InputModule(a_pOwnedMob, a_pOwnedClient)
+:	Component(a_pOwnedMob, a_pOwnedClient)
 ,	m_FlySpeed(1.f)
 ,	m_RelativeMoveDir(Ogre::Vector3(0,0,0))
 {

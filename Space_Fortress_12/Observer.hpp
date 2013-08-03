@@ -15,7 +15,7 @@ public:
 	void SetTargetPossessMob(Mob* a_pTargetPossessMob);
 	//
 protected:
-	PossessMob* m_pPossessMobInputModule;
+	PossessMob* m_pPossessMob;
 	//
 };
 

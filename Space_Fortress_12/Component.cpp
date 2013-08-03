@@ -1,7 +1,7 @@
-#include "InputModule.hpp"
+#include "Component.hpp"
 #include "Atom.hpp"
 
-InputModule::InputModule(Mob* a_pOwnedMob, Client* a_pOwnedClient)
+Component::Component(Mob* a_pOwnedMob, Client* a_pOwnedClient)
 :	m_pOwnedMob(a_pOwnedMob)
 ,	m_pOwnedClient(a_pOwnedClient)
 ,	m_pCurrentlyTargettedAtom(NULL)
@@ -9,7 +9,7 @@ InputModule::InputModule(Mob* a_pOwnedMob, Client* a_pOwnedClient)
 	//
 }
 
-void InputModule::SetClient(Client* a_pClient)
+void Component::SetClient(Client* a_pClient)
 {
 	m_pOwnedClient = a_pClient;
 	if(!m_pOwnedClient)
@@ -18,32 +18,32 @@ void InputModule::SetClient(Client* a_pClient)
 	}
 }
 
-bool InputModule::keyPressed( const OIS::KeyEvent &arg )
+bool Component::keyPressed( const OIS::KeyEvent &arg )
 {
 	return false;
 }
 
-bool InputModule::keyReleased( const OIS::KeyEvent &arg )
+bool Component::keyReleased( const OIS::KeyEvent &arg )
 {
 	return false;
 }
 
-bool InputModule::mouseMoved( const OIS::MouseEvent &arg )
+bool Component::mouseMoved( const OIS::MouseEvent &arg )
 {
 	return false;
 }
 
-bool InputModule::mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
+bool Component::mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
 {
 	return false;
 }
 
-bool InputModule::mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
+bool Component::mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
 {
 	return false;
 }
 
-void InputModule::SelectNewAtom(Atom* a_pNewAtom)
+void Component::SelectNewAtom(Atom* a_pNewAtom)
 {
 	if(a_pNewAtom)
 	{
@@ -61,7 +61,7 @@ void InputModule::SelectNewAtom(Atom* a_pNewAtom)
 	}
 }
 
-void InputModule::ClearSelectedAtom()
+void Component::ClearSelectedAtom()
 {
 	if(m_pCurrentlyTargettedAtom)
 	{
@@ -71,7 +71,7 @@ void InputModule::ClearSelectedAtom()
 	}
 }
 
-void InputModule::ForceClearAtomIfSelected(Atom* a_pOtherAtom)
+void Component::ForceClearAtomIfSelected(Atom* a_pOtherAtom)
 {
 	if(a_pOtherAtom == m_pCurrentlyTargettedAtom)
 	{

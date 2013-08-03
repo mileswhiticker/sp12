@@ -9,7 +9,7 @@
 class Station;
 class Atom;
 class PlayerSpawn;
-class MapCell;
+class Turf;
 
 class MapSuite
 {
@@ -19,17 +19,17 @@ public:
 	static Station* GetStartingStation();
 	//
 	//void CreateAdjacentGirderBuildpoints(int a_X, int a_Y, int a_Z);
-	int CreateAdjacentGirderBuildpoints(MapCell* a_pLocMapCell);	//unsigned int a_X, unsigned int a_Y, unsigned int a_Z
-	int ClearDependantAdjacentGirderBuildpoints(MapCell* a_pLocMapCell);
-	MapCell* CreateNewMapCell(int a_X, int a_Y, int a_Z);
-	MapCell* CreateNewMapCell(Ogre::Vector3 a_Coords);
-	
-	MapCell* GetCellInDirOrNull(MapCell* a_pSourceMapCell, int a_Direction);
-	MapCell* GetCellInDirOrCreate(MapCell* a_pSourceMapCell, int a_Direction);
-	MapCell* GetCellAtCoordsOrCreate(int a_X, int a_Y, int a_Z);
-	MapCell* GetCellAtCoordsOrCreate(Ogre::Vector3 a_Coords);
-	MapCell* GetCellAtCoordsOrNull(int a_X, int a_Y, int a_Z);
-	MapCell* GetCellAtCoordsOrNull(Ogre::Vector3 a_Coords);
+	int CreateAdjacentGirderBuildpoints(Turf* a_pCenterTurf);	//unsigned int a_X, unsigned int a_Y, unsigned int a_Z
+	int ClearDependantAdjacentGirderBuildpoints(Turf* a_pCenterTurf);
+	Turf* CreateTurf(int a_X, int a_Y, int a_Z, int a_TurfType = 1);
+	Turf* CreateTurf(Ogre::Vector3 a_Coords, int a_TurfType = 1);
+	//
+	Turf* GetTurfInDirOrNull(Turf* a_pSourceTurf, int a_Direction);
+	Turf* GetTurfInDirOrCreate(Turf* a_pSourceTurf, int a_Direction);
+	Turf* GetTurfAtCoordsOrCreate(int a_X, int a_Y, int a_Z);
+	Turf* GetTurfAtCoordsOrCreate(Ogre::Vector3 a_Coords);
+	Turf* GetTurfAtCoordsOrNull(int a_X, int a_Y, int a_Z);
+	Turf* GetTurfAtCoordsOrNull(Ogre::Vector3 a_Coords);
 	//
 	PlayerSpawn* GetRandomPlayerSpawn();
 	//
@@ -39,7 +39,7 @@ public:
 private:
 	MapSuite();
 	std::vector<Station*> m_MapStations;
-	std::unordered_map<std::string, MapCell*> m_MapCellGrid;
+	std::unordered_map<std::string, Turf*> m_TurfGrid;
 	bool LoadMapFile(std::string a_FileName);
 	//
 	//std::vector< std::vector< std::vector<Atom*> > > m_InstanceGrid;	//3d matrix, each containing either a girder or a build highlight

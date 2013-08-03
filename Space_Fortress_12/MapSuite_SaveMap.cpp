@@ -1,7 +1,7 @@
 #include "MapSuite.hpp"
 #include "AtomManager.hpp"
 
-#include "Girder.hpp"
+#include "Turf.hpp"
 #include "MapCell.hpp"
 #include <OGRE\OgreSceneNode.h>
 
@@ -21,7 +21,7 @@ bool MapSuite::SaveMap(std::string a_FileName)
 {
 	//check if the a_Filename already exists
 	//todo (just overwrite it for now)
-
+	/*
 	std::string full_file_path = MAP_DIR + a_FileName + ".sf12m";
 	tinyxml2::XMLDocument mapDoc;
 	AtomManager& atomManager = AtomManager::GetSingleton();
@@ -67,5 +67,6 @@ bool MapSuite::SaveMap(std::string a_FileName)
 	tinyxml2::XMLPrinter printer(pFile);
 	mapDoc.Print(&printer);
 	fclose(pFile);
+	*/
 	return true;
 }

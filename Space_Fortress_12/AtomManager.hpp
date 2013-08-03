@@ -33,7 +33,7 @@ public:
 	//the first 6 bits of a_AdditionalFlags are directions
 	Object* CreateObject(int a_ObjectType, Ogre::Vector3 a_Pos, int a_AdditionalFlags = INSTANTIATE_IMMEDIATELY);
 	Structure* CreateStructure(int a_StructureType, Turf* a_pLocTurf, int a_AdditionalFlags = INSTANTIATE_IMMEDIATELY);
-	Turf* CreateTurf(int a_TurfType, MapCell* a_pLocMapCell, int a_AdditionalFlags = INSTANTIATE_IMMEDIATELY);
+	Turf* CreateTurf(int a_TurfType, Ogre::Vector3 a_SpawnPos, int a_AdditionalFlags = INSTANTIATE_IMMEDIATELY);
 	Mob* CreateMob(int a_MobType, Ogre::Vector3 a_SpawnPos, int a_AdditionalFlags = INSTANTIATE_IMMEDIATELY);
 	//
 	void ClearMapCell(MapCell* a_pMapCell);

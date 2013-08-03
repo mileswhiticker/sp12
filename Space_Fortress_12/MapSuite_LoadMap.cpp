@@ -8,13 +8,12 @@
 
 #include "OgreHelper.hpp"
 #include "num2string.h"
-#include "UID.hpp"
 #include "MapDefines.h"
 #include "Direction.h"
 #include "iVector3.h"
 #include "Files.hpp"
 
-#include "Girder.hpp"
+#include "Turf.hpp"
 #include "PlayerSpawn.hpp"
 #include "Object.hpp"
 
@@ -35,14 +34,14 @@ bool MapSuite::LoadMapFile(std::string a_FileName)
 	if(!result)
 	{
 		//successful
-		std::cout << "Successfully loaded file \"" << full_file_path << "\"" << std::endl;
+		std::cout << "MAP: Successfully opened file \"" << full_file_path << "\"" << std::endl;
 
 		tinyxml2::XMLNode* pRootNode = mapDoc.FirstChild();
-		for(tinyxml2::XMLNode* pTopLevelNode = pRootNode->FirstChild(); pTopLevelNode; pTopLevelNode = pTopLevelNode->NextSibling())
+		for(tinyxml2::XMLNode* pInstanceNode = pRootNode->FirstChild(); pInstanceNode; pInstanceNode = pInstanceNode->NextSibling())
 		{
 			//new station or ship - a discrete, unconnectable bunch of cells
-			tinyxml2::XMLElement* pTopLevelElement = pTopLevelNode->ToElement();
-			if(!std::string("station").compare(pTopLevelNode->Value()) && pTopLevelElement)
+			tinyxml2::XMLElement* pTopLevelElement = pInstanceNode->ToElement();
+			if(!std::string("station").compare(pInstanceNode->Value()) && pTopLevelElement)
 			{
 				//create the container object
 				/*Station* pStation = new Station();
@@ -65,11 +64,11 @@ bool MapSuite::LoadMapFile(std::string a_FileName)
 				//directionalLight->setDiffuseColour(0.5,0.5,0.5);*/
 
 				//Ogre::SceneNode* pStationSceneNode = Application::StaticGetSceneManager().getRootSceneNode()->createChildSceneNode(pStationName);
-				for(tinyxml2::XMLNode* pGirderNode = pTopLevelNode->FirstChild(); pGirderNode; pGirderNode = pGirderNode->NextSibling())
+				for(tinyxml2::XMLNode* pToplevelNode = pInstanceNode->FirstChild(); pToplevelNode; pToplevelNode = pToplevelNode->NextSibling())
 				{
-					if(!std::string("playerspawn").compare(pGirderNode->Value()))
+					if(!std::string("playerspawn").compare(pToplevelNode->Value()))
 					{
-						tinyxml2::XMLElement* pElement = pGirderNode->ToElement();
+						tinyxml2::XMLElement* pElement = pToplevelNode->ToElement();
 						if(pElement)
 						{
 							int i = 0;
@@ -95,12 +94,12 @@ bool MapSuite::LoadMapFile(std::string a_FileName)
 							m_LoadedSpawns.push_back(pNewSpawn);
 						}
 					}
-					else if(!std::string("cell").compare(pGirderNode->Value()))
+					else if(!std::string("turf").compare(pToplevelNode->Value()))
 					{
-						tinyxml2::XMLElement* pElement = pGirderNode->ToElement();
+						tinyxml2::XMLElement* pElement = pToplevelNode->ToElement();
 						assert(pElement);
 
-						//if any of the attr loading fails, just skip this cell entirely
+						//if any of the attr loading fails, just skip this turf entirely
 						int i = 0;
 						if(pElement->QueryIntAttribute("x", &i))
 							continue;
@@ -111,13 +110,27 @@ bool MapSuite::LoadMapFile(std::string a_FileName)
 						if(pElement->QueryIntAttribute("z", &k))
 							continue;
 						
-						//create the cell and slot it into the tilemap
-						//iVector3 coords = iVector3(i, j, k);
-						Girder* pGirder = NULL;
-						const char* filling_type = NULL;
-						//std::string(pElement->Attribute("skeleton"))
-						MapCell* pLocMapCell = CreateNewMapCell(i,j,k);
-						pGirder = (Girder*)AtomManager::GetSingleton().CreateTurf(Turf::GIRDER, pLocMapCell, INSTANTIATE_IMMEDIATELY);
+						//work out the turf type
+						int turfType = pElement->IntAttribute("type");
+						if(!turfType)
+						{
+							//const char*
+							std::string turfTypeString = pElement->Attribute("type_text");
+							if(!turfTypeString.compare("girder"))
+							{
+								turfType = 2;
+							}
+						}
+						//just make it an empty cell
+						if(!turfType)
+						{
+							turfType = 1;
+						}
+						
+						//create the turf and slot it into the tilemap
+						Turf* pNewTurf = CreateTurf(i,j,k, turfType);
+						//MapCell* pLocMapCell = CreateNewMapCell(i,j,k);
+						//pGirder = (Girder*)AtomManager::GetSingleton().CreateTurf(Turf::GIRDER, pLocMapCell, INSTANTIATE_IMMEDIATELY);
 
 						//check if it wants to be filling in
 						//todo: update this to new method
@@ -134,9 +147,10 @@ bool MapSuite::LoadMapFile(std::string a_FileName)
 						}*/
 
 						//loop through cell nodes
-						for(tinyxml2::XMLNode* pGirderAttributeNode = pGirderNode->FirstChild(); pGirderAttributeNode; pGirderAttributeNode = pGirderAttributeNode->NextSibling())
+						for(tinyxml2::XMLNode* pGirderAttributeNode = pToplevelNode->FirstChild(); pGirderAttributeNode; pGirderAttributeNode = pGirderAttributeNode->NextSibling())
 						{
-							if(pGirder && !std::string("overlay").compare(pGirderAttributeNode->Value()))
+							break;
+							if(pNewTurf && !std::string("overlay").compare(pGirderAttributeNode->Value()))
 							{
 								//overlay plating
 								tinyxml2::XMLElement* pElement = pGirderAttributeNode->ToElement();
@@ -150,11 +164,11 @@ bool MapSuite::LoadMapFile(std::string a_FileName)
 									{
 										//pGirder->AddUnderlay(dir, plating);
 										//Structure* pUnusedBuildPoint = AtomManager::GetSingleton().CreateStructure(Structure::OVERLAYPLATING, pLocMapCell, NULL, dir|INSTANTIATE_IMMEDIATELY);
-										pGirder->CreateBuildpointInDir(Structure::OVERLAYPLATING, dir);
+										//pGirder->CreateBuildpointInDir(Structure::OVERLAYPLATING, dir);
 									}
 								}
 							}
-							else if(pGirder && !filling_type && !std::string("underlay").compare(pGirderAttributeNode->Value()))
+							else if(pNewTurf && !std::string("underlay").compare(pGirderAttributeNode->Value()))
 							{
 								//underlay plating
 								tinyxml2::XMLElement* pElement = pGirderAttributeNode->ToElement();
@@ -168,7 +182,7 @@ bool MapSuite::LoadMapFile(std::string a_FileName)
 									{
 										//pGirder->AddUnderlay(dir, plating);
 										//Structure* pUnusedBuildPoint = AtomManager::GetSingleton().CreateStructure(Structure::UNDERLAYPLATING, pLocMapCell, NULL, dir|INSTANTIATE_IMMEDIATELY);
-										pGirder->CreateBuildpointInDir(Structure::UNDERLAYPLATING, dir);
+										//pGirder->CreateBuildpointInDir(Structure::UNDERLAYPLATING, dir);
 									}
 								}
 							}
@@ -223,11 +237,12 @@ bool MapSuite::LoadMapFile(std::string a_FileName)
 				m_MapStations.push_back(pStation);*/
 			}
 		}
+		std::cout << "MAP: Successfully loaded file \"" << full_file_path << "\"" << std::endl;
 		return true;
 	}
 
 	//something went wrong
-	std::cout << "ERROR code " << result << " while loading file \"" << full_file_path << "\"" << std::endl;
+	std::cout << "MAP: Error code " << result << " while loading file \"" << full_file_path << "\"" << std::endl;
 	return false;
 }
 

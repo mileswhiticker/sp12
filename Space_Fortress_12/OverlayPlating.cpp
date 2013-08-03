@@ -20,12 +20,13 @@
 #include "CollisionDefines.h"
 #include "Direction.h"
 #include "num2string.h"
-#include "UID.hpp"
 
 OverlayPlating::OverlayPlating(Turf* a_pLocTurf, int a_Dir)
 :	Structure(a_pLocTurf, a_Dir)
 {
 	m_MyStructureType = Structure::OVERLAYPLATING;
+	m_MaterialName = "over_plating";
+	m_SelectMaterialName = "over_plating_modulate";
 }
 
 void OverlayPlating::InstantiateStructure(bool a_IsBuildPoint)
@@ -37,7 +38,7 @@ void OverlayPlating::InstantiateStructure(bool a_IsBuildPoint)
 	//std::cout << "instantiating OverlayPlating with direction " << m_Direction << std::endl;
 	
 	//create entity
-	m_pAtomEntity = sceneManager.createEntity("over_plating_" + num2string(NewUID()), "cell_overlay.mesh");
+	m_pAtomEntity = sceneManager.createEntity("over_plating_" + num2string(m_AtomID), "cell_overlay.mesh");
 	m_pAtomEntitySceneNode->attachObject(m_pAtomEntity);
 	StopFlashingColour();
 
@@ -105,14 +106,14 @@ void OverlayPlating::InstantiateStructure(bool a_IsBuildPoint)
 	{
 		SetEntityVisible(false);
 		m_pAtomEntity->setMaterialName("cell_highlight_material");
-		dynamicsWorld.addRigidBody(m_pRigidBody, COLLISION_BUILDPOINT, COLLISION_BUILDRAYCAST);
+		dynamicsWorld.addRigidBody(m_pRigidBody, COLLISION_BUILDPOINT, RAYCAST_BUILD);
 
 		//todo: is this working?
 		//m_pRigidBody->setCollisionFlags(m_pRigidBody->CF_NO_CONTACT_RESPONSE);
 	}
 	else
 	{
-		dynamicsWorld.addRigidBody(m_pRigidBody, COLLISION_STRUCTURE, COLLISION_BUILDRAYCAST|COLLISION_OBJ|COLLISION_MOB);
+		dynamicsWorld.addRigidBody(m_pRigidBody, COLLISION_STRUCTURE, RAYCAST_BUILD|COLLISION_OBJ|COLLISION_MOB);
 	}
 	InitCollisionShapeDebugDraw(Ogre::ColourValue::Red);
 }
@@ -124,7 +125,7 @@ void OverlayPlating::CreateFromBuildPoint()
 		//first, reset the collision flags for build raycasting
 		btDiscreteDynamicsWorld& dynamicsWorld = GetDynamicsWorld();
 		dynamicsWorld.removeRigidBody(m_pRigidBody);
-		dynamicsWorld.addRigidBody(m_pRigidBody, COLLISION_STRUCTURE, COLLISION_BUILDRAYCAST|COLLISION_OBJ|COLLISION_MOB);
+		dynamicsWorld.addRigidBody(m_pRigidBody, COLLISION_STRUCTURE, RAYCAST_BUILD|COLLISION_OBJ|COLLISION_MOB);
 		//m_pRigidBody->setCollisionFlags(m_pRigidBody->CF_STATIC_OBJECT);
 		
 		//reset the material
@@ -143,7 +144,7 @@ void OverlayPlating::DestroyToBuildPoint()
 		//reset the rigidbody's collision flags for build raycasting
 		btDiscreteDynamicsWorld& dynamicsWorld = GetDynamicsWorld();
 		dynamicsWorld.removeRigidBody(m_pRigidBody);
-		dynamicsWorld.addRigidBody(m_pRigidBody, COLLISION_BUILDPOINT, COLLISION_BUILDRAYCAST);
+		dynamicsWorld.addRigidBody(m_pRigidBody, COLLISION_BUILDPOINT, RAYCAST_BUILD);
 		
 		//reset the material
 		m_pAtomEntity->setMaterialName("cell_highlight_material");
@@ -151,26 +152,5 @@ void OverlayPlating::DestroyToBuildPoint()
 		//done
 		SetEntityVisible(false);
 		m_IsBuildPoint = true;
-	}
-}
-
-void OverlayPlating::Select(InputModule* a_pSelectingInputModule)
-{
-	Structure::Select(a_pSelectingInputModule);
-	if(m_pAtomEntity)
-	{
-		if(m_IsBuildPoint)
-			m_pAtomEntity->setMaterialName("cell_highlight_material");
-		else
-			m_pAtomEntity->setMaterialName("over_plating_modulate");
-	}
-}
-
-void OverlayPlating::DeSelect(InputModule* a_pSelectingInputModule)
-{
-	Structure::DeSelect(a_pSelectingInputModule);
-	if(m_pAtomEntity)
-	{
-		m_pAtomEntity->setMaterialName("over_plating");
 	}
 }

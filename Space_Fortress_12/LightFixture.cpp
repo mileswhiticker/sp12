@@ -12,8 +12,8 @@
 #include "BulletHelper.hpp"
 #include "BtOgreHelper.hpp"
 #include "num2string.h"
-#include "UID.hpp"
 #include "OgreHelper.hpp"
+#include "MapHelper.hpp"
 
 #include "CollisionDefines.h"
 #include "Direction.h"
@@ -22,6 +22,9 @@ LightFixture::LightFixture(Turf* m_pLocTurf, int a_Dir)
 :	Structure(m_pLocTurf, a_Dir)
 {
 	m_MyStructureType = Structure::LIGHTFIXTURE;
+	m_MaterialName = "light_fixture";
+	m_SelectMaterialName = "light_fixture_modulate";
+	m_VirtualSelectMaterialName = "light_fixture_modulate";
 }
 
 void LightFixture::InstantiateStructure(bool a_IsBuildPoint)
@@ -33,14 +36,13 @@ void LightFixture::InstantiateStructure(bool a_IsBuildPoint)
 	//std::cout << "instantiating OverlayPlating with direction " << m_Direction << std::endl;
 	
 	//create entity
-	m_pAtomEntity = sceneManager.createEntity("UnderlayPlating_" + num2string(NewUID()), "cell_underlay.mesh");
+	m_pAtomEntity = sceneManager.createEntity("LightTubeFixture_" + num2string(m_AtomID), "obj_light_fixture_tube.mesh");
 	m_pAtomRootSceneNode->attachObject(m_pAtomEntity);
 	StopFlashingColour();
 
 	//set up the directional offsets
 	Ogre::Vector3 offsetPos(0, 0, 0);
-	//std::cout << "	new overlay plating" << std::endl;
-	if(m_Direction & NORTH)
+	/*if(m_Direction & NORTH)
 	{
 		offsetPos.z += 0.395f;
 	}
@@ -65,7 +67,7 @@ void LightFixture::InstantiateStructure(bool a_IsBuildPoint)
 		offsetPos.y -= 0.395f;
 	}
 	m_pAtomRootSceneNode->setPosition(offsetPos);
-	m_pAtomRootSceneNode->lookAt(Ogre::Vector3::ZERO, Ogre::Node::TS_LOCAL);
+	m_pAtomRootSceneNode->lookAt(GetUnitVectorFromDir(m_Direction), Ogre::Node::TS_LOCAL);*/
 	//m_pAtomRootSceneNode->yaw(Ogre::Degree(90));
 	
 	//create physics body and initialise to starting position
@@ -81,14 +83,14 @@ void LightFixture::InstantiateStructure(bool a_IsBuildPoint)
 	{
 		SetEntityVisible(false);
 		m_pAtomEntity->setMaterialName("cell_highlight_material");
-		dynamicsWorld.addRigidBody(m_pRigidBody, COLLISION_BUILDPOINT, COLLISION_BUILDRAYCAST);
+		dynamicsWorld.addRigidBody(m_pRigidBody, COLLISION_BUILDPOINT, RAYCAST_BUILD);
 
 		//todo: is this working?
 		m_pRigidBody->setCollisionFlags(m_pRigidBody->CF_NO_CONTACT_RESPONSE);
 	}
 	else
 	{
-		dynamicsWorld.addRigidBody(m_pRigidBody, COLLISION_STRUCTURE, COLLISION_BUILDRAYCAST);
+		dynamicsWorld.addRigidBody(m_pRigidBody, COLLISION_STRUCTURE, RAYCAST_BUILD);
 	}
 }
 
@@ -99,7 +101,7 @@ void LightFixture::CreateFromBuildPoint()
 		//first, reset the collision flags for build raycasting
 		btDiscreteDynamicsWorld& dynamicsWorld = GetDynamicsWorld();
 		dynamicsWorld.removeRigidBody(m_pRigidBody);
-		dynamicsWorld.addRigidBody(m_pRigidBody, COLLISION_STRUCTURE, COLLISION_BUILDRAYCAST);
+		dynamicsWorld.addRigidBody(m_pRigidBody, COLLISION_STRUCTURE, RAYCAST_BUILD);
 		//m_pRigidBody->setCollisionFlags(m_pRigidBody->CF_STATIC_OBJECT);
 		
 		//reset the material
@@ -118,7 +120,7 @@ void LightFixture::DestroyToBuildPoint()
 		//reset the rigidbody's collision flags for build raycasting
 		btDiscreteDynamicsWorld& dynamicsWorld = GetDynamicsWorld();
 		dynamicsWorld.removeRigidBody(m_pRigidBody);
-		dynamicsWorld.addRigidBody(m_pRigidBody, COLLISION_BUILDPOINT, COLLISION_BUILDRAYCAST);
+		dynamicsWorld.addRigidBody(m_pRigidBody, COLLISION_BUILDPOINT, RAYCAST_BUILD);
 		
 		//reset the material
 		m_pAtomEntity->setMaterialName("cell_highlight_material");
@@ -127,22 +129,4 @@ void LightFixture::DestroyToBuildPoint()
 		SetEntityVisible(false);
 		m_IsBuildPoint = true;
 	}*/
-}
-
-void LightFixture::Select(InputModule* a_pSelectingInputModule)
-{
-	Structure::Select(a_pSelectingInputModule);
-	if(m_pAtomEntity)
-	{
-		m_pAtomEntity->setMaterialName("light_fixture_modulate");
-	}
-}
-
-void LightFixture::DeSelect(InputModule* a_pSelectingInputModule)
-{
-	Structure::DeSelect(a_pSelectingInputModule);
-	if(m_pAtomEntity)
-	{
-		m_pAtomEntity->setMaterialName("light_fixture");
-	}
 }

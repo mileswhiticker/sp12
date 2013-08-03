@@ -1,4 +1,4 @@
-#include "InputModule_MobWalk.hpp"
+#include "MobWalk.hpp"
 
 #include "Mob.hpp"
 #include "Client.hpp"
@@ -9,7 +9,7 @@
 #include <OGRE\OgreSceneNode.h>
 
 MobWalk::MobWalk(Mob* a_pOwnedMob, Client* a_pOwnedClient)
-:	InputModule(a_pOwnedMob, a_pOwnedClient)
+:	Component(a_pOwnedMob, a_pOwnedClient)
 ,	m_RelativeMoveDir(Ogre::Vector3::ZERO)
 ,	m_IsSprinting(false)
 ,	m_WalkSpeed(1.f)
