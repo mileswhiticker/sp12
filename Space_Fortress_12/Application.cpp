@@ -54,6 +54,8 @@ bool Application::frameStarted(const Ogre::FrameEvent& evt)
 	/*if(renderCanvas)
 		m_pCanvas->RenderCanvas();*/
 
+	EffectManager::GetSingleton().frameStarted(evt);
+
 	return true;
 }
 

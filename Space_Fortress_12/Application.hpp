@@ -132,7 +132,6 @@ private:
 	//networking, clients and mobs
 	Server* m_pHostServer;
 	std::vector<Client*> m_ConnectedClients;
-	std::vector<Mob*> m_Mobs;
 };
 
 #endif	APPLICATION_HPP

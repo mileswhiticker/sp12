@@ -24,7 +24,7 @@
 #include "Client.hpp"
 #include "Mob.hpp"
 #include "Observer.hpp"
-#include "Human.hpp"
+#include "Humanoid.hpp"
 
 #include "AtomManager.hpp"
 #include "Files.hpp"
@@ -286,15 +286,15 @@ void Application::createTestClient()
 	//by default spawn at (10, 0, 0) and look west (down the negative x axis)
 	Ogre::Vector3 spawnPos = Ogre::Vector3(10,5,0);
 	int spawnDir = 8;
-	PlayerSpawn* chosenSpawn = MapSuite::GetInstance().GetRandomPlayerSpawn();
+	PlayerSpawn* chosenSpawn = MapSuite::GetSingleton().GetRandomPlayerSpawn();
 	if(chosenSpawn)
 	{
 		spawnPos = chosenSpawn->pos;
 		spawnDir = chosenSpawn->dir;
 	}
-	Human* pTestHuman = (Human*)AtomManager::GetSingleton().CreateMob(Mob::HUMAN, Ogre::Vector3::ZERO, 0 | INSTANTIATE_IMMEDIATELY);
+	Humanoid* pTestHumanoid = (Humanoid*)AtomManager::GetSingleton().CreateMob(Mob::HUMANOID, Ogre::Vector3::ZERO, 0 | INSTANTIATE_IMMEDIATELY);
 	//Observer* pTestObserver = (Observer*)AtomManager::GetSingleton().CreateMob(Mob::OBSERVER, spawnPos, NULL, spawnDir | INSTANTIATE_IMMEDIATELY);
-	pTestHuman->ConnectClient(pTestClient);
+	pTestHumanoid->ConnectClient(pTestClient);
 }
 
 #undef RESOURCES_CFG

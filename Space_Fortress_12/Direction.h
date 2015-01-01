@@ -10,12 +10,14 @@ UP 16		//+Y	UNIT_Y
 DOWN 32		//-Y	NEGATIVE_UNIT_Y
 */
 
+#define MINDIR NORTH
 #define NORTH 1		//+Z
 #define SOUTH 2		//-Z
 #define EAST 4		//+X
 #define WEST 8		//-X
 #define UP 16		//+Y
 #define DOWN 32		//-Y
+#define MAXDIR DOWN
 #define ALLDIRS (NORTH|SOUTH|EAST|WEST|UP|DOWN)
 
 #endif	DIRECTION_H

@@ -27,14 +27,19 @@ bool Application::Update(float a_DeltaT)
 		(*it)->Update(a_DeltaT);
 	}
 
-	//update mobs on server
-	for(auto it = m_Mobs.begin(); it != m_Mobs.end(); ++it)
+	int physStep = 100;
+	/*if(a_DeltaT > 0.017f)
 	{
-		(*it)->Update(a_DeltaT);
-	}
-
-	m_pBulletDynamicsWorld->stepSimulation(a_DeltaT, 100);
+		physStep -= (a_DeltaT - 0.017f) * 25;
+		if(physStep < 1)
+		{
+			physStep = 1;
+		}
+	}*/
+	m_pBulletDynamicsWorld->stepSimulation(a_DeltaT, physStep);
 	AtomManager::GetSingleton().Update(a_DeltaT);
+	/*std::cout << "deltaT: " << a_DeltaT << std::endl;
+	std::cout << "physStep: " << physStep << std::endl;*/
 
 	//render a single frame
 	return (!m_ShutdownNextUpdate && m_pRoot->renderOneFrame());
