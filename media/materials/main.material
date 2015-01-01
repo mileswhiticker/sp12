@@ -80,3 +80,19 @@ material gravplates
 		}
 	}
 }
+
+material mat_highlight
+// : Ogre/DepthShadowmap/BasicTemplateMaterial
+{
+	//set_texture_alias MainTexture Lightning_Marble_11_111_by_robostimpy.jpg
+	technique
+	{
+		pass
+		{
+			texture_unit
+			{
+				texture highlighted_cell.png
+			}
+		}
+	}
+}

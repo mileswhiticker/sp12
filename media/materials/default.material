@@ -1,7 +1,7 @@
 
 //default material that exported meshes from max use
 //this texture should make them easy to spot and correct
-material defaultLambert
+material default1
 {
 	technique
 	{
@@ -10,6 +10,20 @@ material defaultLambert
 			texture_unit
 			{
 				texture default.jpg
+			}
+		}
+	}
+}
+
+material default2
+{
+	technique
+	{
+		pass
+		{
+			texture_unit
+			{
+				texture default2.jpg
 			}
 		}
 	}
