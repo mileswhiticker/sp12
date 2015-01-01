@@ -1,13 +1,13 @@
 #ifndef INPUTMODULE_OBSERVERLOOK
 #define INPUTMODULE_OBSERVERLOOK
 
-#include "Component.hpp"
+#include "InputModule.hpp"
 
 class ObserverLook
-:	public Component
+:	public InputModule
 {
 public:
-	ObserverLook(Mob* a_pOwnedMob, Client* a_pOwnedClient);
+	ObserverLook(Mob* a_pOwnedMob);
 	virtual void Update(float a_DeltaT);
 	virtual bool mouseMoved( const OIS::MouseEvent &arg );
 	//

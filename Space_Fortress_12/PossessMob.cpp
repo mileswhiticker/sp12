@@ -10,8 +10,8 @@
 
 #include "BtOgreHelper.hpp"
 
-PossessMob::PossessMob(Mob* a_pOwnedMob, Client* a_pOwnedClient)
-:	Component(a_pOwnedMob, a_pOwnedClient)
+PossessMob::PossessMob(Mob* a_pOwnedMob)
+:	InputModule(a_pOwnedMob)
 ,	m_pTargetPossessMob(NULL)
 {
 	//
@@ -45,15 +45,18 @@ bool PossessMob::keyReleased( const OIS::KeyEvent &arg )
 		{
 			if(m_pTargetPossessMob)
 			{
-				//evict the clients client currently in there, if there is one
-				m_pTargetPossessMob->DisconnectClient();
-				Client* pOwnClient = m_pOwnedClient;
-				if(m_pOwnedMob)
+				//evict the client currently in the target mob, if there is one
+				Client* pMyClient = m_pOwnedMob->m_pPossessingClient;
+				if(pMyClient)
 				{
-					m_pOwnedMob->DisconnectClient();
+					m_pTargetPossessMob->DisconnectClient();
+					if(m_pOwnedMob)
+					{
+						m_pOwnedMob->DisconnectClient();
+					}
+					m_pTargetPossessMob->ConnectClient(pMyClient);
+					pMyClient->m_pTopInfoBar->setText("Player mode");
 				}
-				m_pTargetPossessMob->ConnectClient(pOwnClient);
-				pOwnClient->m_pTopInfoBar->setText("Player mode");
 
 				//todo: delete this->m_pOwnedMob (?)
 				//

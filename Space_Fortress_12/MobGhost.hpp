@@ -1,13 +1,13 @@
 #ifndef INPUTMODULE_MobGhost_HPP
 #define INPUTMODULE_MobGhost_HPP
 
-#include "Component.hpp"
+#include "InputModule.hpp"
 
 class MobGhost
-:	public Component
+:	public InputModule
 {
 public:
-	MobGhost(Mob* a_pOwnedMob, Client* a_pOwnedClient);
+	MobGhost(Mob* a_pOwnedMob);
 	virtual void Update(float a_DeltaT);
 	//
 	virtual bool keyPressed( const OIS::KeyEvent &arg );

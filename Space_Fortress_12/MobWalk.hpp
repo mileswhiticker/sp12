@@ -1,7 +1,7 @@
 #ifndef INPUTMODULE_MOBWALK_HPP
 #define INPUTMODULE_MOBWALK_HPP
 
-#include "Component.hpp"
+#include "InputModule.hpp"
 //#include <LinearMath\btVector3.h>
 #include <OGRE\OgreVector3.h>
 
@@ -11,10 +11,10 @@ namespace Ogre
 };
 
 class MobWalk
-:	public Component
+:	public InputModule
 {
 public:
-	MobWalk(Mob* a_pOwnedMob, Client* a_pOwnedClient);
+	MobWalk(Mob* a_pOwnedMob);
 	virtual void Update(float a_DeltaT);
 	//
 	virtual bool keyPressed( const OIS::KeyEvent &arg );

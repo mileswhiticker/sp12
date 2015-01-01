@@ -1,6 +1,6 @@
 #include "Mob.hpp"
 
-#include "Component.hpp"
+#include "InputModule.hpp"
 #include "Client.hpp"
 #include "MapSuite.hpp"
 //#include "MapCell.hpp"
@@ -14,6 +14,8 @@
 #include <BulletCollision\CollisionDispatch\btCollisionWorld.h>
 #include <BulletDynamics\Dynamics\btRigidBody.h>
 
+#include "EffectManager.hpp"
+#include "Cached.hpp"
 #include "CollisionDefines.h"
 #include "OgreHelper.hpp"
 #include "RandHelper.h"
@@ -31,9 +33,14 @@ Mob::Mob(Ogre::Vector3 a_StartPos, int a_Direction)
 ,	m_CameraModelOffset(Ogre::Vector3::ZERO)
 ,	m_Intent(HELP)
 ,	m_pHeldObject(NULL)
+,	m_pCurrentRaycastingInputModule(NULL)
+,	m_tLeftInteractRaycast(3)
+,	m_InteractRaycastInterval(0.1f)
 {
 	m_MyAtomType = Atom::MOB;
 	//btQuaternion(btVector3(0,1,0), 0);
+	m_DefaultPhysicsGroup = COLLISION_MOB;
+	m_DefaultPhysicsMask = COLLISION_OBJ|COLLISION_MOB|COLLISION_STRUCTURE;
 }
 
 Mob::~Mob()
@@ -47,6 +54,20 @@ Mob::~Mob()
 void Mob::Update(float a_DeltaT)
 {
 	Atom::Update(a_DeltaT);
+	
+	//raycast forward if we need to
+	m_tLeftInteractRaycast -= a_DeltaT;
+	if(m_tLeftInteractRaycast <= 0)
+	{
+		m_tLeftInteractRaycast = m_InteractRaycastInterval;
+		RaycastForward();
+	}
+
+	//InputModules
+	for(auto it = m_ActiveInputModules.begin(); it != m_ActiveInputModules.end(); ++it)
+	{
+		(*it)->Update(a_DeltaT);
+	}
 
 	//if we're "falling", raycast down to see if we're on the "ground"
 	m_tleftNextGroundRaycast -= a_DeltaT;
@@ -60,6 +81,110 @@ void Mob::Update(float a_DeltaT)
 	UpdateOrientation(a_DeltaT);
 }
 
+//InputModule* m_pCurrentRaycastingInputModule;
+void Mob::RaycastForward()
+{
+	//DebugDrawer::getSingleton().drawSphere(Ogre::Vector3(0,0,0), 10, Ogre::ColourValue::Blue);
+	if(m_pCurrentRaycastingInputModule && m_pPossessingClient && m_pPossessingClient->m_pCamera)
+	{
+		float interactRange = m_pCurrentRaycastingInputModule->GetInteractRange();
+		if(!interactRange)
+			return;
+		
+		Ogre::Vector3 camPos = m_pPossessingClient->m_pCamera->getDerivedPosition();
+		btVector3 startPos = OGRE2BT(camPos);
+		Ogre::Vector3 camDir = m_pPossessingClient->m_pCamera->getDerivedOrientation() * Ogre::Vector3::NEGATIVE_UNIT_Z;
+		btVector3 rayDir = OGRE2BT(camDir);
+		
+		//EffectManager::GetSingleton().CacheLine(new CachedLine(Ogre::Vector3(0,0,0), camPos, Ogre::ColourValue::Green));
+		//EffectManager::GetSingleton().CacheLine(new CachedLine(camPos, camPos + camDir, Ogre::ColourValue::Blue));
+		//DebugDrawer::getSingleton().drawLine(Ogre::Vector3::ZERO, Ogre::Vector3::UNIT_X * 10, Ogre::ColourValue::Green);
+
+		btCollisionWorld::ClosestRayResultCallback closestHitRayCallback(startPos, startPos + rayDir * btScalar(interactRange));
+		closestHitRayCallback.m_collisionFilterGroup = m_pCurrentRaycastingInputModule->GetInteractFilterGroup();
+		closestHitRayCallback.m_collisionFilterMask = m_pCurrentRaycastingInputModule->GetInteractFilterMask();
+
+		btDiscreteDynamicsWorld& bulletWorld = Application::StaticGetDynamicsWorld();
+		
+		Atom* pHitAtom = NULL;
+		std::vector<Atom*> interactableAtoms;
+		
+		float hitDistScalar = 999;
+
+		//this grabs the closest viable result... may as well just grab all of the results
+		/*bulletWorld.rayTest(startPos, startPos + rayDir * btScalar(interactRange), closestHitRayCallback);
+		if(closestHitRayCallback.hasHit())
+		{
+			const btCollisionObject* pHitObj = closestHitRayCallback.m_collisionObject;
+			pHitAtom = (Atom*)pHitObj->getUserPointer();
+			//std::cout << index << "/" << rayCallback.m_collisionObjects.size() << " " << pHitAtom << std::endl;
+			if(m_pCurrentRaycastingInputModule->TryInteract(pHitAtom))
+			{
+				//grab the hit dist fraction, so we can draw a sphere there later
+				hitDistScalar = closestHitRayCallback.m_closestHitFraction;
+			}
+			else
+			{
+				//reset it, so that if we don't find a matching structure at all the user's selection is reset
+				pHitAtom = NULL;
+			}
+		}*/
+
+		//grab all results and pass them over to the input module to sort through
+		//bullet does not sort these by distance! we have to do it manually here
+		if(!pHitAtom)
+		{
+			btCollisionWorld::AllHitsRayResultCallback allHitsRayCallback(startPos, startPos + rayDir * btScalar(interactRange));
+			allHitsRayCallback.m_collisionFilterGroup = closestHitRayCallback.m_collisionFilterGroup;
+			allHitsRayCallback.m_collisionFilterMask = closestHitRayCallback.m_collisionFilterMask;
+
+			bulletWorld.rayTest(startPos, startPos + rayDir * btScalar(interactRange), allHitsRayCallback);
+			if(allHitsRayCallback.hasHit())
+			{
+				for(int index=0;index<allHitsRayCallback.m_collisionObjects.size();index++)
+				{
+					const btCollisionObject* pHitObj = allHitsRayCallback.m_collisionObjects.at(index);
+					Atom* pTestAtom = (Atom*)pHitObj->getUserPointer();
+
+					//interactableAtoms.push_back(pTestAtom);
+
+					//check if it's closer than the previous target
+					float curDist = allHitsRayCallback.m_hitFractions[index];
+					if(curDist < hitDistScalar)
+					{
+						//check if we've hit a valid target
+						if(m_pCurrentRaycastingInputModule->TryInteract(pTestAtom, false))
+						{
+							//if it is, select it then keep checking the rest
+							hitDistScalar = curDist;
+							pHitAtom = pTestAtom;
+						}	
+					}
+				}
+			}
+		}
+
+		if(pHitAtom)
+		{
+			/*float myVar;
+			myVar = 1;
+			//draw a sphere at the hit point
+			Ogre::Vector3 drawPos = camPos + camDir * Ogre::Real(interactRange) * hitDistScalar;
+			EffectManager::GetSingleton().CacheSphere(new CachedSphere(drawPos, 0.01f, Ogre::ColourValue::Red));*/
+		}
+
+		//there's bit of cleanup to do in this function... if i ever get it working satisfactorily
+		if(interactableAtoms.size() > 0)
+		{
+			m_pCurrentRaycastingInputModule->TryInteract(interactableAtoms);
+		}
+		else
+		{
+			m_pCurrentRaycastingInputModule->TryInteract(pHitAtom, true);
+		}
+	}
+}
+
 bool Mob::ConnectClient(Client* a_pNewClient)
 {
 	if(!m_pPossessingClient)
@@ -71,11 +196,6 @@ bool Mob::ConnectClient(Client* a_pNewClient)
 		RegisterKeyListener(this);
 		RegisterMouseListener(this);
 		
-		for(auto it = m_AllComponents.begin(); it != m_AllComponents.end(); ++it)
-		{
-			(*it)->SetClient(a_pNewClient);
-		}
-
 		return true;
 	}
 	return false;
@@ -95,11 +215,6 @@ bool Mob::DisconnectClient()
 	{
 		m_pPossessingClient = NULL;
 
-		for(auto it = m_AllComponents.begin(); it != m_AllComponents.end(); ++it)
-		{
-			(*it)->SetClient(NULL);
-		}
-
 		return true;
 	}
 	return false;
@@ -107,7 +222,7 @@ bool Mob::DisconnectClient()
 
 bool Mob::keyPressed( const OIS::KeyEvent &arg )
 {
-	for(auto it = m_AllComponents.begin(); it != m_AllComponents.end(); ++it)
+	for(auto it = m_ActiveInputModules.begin(); it != m_ActiveInputModules.end(); ++it)
 	{
 		(*it)->keyPressed(arg);
 	}
@@ -117,7 +232,7 @@ bool Mob::keyPressed( const OIS::KeyEvent &arg )
 
 bool Mob::keyReleased( const OIS::KeyEvent &arg )
 {
-	for(auto it = m_AllComponents.begin(); it != m_AllComponents.end(); ++it)
+	for(auto it = m_ActiveInputModules.begin(); it != m_ActiveInputModules.end(); ++it)
 	{
 		(*it)->keyReleased(arg);
 	}
@@ -127,7 +242,7 @@ bool Mob::keyReleased( const OIS::KeyEvent &arg )
 
 bool Mob::mouseMoved( const OIS::MouseEvent &arg )
 {
-	for(auto it = m_AllComponents.begin(); it != m_AllComponents.end(); ++it)
+	for(auto it = m_ActiveInputModules.begin(); it != m_ActiveInputModules.end(); ++it)
 	{
 		(*it)->mouseMoved(arg);
 	}
@@ -137,7 +252,7 @@ bool Mob::mouseMoved( const OIS::MouseEvent &arg )
 
 bool Mob::mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
 {
-	for(auto it = m_AllComponents.begin(); it != m_AllComponents.end(); ++it)
+	for(auto it = m_ActiveInputModules.begin(); it != m_ActiveInputModules.end(); ++it)
 	{
 		(*it)->mousePressed(arg, id);
 	}
@@ -147,7 +262,7 @@ bool Mob::mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
 
 bool Mob::mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
 {
-	for(auto it = m_AllComponents.begin(); it != m_AllComponents.end(); ++it)
+	for(auto it = m_ActiveInputModules.begin(); it != m_ActiveInputModules.end(); ++it)
 	{
 		(*it)->mouseReleased(arg, id);
 	}
@@ -308,33 +423,113 @@ void Mob::UpdateOrientation(float a_DeltaT)
 	}
 }
 
-void Mob::AddObjectToInventory(Object* a_pObject)
-{
-	//if this object is held by another mob, it will be forcibly removed from that one
-	//if we already hold this object, it'll do nothing
-	a_pObject->AddToMobInventory(this);
-
-	//only add it to our inventory if we don't hold it already
-	const int atomUID = a_pObject->GetAtomUID();
-	if(m_Contents.count(atomUID) == 0)
-	{
-		m_Contents[atomUID] = a_pObject;
-	}
-}
-
-void Mob::RemoveObjectFromInventory(Object* a_pObject)
-{
-	const int atomUID = a_pObject->GetAtomUID();
-	if(m_Contents.count(atomUID) == 1)
-	{
-		m_Contents.erase(atomUID);
-	}
-}
-
 void Mob::SendClientMessage(std::string a_Message, int a_MsgType)
 {
 	if(m_pPossessingClient)
 	{
 		m_pPossessingClient->DisplayMessage(a_Message, (Client::MessageType)a_MsgType);
 	}
+}
+
+bool Mob::AddInputModule(InputModule* a_pNewInputModule, bool a_Active)
+{
+	if(a_pNewInputModule)
+	{
+		if(a_Active)
+		{
+			m_ActiveInputModules.push_back(a_pNewInputModule);
+		}
+		else
+		{
+			m_InactiveInputModules.push_back(a_pNewInputModule);
+		}
+		return true;
+	}
+	return false;
+}
+
+bool Mob::DeactivateInputModule(InputModule* a_pInputModuleToDeactivate)
+{
+	if(a_pInputModuleToDeactivate)
+	{
+		for(auto it = m_ActiveInputModules.begin(); it != m_ActiveInputModules.end(); ++it)
+		{
+			if(*it == a_pInputModuleToDeactivate)
+			{
+				m_ActiveInputModules.erase(it);
+				m_InactiveInputModules.push_back(a_pInputModuleToDeactivate);
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+bool Mob::ReactivateInputModule(InputModule* a_pInputModuleToReactivate)
+{
+	if(a_pInputModuleToReactivate)
+	{
+		for(auto it = m_ActiveInputModules.begin(); it != m_ActiveInputModules.end(); ++it)
+		{
+			if(*it == a_pInputModuleToReactivate)
+			{
+				m_InactiveInputModules.erase(it);
+				m_ActiveInputModules.push_back(a_pInputModuleToReactivate);
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+bool Mob::ClearInputModule(InputModule* a_pInputModuleToClear, bool a_Active)
+{
+	if(a_pInputModuleToClear)
+	{
+		if(a_Active)
+		{
+			if(!ClearActiveInputModule(a_pInputModuleToClear))
+			{
+				return ClearInactiveInputModule(a_pInputModuleToClear);
+			}
+		}
+		else
+		{
+			if(!ClearInactiveInputModule(a_pInputModuleToClear))
+			{
+				return ClearActiveInputModule(a_pInputModuleToClear);
+			}
+			else
+			{
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+bool Mob::ClearActiveInputModule(InputModule* a_pInputModuleToClear)
+{
+	for(auto it = m_ActiveInputModules.begin(); it != m_ActiveInputModules.end(); ++it)
+	{
+		if(*it == a_pInputModuleToClear)
+		{
+			m_ActiveInputModules.erase(it);
+			return true;
+		}
+	}
+	return false;
+}
+
+bool Mob::ClearInactiveInputModule(InputModule* a_pInputModuleToClear)
+{
+	for(auto it = m_InactiveInputModules.begin(); it != m_InactiveInputModules.end(); ++it)
+	{
+		if(*it == a_pInputModuleToClear)
+		{
+			m_InactiveInputModules.erase(it);
+			return true;
+		}
+	}
+	return false;
 }

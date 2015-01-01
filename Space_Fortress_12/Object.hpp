@@ -7,6 +7,7 @@
 
 class Turf;
 class Mob;
+class InputModule;
 namespace Ogre
 {
 	class SceneNode;
@@ -18,7 +19,7 @@ class Object
 public:
 	enum ObjType
 	{
-		UNKNOWN = 0,
+		OBJTYPE_UNKNOWN = 0,
 		//
 		BOX,
 		BUILDABLE,
@@ -31,25 +32,22 @@ public:
 	ObjType GetObjType();
 	//
 	virtual void Build(Turf* a_pLocTurf, int a_Direction, int a_Layer);
+
+	//mob interaction
+	InputModule* GetEquipInputModule();
 	//
-	void AddToMobInventory(Mob* a_pMob);
-	void RemoveFromMobInventory();
+	virtual bool AddToOtherAtomContents(Atom* a_pAtom);
+	virtual bool RemoveFromOtherAtomContents();
 	//
 protected:
 	ObjType m_MyObjType;
 	std::string m_MeshName;
 	Mob* m_pHoldingMob;
-	//
-};
 
-class Box
-:	public Object
-{
-public:
-	Box(Ogre::Vector3 a_Position);
-	//virtual void InstantiateAtom();
-	//
-protected:
+	//interaction stuff
+	/*Atom::AtomType m_TargetAtomType;
+	int m_TargetAtomSubtype;*/
+	InputModule* m_pEquipInputModule;
 	//
 };
 

@@ -1,15 +1,15 @@
 #ifndef OBSERVER_FLIGHT_HPP
 #define OBSERVER_FLIGHT_HPP
 
-#include "Component.hpp"
+#include "InputModule.hpp"
 #include <OGRE\OgreVector3.h>
 #include <OGRE\OgreQuaternion.h>
 
 class ObserverFlight
-:	public Component
+:	public InputModule
 {
 public:
-	ObserverFlight(Mob* a_pOwnedMob, Client* a_pOwnedClient);
+	ObserverFlight(Mob* a_pOwnedMob);
 	virtual void Update(float a_DeltaT);
 	//
 	virtual bool keyPressed( const OIS::KeyEvent &arg );

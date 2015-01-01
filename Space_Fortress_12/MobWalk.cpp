@@ -8,8 +8,8 @@
 #include <BulletDynamics\Dynamics\btRigidBody.h>
 #include <OGRE\OgreSceneNode.h>
 
-MobWalk::MobWalk(Mob* a_pOwnedMob, Client* a_pOwnedClient)
-:	Component(a_pOwnedMob, a_pOwnedClient)
+MobWalk::MobWalk(Mob* a_pOwnedMob)
+:	InputModule(a_pOwnedMob)
 ,	m_RelativeMoveDir(Ogre::Vector3::ZERO)
 ,	m_IsSprinting(false)
 ,	m_WalkSpeed(1.f)

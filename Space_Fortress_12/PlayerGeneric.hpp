@@ -1,7 +1,7 @@
 #ifndef PLAYER_GENERIC_HPP
 #define PLAYER_GENERIC_HPP
 
-#include "Component.hpp"
+#include "InputModule.hpp"
 #include <OGRE\OgreVector3.h>
 #include <OGRE\OgreQuaternion.h>
 
@@ -11,10 +11,10 @@ namespace Ogre
 };
 
 class PlayerGeneric
-:	public Component
+:	public InputModule
 {
 public:
-	PlayerGeneric(Mob* a_pOwnedMob, Client* a_pOwnedClient);
+	PlayerGeneric(Mob* a_pOwnedMob);
 	virtual void Update(float a_DeltaT);
 	//
 	virtual bool keyPressed( const OIS::KeyEvent &arg );

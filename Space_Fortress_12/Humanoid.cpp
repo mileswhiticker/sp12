@@ -1,4 +1,4 @@
-#include "Human.hpp"
+#include "Humanoid.hpp"
 
 #include <OGRE\OgreSceneManager.h>
 #include <OGRE\OgreSceneNode.h>
@@ -29,20 +29,24 @@
 #include "DebugDrawer.h"
 #include "CollisionDefines.h"
 
-Human::Human(Ogre::Vector3 a_StartPos, int a_Direction)
+Humanoid::Humanoid(Ogre::Vector3 a_StartPos, int a_Direction)
 :	Mob(a_StartPos, a_Direction)
 {
-	m_MyMobType = HUMAN;
-	SetupInputModules();
+	m_MyMobType = HUMANOID;
 	m_CameraModelOffset.y = 0.35f;
+	
+	m_ActiveInputModules.push_back(new PlayerGeneric(this));
+	m_ActiveInputModules.push_back(new MobLook(this));
+	m_ActiveInputModules.push_back(new MobWalk(this));
+	m_ActiveInputModules.push_back(new MobGhost(this));
 }
 
-void Human::Update(float a_DeltaT)
+void Humanoid::Update(float a_DeltaT)
 {
 	Mob::Update(a_DeltaT);
 }
 
-void Human::InstantiateAtom()
+void Humanoid::InstantiateAtom()
 {
 	//a single cuboid girder to cover this cell
 	Ogre::SceneManager& sceneManager = GetSceneManager();
@@ -74,12 +78,3 @@ void Human::InstantiateAtom()
 	
 	Mob::InstantiateAtom();
 }
-
-void Human::SetupInputModules()
-{
-	m_AllComponents.push_back(new PlayerGeneric(this, NULL));
-	m_AllComponents.push_back(new MobLook(this, NULL));
-	m_AllComponents.push_back(new MobWalk(this, NULL));
-	m_AllComponents.push_back(new MobGhost(this, NULL));
-}
-

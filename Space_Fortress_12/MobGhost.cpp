@@ -6,8 +6,8 @@
 #include <cegui\elements\CEGUIGUISheet.h>
 #include <OGRE\OgreSceneNode.h>
 
-MobGhost::MobGhost(Mob* a_pOwnedMob, Client* a_pOwnedClient)
-:	Component(a_pOwnedMob, a_pOwnedClient)
+MobGhost::MobGhost(Mob* a_pOwnedMob)
+:	InputModule(a_pOwnedMob)
 {
 	//
 }
@@ -40,11 +40,11 @@ bool MobGhost::keyReleased( const OIS::KeyEvent &arg )
 		{
 			//todo: bitshift spawn dir into the last argument
 			Ogre::Vector3 spawnPos = Ogre::Vector3::ZERO;
-			m_pOwnedClient->m_pTopInfoBar->setText("Observer mode");
+			m_pOwnedMob->m_pPossessingClient->m_pTopInfoBar->setText("Observer mode");
 			if(m_pOwnedMob)
 				spawnPos = m_pOwnedMob->m_pAtomRootSceneNode->getPosition();
 			Observer* pTestObserver = (Observer*)AtomManager::GetSingleton().CreateMob(Mob::OBSERVER, spawnPos, INSTANTIATE_IMMEDIATELY);
-			pTestObserver->ConnectClient(m_pOwnedClient);
+			pTestObserver->ConnectClient(m_pOwnedMob->m_pPossessingClient);
 
 			pTestObserver->SetTargetPossessMob(m_pOwnedMob);
 			m_pOwnedMob->DisconnectClient();

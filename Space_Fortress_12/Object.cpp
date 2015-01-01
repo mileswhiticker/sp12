@@ -1,4 +1,6 @@
 #include "Object.hpp"
+#include "Mob.hpp"
+#include "InputModule.hpp"
 
 #include "BtOgreHelper.hpp"
 #include "BulletHelper.hpp"
@@ -7,10 +9,8 @@
 #include "DebugDrawer.h"
 #include "CollisionDefines.h"
 
-#include "Mob.hpp"
 #include "Cached.hpp"
 #include "EffectManager.hpp"
-#include "RandHelper.h"
 
 #include <BulletCollision\CollisionShapes\btBoxShape.h>
 #include <BulletCollision\CollisionShapes\btSphereShape.h>
@@ -22,20 +22,18 @@
 #include <OGRE\OgreSceneNode.h>
 #include <OGRE\OgreEntity.h>
 
+#include "num2string.h"
+#include "RandHelper.h"
+
 Object::Object(Ogre::Vector3 a_StartPos, int a_StartDirection)
 :	Atom(a_StartPos, a_StartDirection)
-,	m_MyObjType(UNKNOWN)
+,	m_MyObjType(OBJTYPE_UNKNOWN)
 ,	m_pHoldingMob(NULL)
+,	m_pEquipInputModule(NULL)
 {
-	//
-}
-
-Box::Box(Ogre::Vector3 a_Position)
-:	Object(a_Position, 0)
-{
-	//scenenode
-	m_MyObjType = Object::BOX;
-	m_MeshName = "cell_filling.mesh";
+	m_AtomTextName = "Object";
+	m_DefaultPhysicsGroup = COLLISION_OBJ;
+	m_DefaultPhysicsMask = COLLISION_OBJ|COLLISION_MOB|COLLISION_STRUCTURE;
 }
 
 void Object::Update(float a_DeltaT)
@@ -103,76 +101,36 @@ void Object::Build(Turf* a_pLocTurf, int a_Direction, int a_Layer)
 	//
 }
 
-void Object::AddToMobInventory(Mob* a_pMob)
+InputModule* Object::GetEquipInputModule()
 {
-	if( a_pMob && (a_pMob != m_pHoldingMob) )
-	{
-		//if we're already being held, tell them to forget about us
-		if(m_pHoldingMob)
-		{
-			//this way avoids an endless recursive loop
-			Mob* pHoldingMob = m_pHoldingMob;
-			m_pHoldingMob = NULL;
-			pHoldingMob->RemoveObjectFromInventory(this);
-		}
-		else
-		{
-			//make the mesh invisible
-			m_pAtomEntitySceneNode->detachObject(m_pAtomEntity);
-		
-			//disable the rigidbody
-			btDiscreteDynamicsWorld& dynamicsWorld = GetDynamicsWorld();
-			dynamicsWorld.removeRigidBody(m_pRigidBody);
-			
-			m_UseRigidbodyPosition = false;
-		}
-		
-		m_pHoldingMob = a_pMob;
-		a_pMob->AddObjectToInventory(this);
-		
-		//bind the object position to the mob position
-		if(m_pAtomRootSceneNode->getParentSceneNode())
-		{
-			m_pAtomRootSceneNode->getParentSceneNode()->removeChild(m_pAtomRootSceneNode);
-		}
-		m_pAtomRootSceneNode->setPosition(0,0,0);
-		m_pHoldingMob->m_pAtomRootSceneNode->addChild(m_pAtomRootSceneNode);
-	}
+	return m_pEquipInputModule;
 }
 
-void Object::RemoveFromMobInventory()
+bool Object::AddToOtherAtomContents(Atom* a_pAtom)
 {
-	if(m_pHoldingMob)
+	if(Atom::AddToOtherAtomContents(a_pAtom))
 	{
-		m_pHoldingMob = NULL;
-		m_pHoldingMob->RemoveObjectFromInventory(this);
-
-		//make the mesh visible
-		Ogre::SceneNode* pCurParent = m_pAtomEntity->getParentSceneNode();
-		if(pCurParent != m_pAtomEntitySceneNode)
+		if(m_pEquipInputModule && m_pHoldingAtom->GetAtomType() == Atom::MOB)
 		{
-			if(pCurParent)
-			{
-				pCurParent->detachObject(m_pAtomEntity);
-			}
-			m_pAtomEntitySceneNode->attachObject(m_pAtomEntity);
+			Mob* pHoldingMob = (Mob*)a_pAtom;
+			m_pEquipInputModule->SetMobOwner(pHoldingMob);
+			//pHoldingMob-
 		}
-
-		//detach our scene node from the mob, and child it to the root scene node
-		Ogre::SceneNode& rootSceneNode = GetRootSceneNode();
-		Ogre::SceneNode* pParentSceneNode = m_pAtomRootSceneNode->getParentSceneNode();
-		if(pParentSceneNode != &rootSceneNode)
-		{
-			if(pParentSceneNode)
-			{
-				pParentSceneNode->removeChild(m_pAtomRootSceneNode);
-			}
-			rootSceneNode.addChild(m_pAtomRootSceneNode);
-		}
-		
-		//re-enable the rigidbody
-		btDiscreteDynamicsWorld& dynamicsWorld = GetDynamicsWorld();
-		dynamicsWorld.addRigidBody(m_pRigidBody, COLLISION_OBJ, COLLISION_OBJ|COLLISION_MOB|COLLISION_STRUCTURE);
-		m_UseRigidbodyPosition = true;
+		return true;
 	}
+	return false;
+}
+
+bool Object::RemoveFromOtherAtomContents()
+{
+	if(Atom::RemoveFromOtherAtomContents())
+	{
+		//we should only have a mob owner if we're directly in the contents of the mob
+		if(m_pEquipInputModule)
+		{
+			m_pEquipInputModule->SetMobOwner(NULL);
+		}
+		return true;
+	}
+	return false;
 }

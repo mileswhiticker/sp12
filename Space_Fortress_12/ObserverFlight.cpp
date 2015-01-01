@@ -6,8 +6,8 @@
 #include <OGRE\OgreSceneNode.h>
 #include <OGRE\OgreCamera.h>
 
-ObserverFlight::ObserverFlight(Mob* a_pOwnedMob, Client* a_pOwnedClient)
-:	Component(a_pOwnedMob, a_pOwnedClient)
+ObserverFlight::ObserverFlight(Mob* a_pOwnedMob)
+:	InputModule(a_pOwnedMob)
 ,	m_FlySpeed(1.f)
 ,	m_RelativeMoveDir(Ogre::Vector3(0,0,0))
 {
@@ -19,8 +19,8 @@ void ObserverFlight::Update(float a_DeltaT)
 	if(m_RelativeMoveDir.squaredLength())
 	{
 		Ogre::Quaternion moveOrientation = Ogre::Quaternion::IDENTITY;
-		if(m_pOwnedClient && m_pOwnedClient->m_pCamera)
-			moveOrientation = m_pOwnedClient->m_pCamera->getOrientation();
+		if(m_pOwnedMob->m_pPossessingClient && m_pOwnedMob->m_pPossessingClient->m_pCamera)
+			moveOrientation = m_pOwnedMob->m_pPossessingClient->m_pCamera->getOrientation();
 		//
 		Ogre::Vector3 oldPos = Ogre::Vector3::ZERO;
 		if(m_pOwnedMob && m_pOwnedMob->m_pAtomRootSceneNode)

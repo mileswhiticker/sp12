@@ -12,8 +12,8 @@
 #include "EffectManager.hpp"
 #include "Object.hpp"
 
-PlayerGeneric::PlayerGeneric(Mob* a_pOwnedMob, Client* a_pOwnedClient)
-:	Component(a_pOwnedMob, a_pOwnedClient)
+PlayerGeneric::PlayerGeneric(Mob* a_pOwnedMob)
+:	InputModule(a_pOwnedMob)
 {
 	//point light for testing
 	Ogre::SceneManager& sceneMgr = GetSceneManager();
@@ -51,8 +51,8 @@ bool PlayerGeneric::keyReleased( const OIS::KeyEvent &arg )
 	{
 	case(OIS::KC_L):
 		{
-			if(m_pOwnedClient)
-				m_pPointLight->setPosition(m_pOwnedClient->m_pCamera->getDerivedPosition());
+			if(m_pOwnedMob->m_pPossessingClient)
+				m_pPointLight->setPosition(m_pOwnedMob->m_pPossessingClient->m_pCamera->getDerivedPosition());
 			break;
 		}
 	case(OIS::KC_O):

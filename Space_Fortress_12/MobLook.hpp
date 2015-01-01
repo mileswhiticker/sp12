@@ -1,13 +1,13 @@
 #ifndef INPUTMODULE_MOBLOOK
 #define INPUTMODULE_MOBLOOK
 
-#include "Component.hpp"
+#include "InputModule.hpp"
 
 class MobLook
-:	public Component
+:	public InputModule
 {
 public:
-	MobLook(Mob* a_pOwnedMob, Client* a_pOwnedClient);
+	MobLook(Mob* a_pOwnedMob);
 	virtual void Update(float a_DeltaT);
 	virtual bool mouseMoved( const OIS::MouseEvent &arg );
 	//

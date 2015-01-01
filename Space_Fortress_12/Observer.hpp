@@ -3,6 +3,7 @@
 
 #include "Mob.hpp"
 class PossessMob;
+class RCD;
 
 class Observer
 :	public Mob
@@ -10,13 +11,13 @@ class Observer
 public:
 	Observer(Ogre::Vector3 a_StartPos, int a_Direction = 0);
 	virtual void InstantiateAtom();
-	virtual void SetupInputModules();
 	//
 	void SetTargetPossessMob(Mob* a_pTargetPossessMob);
 	//
 protected:
 	PossessMob* m_pPossessMob;
 	//
+	RCD* m_pMyRCD;
 };
 
 #endif	OBSERVER_HPP

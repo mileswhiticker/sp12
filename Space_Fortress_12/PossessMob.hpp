@@ -1,13 +1,13 @@
 #ifndef INPUTMODULE_POSSESSMOB_HPP
 #define INPUTMODULE_POSSESSMOB_HPP
 
-#include "Component.hpp"
+#include "InputModule.hpp"
 
 class PossessMob
-:	public Component
+:	public InputModule
 {
 public:
-	PossessMob(Mob* a_pOwnedMob, Client* a_pOwnedClient);
+	PossessMob(Mob* a_pOwnedMob);
 	virtual void Update(float a_DeltaT);
 	//
 	virtual bool keyPressed( const OIS::KeyEvent &arg );
