@@ -1,6 +1,6 @@
 <sf12m>
 	<!--Experimental map format for Space Fortress 12-->
-	<!--Use discrete integers for coordinatess-->
+	<!--Use only discrete integers for coordinates-->
 
 	<station name = "Test Station 13">
 	
@@ -85,11 +85,9 @@
 			<underlay plating="grey_default" dir="32"></underlay>
 		</turf>
 		
-		<playerspawn x="2" y="2" z="5" type="observer" dir="2"></playerspawn>
-		<playerspawn x="2" y="2" z="-2" type="observer" dir="1"></playerspawn>
-		<playerspawn x="5" y="2" z="2" type="observer" dir="8"></playerspawn>
-		<playerspawn x="-2" y="2" z="2" type="observer" dir="4"></playerspawn>
+		<playerspawn x="1" y="2" z="3" type="observer" dir="2"></playerspawn>
 		
 	</station>
 
 </sf12m>
+		
