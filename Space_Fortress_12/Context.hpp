@@ -19,6 +19,7 @@ class Context
 public:
 	enum ContextType
 	{
+		//unused?
 		CONTEXT_UNKNOWN = 0,
 		//
 		BUILD = 1,
@@ -31,7 +32,7 @@ public:
 		//
 		CONTEXT_MAX
 	};
-	Context(Turf* a_pLocTurf, Atom* a_pOwnedAtom);
+	Context(int a_FaceDir, int a_Quadrant, Atom* a_pOwnedAtom);
 	
 	virtual bool AttemptInteract(Mob* a_pSourceMob, Atom* a_pUsedAtom, int a_InteractType);
 	//

@@ -27,6 +27,9 @@ OverlayPlating::OverlayPlating(Turf* a_pLocTurf, int a_Dir)
 	m_MyStructureType = Structure::OVERLAYPLATING;
 	m_MaterialName = "over_plating";
 	m_SelectMaterialName = "over_plating_modulate";
+	
+	m_FaceQuadrant = ALLQUADRANT;
+	//m_StructureLevel = OVER;
 }
 
 void OverlayPlating::InstantiateStructure(bool a_IsBuildPoint)
@@ -37,6 +40,8 @@ void OverlayPlating::InstantiateStructure(bool a_IsBuildPoint)
 	Ogre::SceneManager& sceneManager = GetSceneManager();
 	//std::cout << "instantiating OverlayPlating with direction " << m_Direction << std::endl;
 	
+	m_AtomFlags = RCD_CAN_DESTROY;
+
 	//create entity
 	m_pAtomEntity = sceneManager.createEntity("over_plating_" + num2string(m_AtomID), "cell_overlay.mesh");
 	m_pAtomEntitySceneNode->attachObject(m_pAtomEntity);

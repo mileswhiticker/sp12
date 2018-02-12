@@ -1,20 +1,18 @@
 #ifndef ATOM_MANAGER_HPP
 #define ATOM_MANAGER_HPP
 
+#include <set>
 #include <string>
 #include <OGRE\OgreVector3.h>
-#include <set>
+#include "BuildFlags.hpp"
 
 class Atom;
 class Object;
-class Girder;
 class Structure;
 class MapCell;
 class Mob;
 class Turf;
-
-#define INSTANTIATE_IMMEDIATELY 64
-#define BUILD_POINT 128
+class Context;
 
 class AtomManager
 {
@@ -33,19 +31,21 @@ public:
 	//the first 6 bits of a_AdditionalFlags are directions
 	Object* CreateObject(int a_ObjectType, Ogre::Vector3 a_Pos, int a_AdditionalFlags = INSTANTIATE_IMMEDIATELY);
 	Structure* CreateStructure(int a_StructureType, Turf* a_pLocTurf, int a_AdditionalFlags = INSTANTIATE_IMMEDIATELY);
-	Turf* CreateTurf(int a_TurfType, Ogre::Vector3 a_SpawnPos, int a_AdditionalFlags = INSTANTIATE_IMMEDIATELY);
 	Mob* CreateMob(int a_MobType, Ogre::Vector3 a_SpawnPos, int a_AdditionalFlags = INSTANTIATE_IMMEDIATELY);
 	//
-	void ClearMapCell(MapCell* a_pMapCell);
+	Context* CreateInteractContext(int a_Dir, int a_Quadrant, int a_Layer);
 	//
+	
+	void SetTurfWantingUpdate(Turf* a_pTurfToUpdate);
+	void StopTurfWantingUpdate(Turf* a_pTurfToStopUpdate);
+
 	void DeleteStructure(Structure* a_pStructureToDel);
 	void DeleteMob(Mob* a_pMobToDel);
-	void DeleteTurf(Turf* a_pTurfToDel);
 
 	std::set<Structure*> m_StructuresInWorld;
 	std::set<Mob*> m_MobsInWorld;
 	std::set<Atom*> m_ObjectsInWorld;
-	std::set<Turf*> m_TurfsInWorld;
+	std::map<int,Turf*> m_TurfsInWorldWantingUpdate;
 	//
 private:
 	AtomManager();

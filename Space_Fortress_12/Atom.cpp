@@ -1,7 +1,7 @@
 #include "Atom.hpp"
-#include "ObserverBuild.hpp"
 
 #include "Mob.hpp"
+#include "InputModule.hpp"
 #include "Turf.hpp"
 
 #include <OGRE\OgreEntity.h>
@@ -24,6 +24,7 @@
 #include "Cached.hpp"
 #include "DebugDrawer.h"
 #include "MapSuite.hpp"
+#include "Object.hpp"
 
 Atom::Atom(Ogre::Vector3 a_Pos, int a_Dir)
 :	m_pAtomEntitySceneNode(NULL)
@@ -42,11 +43,15 @@ Atom::Atom(Ogre::Vector3 a_Pos, int a_Dir)
 ,	m_tLeftUpdateCell(0)
 ,	m_AtomFlags(UNKNOWN_ATOMFLAG)
 ,	m_AtomID(NewUID())
+,	m_DefaultPhysicsGroup(0)
+,	m_DefaultPhysicsMask(0)
+,	m_pMyContext(NULL)
+,	m_UpdateTurfLoc(true)
 	//remove this shit
 ,	m_MaterialName("defaultLambert")		//todo
 ,	m_SelectMaterialName("defaultLambert")	//todo
 ,	m_VirtualSelectMaterialName("cell_highlight_material")
-,	m_AtomTextName("Unknown object")
+,	m_AtomTextName("\"DEFAULT ATOM NAME\"")
 {
 	m_pAtomRootSceneNode = NewSceneNode();
 	m_pAtomRootSceneNode->setPosition(a_Pos);
@@ -136,7 +141,7 @@ void Atom::Update(float a_DeltaT)
 	//--- update current map cell ---//
 	
 	m_tLeftUpdateCell -= a_DeltaT;
-	if(m_pAtomRootSceneNode && m_tLeftUpdateCell <= 0)
+	if(m_pAtomRootSceneNode && m_UpdateTurfLoc && m_tLeftUpdateCell <= 0)
 	{
 		m_tLeftUpdateCell = 0.5f;
 		//update the map cell we're currently in
@@ -153,7 +158,7 @@ void Atom::Update(float a_DeltaT)
 			curPos.z += 0.5f;
 		else
 			curPos.z -= 0.5f;
-		Turf* pNewTurf = MapSuite::GetInstance().GetTurfAtCoordsOrNull(curPos);
+		Turf* pNewTurf = MapSuite::GetSingleton().GetTurfAtCoordsOrNull(curPos);
 		bool check = false;
 		if(pNewTurf != m_pCurrentTurf)
 		{
@@ -168,7 +173,7 @@ void Atom::Update(float a_DeltaT)
 
 		if(check)
 		{
-			/*if(((Mob*)(this))->GetMobType() == Mob::HUMAN)
+			/*if(((Mob*)(this))->GetMobType() == Mob::HUMANOID)
 				std::cout << "human position update" << std::endl;
 			else
 				std::cout << "observer position update" << std::endl;*/
@@ -191,12 +196,6 @@ void Atom::Update(float a_DeltaT)
 		}
 	}
 	
-	//components
-	for(auto it = m_AllComponents.begin(); it != m_AllComponents.end(); ++it)
-	{
-		(*it)->Update(a_DeltaT);
-	}
-
 	//--- highlights shader ---//
 	
 	if(m_pAtomEntity && m_ModulateChangeDir)
@@ -296,21 +295,21 @@ bool Atom::ChangeDirection(int a_NewDir)
 	return true;
 }
 
-void Atom::Select(Component* a_pSourceComponent)
+void Atom::Select(InputModule* a_pSourceInputModule)
 {
-	if(a_pSourceComponent)
+	if(a_pSourceInputModule)
 	{
 		SetFlashingColour(Ogre::ColourValue::Green);
 		SetEntityVisible();
-		m_SelectingInputModules.insert(a_pSourceComponent);
+		m_SelectingInputModules.insert(a_pSourceInputModule);
 	}
 }
 
-void Atom::DeSelect(Component* a_pSourceComponent)
+void Atom::DeSelect(InputModule* a_pSourceInputModule)
 {
-	if(a_pSourceComponent)
+	if(a_pSourceInputModule)
 	{
-		m_SelectingInputModules.erase(a_pSourceComponent);
+		m_SelectingInputModules.erase(a_pSourceInputModule);
 		StopFlashingColour();
 	}
 }
@@ -418,16 +417,6 @@ void Atom::ResetEnvironment()
 	OnGravityChange();
 }
 
-void Atom::BuildTurf(Turf* a_pTarget, bool a_Virtual)
-{
-	//
-}
-
-void Atom::BuildStructure(Turf* a_pTarget, bool a_Virtual)
-{
-	//
-}
-
 int Atom::GetAtomFlags()
 {
 	return m_AtomFlags;
@@ -441,4 +430,124 @@ int Atom::GetAtomUID()
 std::string Atom::GetAtomTextName()
 {
 	return m_AtomTextName;
+}
+
+bool Atom::AddAtomToContents(Atom* a_pAtom)
+{
+	//only add it to our inventory if we don't hold it already
+	const int atomUID = a_pAtom->GetAtomUID();
+	if(m_Contents.count(atomUID) == 0)
+	{
+		m_Contents[atomUID] = a_pAtom;
+
+		//if this object is held by another mob, it will be forcibly removed from that one
+		//if we already hold this object, it'll do nothing
+		a_pAtom->AddToOtherAtomContents(this);
+
+		return true;
+	}
+	return false;
+}
+
+bool Atom::RemoveAtomFromContents(Atom* a_pAtom)
+{
+	//only remove it if we actually have it
+	const int atomUID = a_pAtom->GetAtomUID();
+	if(m_Contents.count(atomUID) == 1)
+	{
+		m_Contents.erase(atomUID);
+		return true;
+	}
+	return false;
+}
+
+bool Atom::AddToOtherAtomContents(Atom* a_pAtom)
+{
+	if( m_pHoldingAtom && (a_pAtom != m_pHoldingAtom) )
+	{
+		//if we're already being held, tell them to forget about us
+		if(m_pHoldingAtom)
+		{
+			//this way avoids an endless recursive loop
+			Atom* pHoldingAtom = m_pHoldingAtom;
+			m_pHoldingAtom = NULL;
+			pHoldingAtom->RemoveAtomFromContents(this);
+		}
+		else
+		{
+			//make the mesh invisible
+			if(m_pAtomEntity && m_pAtomEntitySceneNode)
+			{
+				m_pAtomEntitySceneNode->detachObject(m_pAtomEntity);
+			}
+		
+			//disable the rigidbody
+			if(m_pRigidBody)
+			{
+				btDiscreteDynamicsWorld& dynamicsWorld = GetDynamicsWorld();
+				dynamicsWorld.removeRigidBody(m_pRigidBody);
+			}
+			
+			m_UseRigidbodyPosition = false;
+		}
+		
+		m_pHoldingAtom = a_pAtom;
+		a_pAtom->AddAtomToContents(this);
+		
+		//bind the object position to the mob position
+		if(m_pAtomRootSceneNode->getParentSceneNode())
+		{
+			m_pAtomRootSceneNode->getParentSceneNode()->removeChild(m_pAtomRootSceneNode);
+		}
+		m_pAtomRootSceneNode->setPosition(0,0,0);
+		m_pHoldingAtom->m_pAtomRootSceneNode->addChild(m_pAtomRootSceneNode);
+
+		return true;
+	}
+	return false;
+}
+
+bool Atom::RemoveFromOtherAtomContents()
+{
+	if(m_pHoldingAtom)
+	{
+		m_pHoldingAtom = NULL;
+		m_pHoldingAtom->RemoveAtomFromContents(this);
+
+		//make the mesh visible
+		Ogre::SceneNode* pCurParent = m_pAtomEntity->getParentSceneNode();
+		if(pCurParent != m_pAtomEntitySceneNode)
+		{
+			if(pCurParent)
+			{
+				pCurParent->detachObject(m_pAtomEntity);
+			}
+			m_pAtomEntitySceneNode->attachObject(m_pAtomEntity);
+		}
+
+		//detach our scene node from the mob, and child it to the root scene node
+		Ogre::SceneNode& rootSceneNode = GetRootSceneNode();
+		Ogre::SceneNode* pParentSceneNode = m_pAtomRootSceneNode->getParentSceneNode();
+		if(pParentSceneNode != &rootSceneNode)
+		{
+			if(pParentSceneNode)
+			{
+				pParentSceneNode->removeChild(m_pAtomRootSceneNode);
+			}
+			rootSceneNode.addChild(m_pAtomRootSceneNode);
+		}
+		
+		//re-enable the rigidbody
+		btDiscreteDynamicsWorld& dynamicsWorld = GetDynamicsWorld();
+		dynamicsWorld.addRigidBody(m_pRigidBody, m_DefaultPhysicsGroup, m_DefaultPhysicsMask);
+		m_UseRigidbodyPosition = true;
+
+		return true;
+	}
+	return false;
+}
+
+void Atom::ForceEjectFromTurf()
+{
+	m_pCurrentTurf = NULL;
 }

@@ -85,11 +85,11 @@
     <Filter Include="Source Files\Effects">
       <UniqueIdentifier>{8abf2ea7-0b97-40a8-aaea-6ebdb479aff8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Atoms\AtomComponents">
-      <UniqueIdentifier>{ca45a6cf-0604-4d20-af3a-1e37292c5ccd}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Atoms\AtomComponents">
       <UniqueIdentifier>{5938bf56-14ac-4116-8410-a3b2d64b1ff9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Atoms\Unused">
+      <UniqueIdentifier>{ca45a6cf-0604-4d20-af3a-1e37292c5ccd}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -198,9 +198,6 @@
     <ClCompile Include="GravPlates.cpp">
       <Filter>Source Files\Atoms\Structure</Filter>
     </ClCompile>
-    <ClCompile Include="Human.cpp">
-      <Filter>Source Files\Atoms\Mob</Filter>
-    </ClCompile>
     <ClCompile Include="GravitySource.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -222,12 +219,6 @@
     <ClCompile Include="Objects_Build.cpp">
       <Filter>Source Files\Atoms\Object</Filter>
     </ClCompile>
-    <ClCompile Include="Component_old.cpp">
-      <Filter>Source Files\Atoms\AtomComponents</Filter>
-    </ClCompile>
-    <ClCompile Include="Component.cpp">
-      <Filter>Source Files\InputModule</Filter>
-    </ClCompile>
     <ClCompile Include="PlayerGeneric.cpp">
       <Filter>Source Files\InputModule</Filter>
     </ClCompile>
@@ -235,9 +226,6 @@
       <Filter>Source Files\InputModule</Filter>
     </ClCompile>
     <ClCompile Include="MobWalk.cpp">
-      <Filter>Source Files\InputModule</Filter>
-    </ClCompile>
-    <ClCompile Include="ObserverBuild.cpp">
       <Filter>Source Files\InputModule</Filter>
     </ClCompile>
     <ClCompile Include="ObserverFlight.cpp">
@@ -249,9 +237,6 @@
     <ClCompile Include="PossessMob.cpp">
       <Filter>Source Files\InputModule</Filter>
     </ClCompile>
-    <ClCompile Include="GhostMob.cpp">
-      <Filter>Source Files\InputModule</Filter>
-    </ClCompile>
     <ClCompile Include="Context.cpp">
       <Filter>Source Files\Atoms\AtomComponents</Filter>
     </ClCompile>
@@ -260,6 +245,36 @@
     </ClCompile>
     <ClCompile Include="Interact.cpp">
       <Filter>Source Files\Atoms\AtomComponents</Filter>
+    </ClCompile>
+    <ClCompile Include="RCD.cpp">
+      <Filter>Source Files\Atoms\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Box.cpp">
+      <Filter>Source Files\Atoms\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="InputModule.cpp">
+      <Filter>Source Files\InputModule</Filter>
+    </ClCompile>
+    <ClCompile Include="RCD_InputModule.cpp">
+      <Filter>Source Files\InputModule</Filter>
+    </ClCompile>
+    <ClCompile Include="MobGhost.cpp">
+      <Filter>Source Files\InputModule</Filter>
+    </ClCompile>
+    <ClCompile Include="Inventory.cpp">
+      <Filter>Source Files\InputModule</Filter>
+    </ClCompile>
+    <ClCompile Include="Humanoid.cpp">
+      <Filter>Source Files\Atoms\Mob</Filter>
+    </ClCompile>
+    <ClCompile Include="Turf_Helpers.cpp">
+      <Filter>Source Files\Atoms\Turf</Filter>
+    </ClCompile>
+    <ClCompile Include="Turf_Instantiate.cpp">
+      <Filter>Source Files\Atoms\Turf</Filter>
+    </ClCompile>
+    <ClCompile Include="Turf_Interact.cpp">
+      <Filter>Source Files\Atoms\Turf</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -374,9 +389,6 @@
     <ClInclude Include="GravPlates.hpp">
       <Filter>Header Files\Atoms\Structure</Filter>
     </ClInclude>
-    <ClInclude Include="Human.hpp">
-      <Filter>Header Files\Atoms\Mob</Filter>
-    </ClInclude>
     <ClInclude Include="GravitySource.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -395,22 +407,10 @@
     <ClInclude Include="Objects_Build.hpp">
       <Filter>Header Files\Atoms\Object</Filter>
     </ClInclude>
-    <ClInclude Include="Component.hpp">
-      <Filter>Header Files\Atoms\AtomComponents</Filter>
-    </ClInclude>
-    <ClInclude Include="Component_old.hpp">
-      <Filter>Header Files\InputModule</Filter>
-    </ClInclude>
-    <ClInclude Include="Component.hpp">
-      <Filter>Header Files\InputModule</Filter>
-    </ClInclude>
     <ClInclude Include="MobGhost.hpp">
       <Filter>Header Files\InputModule</Filter>
     </ClInclude>
     <ClInclude Include="MobLook.hpp">
-      <Filter>Header Files\InputModule</Filter>
-    </ClInclude>
-    <ClInclude Include="ObserverBuild.hpp">
       <Filter>Header Files\InputModule</Filter>
     </ClInclude>
     <ClInclude Include="ObserverFlight.hpp">
@@ -428,16 +428,37 @@
     <ClInclude Include="PlayerGeneric.hpp">
       <Filter>Header Files\InputModule</Filter>
     </ClInclude>
-    <ClInclude Include="Context.hpp">
-      <Filter>Header Files\Atoms\AtomComponents</Filter>
-    </ClInclude>
     <ClInclude Include="GirderBuild.hpp">
-      <Filter>Header Files\Atoms\AtomComponents</Filter>
+      <Filter>Header Files\Atoms\Unused</Filter>
     </ClInclude>
     <ClInclude Include="Interact.hpp">
-      <Filter>Header Files\Atoms\AtomComponents</Filter>
+      <Filter>Header Files\Atoms\Unused</Filter>
     </ClInclude>
     <ClInclude Include="Events.hpp">
+      <Filter>Header Files\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="RCD.hpp">
+      <Filter>Header Files\Atoms\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Box.hpp">
+      <Filter>Header Files\Atoms\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="InputModule.hpp">
+      <Filter>Header Files\InputModule</Filter>
+    </ClInclude>
+    <ClInclude Include="RCD_InputModule.hpp">
+      <Filter>Header Files\InputModule</Filter>
+    </ClInclude>
+    <ClInclude Include="Inventory.hpp">
+      <Filter>Header Files\InputModule</Filter>
+    </ClInclude>
+    <ClInclude Include="Humanoid.hpp">
+      <Filter>Header Files\Atoms\Mob</Filter>
+    </ClInclude>
+    <ClInclude Include="Context.hpp">
+      <Filter>Header Files\Atoms</Filter>
+    </ClInclude>
+    <ClInclude Include="BuildFlags.hpp">
       <Filter>Header Files\Config</Filter>
     </ClInclude>
   </ItemGroup>

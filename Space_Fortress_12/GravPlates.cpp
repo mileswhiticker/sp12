@@ -32,6 +32,9 @@ GravPlates::GravPlates(Turf* a_pLocTurf, int a_Dir)
 	m_MyStructureType = Structure::GRAVPLATES;
 	m_MaterialName = "gravplates";
 	m_SelectMaterialName = "gravplates_modulate";
+	
+	m_FaceQuadrant = ALLQUADRANT;
+	//m_StructureLevel = UNDER;
 }
 
 void GravPlates::InstantiateStructure(bool a_IsBuildPoint)
@@ -182,7 +185,7 @@ void GravPlates::ToggleGravity()
 	//toggle gravity
 	if(!m_pCurrentTurf)
 	{
-		m_pCurrentTurf = MapSuite::GetInstance().GetTurfAtCoordsOrCreate(m_pAtomRootSceneNode->_getDerivedPosition());
+		m_pCurrentTurf = MapSuite::GetSingleton().GetTurfAtCoordsOrCreate(m_pAtomRootSceneNode->_getDerivedPosition());
 	}
 	if(m_pCurrentTurf)
 	{
@@ -203,7 +206,7 @@ void GravPlates::ToggleGravity()
 				}
 
 				//
-				pCurTurf = MapSuite::GetInstance().GetTurfInDirOrCreate(pCurTurf, m_Direction);
+				pCurTurf = MapSuite::GetSingleton().GetTurfInDirOrCreate(pCurTurf, m_Direction);
 				percentLeft -= m_PercentGravityFalloff;
 			}
 			m_GravityActive = true;
@@ -225,7 +228,7 @@ void GravPlates::ToggleGravity()
 				}
 
 				//
-				pCurTurf = MapSuite::GetInstance().GetTurfInDirOrCreate(pCurTurf, m_Direction);
+				pCurTurf = MapSuite::GetSingleton().GetTurfInDirOrCreate(pCurTurf, m_Direction);
 				percentLeft -= m_PercentGravityFalloff;
 			}
 			m_GravityActive = true;

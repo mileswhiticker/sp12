@@ -11,9 +11,11 @@ class ObserverBuild;
 struct CachedCube;
 class Turf;
 class InputModule;
-class Component;
+class InputModule;
 class Mob;
 class Context;
+class Object;
+
 namespace Ogre
 {
 	class SceneNode;
@@ -38,10 +40,9 @@ public:
 	{
 		UNKNOWN_ATOMFLAG = 0,
 		//
-		BUILD_TURF,
-		BUILD_STRUCTURE,
+		RCD_BUILD_TARGET = 1,
+		RCD_CAN_DESTROY = 2,
 		//
-		MAX_ATOMFLAG,
 	};
 	Atom(Ogre::Vector3 a_Pos, int a_Dir = 0);
 	virtual ~Atom();
@@ -64,9 +65,10 @@ public:
 	Ogre::SceneNode* m_pAtomEntitySceneNode;
 	Ogre::SceneNode* m_pAtomRootSceneNode;
 	CachedCube* m_pCachedCube;	//used to draw the collision shape, assuming it's a cube
+	int m_DefaultPhysicsGroup;
+	int m_DefaultPhysicsMask;
 	//
-	virtual void BuildTurf(Turf* a_pTarget, bool a_Virtual = false);
-	virtual void BuildStructure(Turf* a_pTarget, bool a_Virtual = false);
+	virtual void ForceEjectFromTurf();
 	virtual bool OnGravityChange();
 	virtual void ResetEnvironment();
 	//
@@ -76,8 +78,14 @@ public:
 	Turf* GetCurrentTurf();
 	std::string GetAtomTextName();
 	//
-	virtual void Select(Component* a_pSourceComponent);
-	virtual void DeSelect(Component* a_pSourceComponent);
+	virtual void Select(InputModule* a_pSourceInputModule);
+	virtual void DeSelect(InputModule* a_pSourceInputModule);
+	//
+	virtual bool AddAtomToContents(Atom* a_pAtom);
+	virtual bool RemoveAtomFromContents(Atom* a_pAtom);
+	//
+	virtual bool AddToOtherAtomContents(Atom* a_pAtom);
+	virtual bool RemoveFromOtherAtomContents();
 	//
 	int GetAtomUID();
 	//
@@ -85,6 +93,7 @@ protected:
 	AtomType m_MyAtomType;
 	int m_Direction;
 	bool m_UseRigidbodyPosition;
+	bool m_UpdateTurfLoc;
 	std::string m_AtomTextName;
 	//
 	void InitCollisionShapeDebugDraw(Ogre::ColourValue a_ColourVal);
@@ -92,10 +101,15 @@ protected:
 	Turf* m_pCurrentTurf;		//for handling gravity
 	int m_AtomFlags;
 	const int m_AtomID;
+
+	//interaction
+	Context* m_pMyContext;
+
+	//contents
 	std::map<int, Atom*> m_Contents;
-	//
-	std::list<Component*> m_AllComponents;
-	//
+	Atom* m_pHoldingAtom;
+
+	//rendering
 	std::string m_MaterialName;
 	std::string m_SelectMaterialName;
 	std::string m_VirtualSelectMaterialName;
@@ -104,7 +118,7 @@ private:
 	float m_ColourModulateLevel;
 	float m_tLeftUpdateCell;
 	int m_ModulateChangeDir;
-	std::set<Component*> m_SelectingInputModules;
+	std::set<InputModule*> m_SelectingInputModules;
 	//
 	//std::list< std::pair<> > m_CustomInteractions;
 };

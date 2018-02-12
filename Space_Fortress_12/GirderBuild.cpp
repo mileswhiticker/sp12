@@ -19,7 +19,7 @@
 #include "BulletHelper.hpp"
 
 GirderBuild::GirderBuild(Turf* a_pLocTurf, Atom* a_pOwnedAtom)
-:	Context(a_pLocTurf, a_pOwnedAtom)
+:	Context(0,0,0)
 {
 	m_ContextAtomType = Atom::TURF;
 	m_ContextAtomSubType = Turf::GIRDER;
@@ -36,7 +36,7 @@ GirderBuild::GirderBuild(Turf* a_pLocTurf, Atom* a_pOwnedAtom)
 		bool valid = true;
 		switch(a_pLocTurf->GetTurfType())
 		{
-		case(Turf::EMPTY):
+		case(Turf::BUILDTURF):
 			{
 				m_MyContextType = Context::BUILD;
 				break;

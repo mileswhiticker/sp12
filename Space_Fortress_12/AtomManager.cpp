@@ -3,7 +3,7 @@
 #include "MapSuite.hpp"
 #include "MapCell.hpp"
 
-#include "Human.hpp"
+#include "Humanoid.hpp"
 #include "Observer.hpp"
 #include "Object.hpp"
 //#include "Girder.hpp"
@@ -12,6 +12,8 @@
 #include "UnderlayPlating.hpp"
 #include "GravPlates.hpp"
 #include "Turf.hpp"
+#include "Box.hpp"
+#include "Context.hpp"
 
 #include "OgreHelper.hpp"
 #include "Direction.h"
@@ -36,9 +38,9 @@ void AtomManager::Update(float a_DeltaT)
 	{
 		(*it)->Update(a_DeltaT);
 	}
-	for(auto it = m_TurfsInWorld.begin(); it != m_TurfsInWorld.end(); ++it)
+	for(auto it = m_TurfsInWorldWantingUpdate.begin(); it != m_TurfsInWorldWantingUpdate.end(); ++it)
 	{
-		(*it)->Update(a_DeltaT);
+		(*it).second->Update(a_DeltaT);
 	}
 }
 
@@ -70,17 +72,6 @@ Object* AtomManager::CreateObject(int a_ObjectType, Ogre::Vector3 a_Pos, int a_A
 		{
 			pOut->InstantiateAtom();
 		}
-	}
-
-	return pOut;
-}
-
-Turf* AtomManager::CreateTurf(int a_TurfType, Ogre::Vector3 a_SpawnPos, int a_AdditionalFlags)
-{
-	Turf* pOut = new Turf(a_SpawnPos);
-	if(a_AdditionalFlags & INSTANTIATE_IMMEDIATELY)
-	{
-		pOut->Instantiate((Turf::TurfType)a_TurfType);
 	}
 
 	return pOut;
@@ -118,7 +109,12 @@ Structure* AtomManager::CreateStructure(int a_StructureType, Turf* a_pLocTurf, i
 	//if creation was successful, deal with any extra flags
 	if(pOut)
 	{
-		m_StructuresInWorld.insert(pOut);
+		//if no turf is sent through, this is a "virtual" structure ie it doesn't really exist
+		if(a_pLocTurf)
+		{
+			m_StructuresInWorld.insert(pOut);
+			a_pLocTurf->AddStructure(pOut);
+		}
 		
 		if(a_AdditionalFlags & INSTANTIATE_IMMEDIATELY)
 		{
@@ -145,9 +141,9 @@ Mob* AtomManager::CreateMob(int a_MobType, Ogre::Vector3 a_SpawnPos, int a_Addit
 			pOut = new Observer(a_SpawnPos, a_AdditionalFlags & ALLDIRS);
 			break;
 		}
-	case(Mob::HUMAN):
+	case(Mob::HUMANOID):
 		{
-			pOut = new Human(a_SpawnPos, a_AdditionalFlags & ALLDIRS);
+			pOut = new Humanoid(a_SpawnPos, a_AdditionalFlags & ALLDIRS);
 			break;
 		}
 	default:
@@ -176,16 +172,24 @@ void AtomManager::DeleteMob(Mob* a_pMobToDel)
 	delete a_pMobToDel;
 }
 
-void AtomManager::DeleteTurf(Turf* a_pTurfToDel)
+//unused?
+Context* AtomManager::CreateInteractContext(int a_Dir, int a_Quadrant, int a_Layer)
 {
-	if(a_pTurfToDel)
-	{
-		m_TurfsInWorld.erase(a_pTurfToDel);
-		delete a_pTurfToDel;
-	}
+	return NULL;
 }
 
-void AtomManager::ClearMapCell(MapCell* a_pMapCell)
+void AtomManager::SetTurfWantingUpdate(Turf* a_pTurfToUpdate)
 {
-	DeleteTurf(a_pMapCell->m_pMyCellTurf);
+	if(a_pTurfToUpdate && !m_TurfsInWorldWantingUpdate.count(a_pTurfToUpdate->GetAtomUID()))
+		m_TurfsInWorldWantingUpdate.insert( std::pair<int, Turf*>(a_pTurfToUpdate->GetAtomUID(), a_pTurfToUpdate) );
+}
+
+void AtomManager::StopTurfWantingUpdate(Turf* a_pTurfToStopUpdate)
+{
+	if(a_pTurfToStopUpdate)
+	{
+		auto it = m_TurfsInWorldWantingUpdate.find(a_pTurfToStopUpdate->GetAtomUID());
+		if(it != m_TurfsInWorldWantingUpdate.end())
+			m_TurfsInWorldWantingUpdate.erase(it);
+	}
 }

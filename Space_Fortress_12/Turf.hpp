@@ -9,26 +9,39 @@
 
 class InputModule;
 class Structure;
-struct Buildpoint;
 class GravitySource;
+struct Buildpoint;
 class Mob;
 class Object;
 
 class Turf
 :	public Atom
-,	public Context
 {
 public:
 	enum TurfType
 	{
 		TURF_UNKNOWN = 0,
 		//
-		EMPTY,
+		BUILDTURF,
 		GIRDER,
+		GIRDER_VIRTUAL,
 		//
 		TURF_MAXTYPE
 	};
+	enum StructureLevel
+	{
+		UNKNOWNLEVEL = 0,
+		//
+		INNER,
+		UNDER,
+		CONDUIT,
+		OVER,
+		OUTER,
+		//
+		MAX_LEVEL
+	};
 	Turf(Ogre::Vector3 a_Location);
+	~Turf();
 	//
 	virtual void InstantiateAtom();
 	//virtual void CreateFromBuildPoint();
@@ -36,15 +49,15 @@ public:
 	//
 	TurfType GetTurfType();
 	//Structure* m_pTurfStructure;
-	bool IsBuildPoint();
 	Buildpoint* GetBuildpointOrNull(int a_Dir, int a_Position);
+	void AddStructure(Structure* a_pNewStructure);
 	//
 	virtual bool Interact(Mob* a_pSourceMob, Context* a_pSourceContext, int a_InteractType = 3, Atom* a_pUsedAtom = NULL);
-	virtual void Select(Component* a_pSourceComponent);
-	virtual void DeSelect(Component* a_pSourceComponent);
+	virtual void Select(InputModule* a_pSourceInputModule);
+	virtual void DeSelect(InputModule* a_pSourceInputModule);
 	//
-	bool IsBuildable();
-	void SetBuildable(bool a_CanBuild = true);
+	bool IsBuildpoint();
+	void SetBuildpoint(bool a_IsBuildpoint = true);
 	//
 	void AddGravityAffector(GravitySource* a_pGravSource, float a_DistScalar);
 	void RemoveGravityAffector(GravitySource* a_pGravSource);
@@ -53,6 +66,8 @@ public:
 	void AtomLeave(Atom* a_pLeavingAtom);
 	void AtomEnter(Atom* a_pEnteringAtom);
 	virtual bool OnGravityChange();
+	//
+	Structure* GetMountedStructure(int a_Dir, int a_Layer);
 	//
 	std::vector<Mob*> m_MobContents;
 	std::vector<Atom*> m_AtomContents;
@@ -66,11 +81,21 @@ public:
 	Ogre::SceneNode* m_pCellSceneNode;
 private:
 	std::vector< std::pair<GravitySource*,float> > m_GravityAffectors;
+	std::string m_CoordsString;
 	//
 protected:
 	TurfType m_MyTurfType;
 	bool m_IsBuildPoint;
-	std::unordered_map<std::string, Buildpoint*> m_Buildpoints;
+	std::unordered_map<std::string, Buildpoint*> m_Buildpoints;							//unused
+	
+	//instead of using these two complex sorted containers, just use a simple list - we don't need to access any of them directly
+	std::list<Structure*> m_Structures;
+	Structure* m_pTargetBuildpoint;			//what the interacting player wants to build
+	bool IsStructureBlocked(int a_Dir, int a_Quadrant, int a_Layer);
+	/*
+	std::unordered_map< int, std::vector<Structure*> > m_StructurePoints_DirLayer;		//remember to add 0 index here, or else handle it elsewhere
+	std::vector< std::unordered_map<int, Structure*> > m_StructurePoints_LayerDir;		//unfilled, not sure if it's needed?
+	*/
 	//
 	void InstantiateGirder(bool a_IsBuildPoint);
 	//

@@ -13,7 +13,7 @@ MapSuite::MapSuite()
 	//
 }
 
-MapSuite& MapSuite::GetInstance()
+MapSuite& MapSuite::GetSingleton()
 {
 	static MapSuite instance;
 	return instance;
@@ -21,32 +21,47 @@ MapSuite& MapSuite::GetInstance()
 
 Station* MapSuite::GetStartingStation()
 {
-	if(MapSuite::GetInstance().m_MapStations.size() > 0)
+	if(MapSuite::GetSingleton().m_MapStations.size() > 0)
 	{
-		return MapSuite::GetInstance().m_MapStations.front();
+		return MapSuite::GetSingleton().m_MapStations.front();
 	}
 	return NULL;
 }
 
-Turf* MapSuite::CreateTurf(int a_X, int a_Y, int a_Z, int a_TurfType)
+/*
+Turf* MapSuite::CreateTurf(int a_X, int a_Y, int a_Z, int a_TurfType, int a_AdditionalFlags)
 {
 	return CreateTurf(Ogre::Vector3(Ogre::Real(a_X),Ogre::Real(a_Y),Ogre::Real(a_Z)), a_TurfType);
 }
 
-Turf* MapSuite::CreateTurf(Ogre::Vector3 a_Coords, int a_TurfType)
+Turf* MapSuite::CreateTurf(Ogre::Vector3 a_Coords, int a_TurfType, int a_AdditionalFlags)
 {
-	Turf* pNewTurf = AtomManager::GetSingleton().CreateTurf(a_TurfType, a_Coords, INSTANTIATE_IMMEDIATELY);
-	//second param is false if it already exists
-
-	std::pair<std::unordered_map<std::string, Turf*>::iterator, bool> result = m_TurfGrid.emplace(std::make_pair(GetCoordsString(a_Coords), pNewTurf));
-	if(!result.second)
+	//create it
+	Turf* pOut = new Turf(a_Coords);
+	if(a_AdditionalFlags & INSTANTIATE_IMMEDIATELY)
 	{
-		delete pNewTurf;
-		pNewTurf = result.first->second;
+		pOut->Instantiate((Turf::TurfType)a_TurfType);
+	}
+	if(a_AdditionalFlags & BUILD_POINT)
+	{
+		//pOut->SetBuildpoint(true);
 	}
 
-	return pNewTurf;
+	//second param is false if it already exists
+	
+	//m_TurfsInWorld.insert(pOut);
+	std::pair<std::unordered_map<std::string, Turf*>::iterator, bool> result = m_TurfGrid.emplace(std::make_pair(GetCoordsString(a_Coords), pOut));
+
+	//if a turf already exists, grab it instead
+	if(!result.second)
+	{
+		delete pOut;		//ahaha not cleaning up this properly...
+		pOut = result.first->second;
+	}
+
+	return pOut;
 }
+*/
 
 int MapSuite::CreateAdjacentGirderBuildpoints(Turf* a_pCenterTurf)
 {
@@ -63,19 +78,22 @@ int MapSuite::CreateAdjacentGirderBuildpoints(Turf* a_pCenterTurf)
 		for(int curDir = 1; curDir <= 32; curDir *= 2)
 		{
 			Ogre::Vector3 targetCoords = GetCoordsInDir(a_pCenterTurf->m_pAtomRootSceneNode->getPosition(), curDir);
-			Turf* pCurrentTurf = GetTurfAtCoordsOrCreate(targetCoords);
+			if(GetTurfAtCoordsOrNull(targetCoords))
+				continue;
+
+			Turf* pCurrentTurf = GetTurfAtCoordsOrCreate(targetCoords, Turf::BUILDTURF);
 			
 			//only add a buildpoint if the cell doesn't have something there already
-			if(pCurrentTurf)
+			/*if(pCurrentTurf)
 			{
-				pCurrentTurf->SetBuildable();
+				pCurrentTurf->SetBuildpoint();
 				//AtomManager::GetSingleton().CreateTurf(Turf::GIRDER, pCurrentTurf, INSTANTIATE_IMMEDIATELY|BUILD_POINT);
 				numCreated++;
 			}
 			else
 			{
 				std::cout << "WARNING: Unable to create turf at " << targetCoords << std::endl;
-			}
+			}*/
 		}
 	}
 	
@@ -95,24 +113,19 @@ int MapSuite::ClearDependantAdjacentGirderBuildpoints(Turf* a_pCenterTurf)
 			Turf* pCurrentTurf = GetTurfAtCoordsOrNull(targetCoords);
 
 			//check if there's a girder build point there
-			if(pCurrentTurf \
-				&& pCurrentTurf->GetTurfType() == Turf::GIRDER \
-				&& pCurrentTurf->IsBuildPoint())
+			if(pCurrentTurf && pCurrentTurf->GetTurfType() == Turf::BUILDTURF)
 			{
 				//see if there are any adjacent turfs other than the source cell
 				int sourceDir = ReverseDir(curAdjDir);
 				bool turfAdjacent = false;
 				for(int curCheckDir = 1; curCheckDir <= 32; curCheckDir *= 2)
 				{
-					if(curCheckDir != sourceDir)
+					//see if there is a turf in that direction we can cling on to
+					Turf* pCheckTurf = GetTurfInDirOrNull(pCurrentTurf, curCheckDir);
+					if(pCheckTurf && !pCheckTurf->GetTurfType() == Turf::GIRDER && pCheckTurf != a_pCenterTurf)		//girders can only be mounted on other girders... for now
 					{
-						//see if there is a turf in that direction we can cling on to
-						Turf* pCheckTurf = GetTurfInDirOrNull(pCheckTurf, curCheckDir);
-						if(pCheckTurf && !pCheckTurf->IsBuildPoint())
-						{
-							turfAdjacent = true;
-							break;
-						}
+						turfAdjacent = true;
+						break;
 					}
 				}
 
@@ -121,7 +134,7 @@ int MapSuite::ClearDependantAdjacentGirderBuildpoints(Turf* a_pCenterTurf)
 				//the things we're deleting will make sure their own deletion is safe
 				if(!turfAdjacent)
 				{
-					pCurrentTurf->SetBuildable(false);
+					DeleteTurf(pCurrentTurf);
 					//AtomManager::GetSingleton().DeleteTurf(pCheckTurf);
 					numCleared++;
 					//leave the mapcell, gravity needs it
@@ -150,6 +163,7 @@ Turf* MapSuite::GetTurfInDirOrNull(Turf* a_pSourceTurf, int a_Direction)
 		catch (const std::out_of_range& oor)
 		{
 			//nothing
+			pOut = NULL;
 		}
 	}
 	return pOut;
@@ -166,20 +180,48 @@ Turf* MapSuite::GetTurfInDirOrCreate(Turf* a_pSourceTurf, int a_Direction)
 	return pOut;
 }
 
-Turf* MapSuite::GetTurfAtCoordsOrCreate(int a_X, int a_Y, int a_Z)
+Turf* MapSuite::GetTurfAtCoordsOrCreate(int a_X, int a_Y, int a_Z, int a_TurfType, int a_AdditionalFlags)
 {
-	Turf* pOut = GetTurfAtCoordsOrNull(a_X, a_Y, a_Z);
+	return GetTurfAtCoordsOrCreate( Ogre::Vector3(a_X, a_Y, a_Z), a_TurfType, a_AdditionalFlags );
+}
+
+Turf* MapSuite::GetTurfAtCoordsOrCreate(Ogre::Vector3 a_Coords, int a_TurfType, int a_AdditionalFlags)
+{
+	Turf* pOut = GetTurfAtCoordsOrNull(a_Coords);
 	if(!pOut)
 	{
-		//if it doesn't exist, just create it
-		pOut = CreateTurf(a_X, a_Y, a_Z);
+		//create it
+		pOut = new Turf(a_Coords);
+
+		if(a_AdditionalFlags & INSTANTIATE_IMMEDIATELY)
+		{
+			//do not override turf type if there's already a turf... not sure if we would even need to do that
+			pOut->Instantiate((Turf::TurfType)a_TurfType);
+		}
+
+		std::pair<std::unordered_map<std::string, Turf*>::iterator, bool> result = m_TurfGrid.emplace(std::make_pair(GetCoordsString(a_Coords), pOut));
+		
+		if(a_AdditionalFlags & CREATE_BUILDTURFS)
+		{
+			if(a_TurfType > Turf::BUILDTURF && a_TurfType < Turf::TURF_MAXTYPE)
+			{
+				CreateAdjacentGirderBuildpoints(pOut);
+			}
+		}
+
+		//this should be entirely redundant
+		/*if(!result.second)
+		{
+			delete pOut;		//ahaha not cleaning up this properly...
+			pOut = result.first->second;
+		}*/
 	}
 	return pOut;
 }
 
-Turf* MapSuite::GetTurfAtCoordsOrCreate(Ogre::Vector3 a_Coords)
+Turf* MapSuite::GetTurfAtCoordsOrNull(Ogre::Vector3 a_Coords)
 {
-	return GetTurfAtCoordsOrCreate(a_Coords.x, a_Coords.y, a_Coords.z);
+	return GetTurfAtCoordsOrNull(a_Coords.x, a_Coords.y, a_Coords.z);
 }
 
 Turf* MapSuite::GetTurfAtCoordsOrNull(int a_X, int a_Y, int a_Z)
@@ -206,11 +248,6 @@ Turf* MapSuite::GetTurfAtCoordsOrNull(int a_X, int a_Y, int a_Z)
 	return pOut;
 }
 
-Turf* MapSuite::GetTurfAtCoordsOrNull(Ogre::Vector3 a_Coords)
-{
-	return GetTurfAtCoordsOrNull(a_Coords.x, a_Coords.y, a_Coords.z);
-}
-
 PlayerSpawn* MapSuite::GetRandomPlayerSpawn()
 {
 	if(m_LoadedSpawns.size())
@@ -218,4 +255,66 @@ PlayerSpawn* MapSuite::GetRandomPlayerSpawn()
 		return m_LoadedSpawns[iRand(m_LoadedSpawns.size())];
 	}
 	return NULL;
+}
+
+
+void MapSuite::DeleteTurf(Turf* a_pTurfToDel)
+{
+	if(a_pTurfToDel)
+	{
+		Ogre::Vector3 turfCoords = a_pTurfToDel->m_pAtomRootSceneNode->getPosition();
+		try
+		{
+			m_TurfGrid.erase( GetCoordsString(turfCoords) );
+		}
+		catch (const std::out_of_range& oor)
+		{
+			//couldn't find it
+			std::cout << "Warning, deleting turf not located in worldmap!" << std::endl;
+		}
+
+		if(a_pTurfToDel->GetTurfType() == Turf::GIRDER)
+		{
+			ClearDependantAdjacentGirderBuildpoints(a_pTurfToDel);
+		}
+
+		//m_TurfsInWorld.erase(a_pTurfToDel);
+
+		//see if we need to create a new buildturf here
+		bool turfAdjacent = false;
+		for(int curCheckDir = 1; curCheckDir <= 32; curCheckDir *= 2)
+		{
+			//see if there is a turf in that direction we can cling on to
+			Turf* pCheckTurf = GetTurfInDirOrNull(a_pTurfToDel, curCheckDir);
+			if(pCheckTurf && pCheckTurf->GetTurfType() == Turf::GIRDER)		//girders can only be mounted on other girders... for now
+			{
+				turfAdjacent = true;
+				break;
+			}
+		}
+
+		delete a_pTurfToDel;
+
+		if(turfAdjacent)
+		{
+			Turf* pCurrentTurf = GetTurfAtCoordsOrCreate(turfCoords, Turf::BUILDTURF);
+		}
+	}
+}
+
+/*
+void MapSuite::ClearMapCell(MapCell* a_pMapCell)
+{
+	DeleteTurf(a_pMapCell->m_pMyCellTurf);
+}
+*/
+
+void MapSuite::BuildTurf(Turf* a_pBuildTurf, int a_TurfType)
+{
+	if(a_pBuildTurf && a_pBuildTurf->GetTurfType() == Turf::BUILDTURF)
+	{
+		a_pBuildTurf->Instantiate((Turf::TurfType)a_TurfType);
+		a_pBuildTurf->SetEntityVisible();
+		CreateAdjacentGirderBuildpoints(a_pBuildTurf);
+	}
 }

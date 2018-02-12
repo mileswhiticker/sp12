@@ -26,6 +26,9 @@ UnderlayPlating::UnderlayPlating(Turf* a_pLocTurf, int a_Dir)
 	m_MyStructureType = Structure::UNDERLAYPLATING;
 	m_MaterialName = "under_plating";
 	m_SelectMaterialName = "under_plating_modulate";
+	
+	m_FaceQuadrant = ALLQUADRANT;
+	//m_StructureLevel = UNDER;
 }
 
 void UnderlayPlating::InstantiateStructure(bool a_IsBuildPoint)
@@ -36,6 +39,8 @@ void UnderlayPlating::InstantiateStructure(bool a_IsBuildPoint)
 	Ogre::SceneManager& sceneManager = GetSceneManager();
 	//std::cout << "instantiating UnderlayPlating with direction " << m_Direction << std::endl;
 	
+	m_AtomFlags = RCD_CAN_DESTROY;
+
 	//create entity
 	m_pAtomEntity = sceneManager.createEntity("UnderlayPlating_" + num2string(m_AtomID), "cell_underlay.mesh");
 	m_pAtomEntitySceneNode->attachObject(m_pAtomEntity);

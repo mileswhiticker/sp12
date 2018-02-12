@@ -16,13 +16,14 @@
 #include "Turf.hpp"
 #include "PlayerSpawn.hpp"
 #include "Object.hpp"
+#include "Structure.hpp"
 
 #include "AtomManager.hpp"
 #include "tinyxml2.h"
 
 bool MapSuite::LoadMap(std::string a_FileName)
 {
-	return MapSuite::GetInstance().LoadMapFile(a_FileName);
+	return MapSuite::GetSingleton().LoadMapFile(a_FileName);
 }
 
 //return value indicates success or failure
@@ -118,17 +119,18 @@ bool MapSuite::LoadMapFile(std::string a_FileName)
 							std::string turfTypeString = pElement->Attribute("type_text");
 							if(!turfTypeString.compare("girder"))
 							{
-								turfType = 2;
+								turfType = Turf::GIRDER;
 							}
 						}
-						//just make it an empty cell
-						if(!turfType)
+						//ignore this turf instead of creating a phantom "empty" turf
+						if(turfType <= Turf::BUILDTURF || turfType >= Turf::TURF_MAXTYPE)
 						{
-							turfType = 1;
+							continue;
+							//turfType = 1;
 						}
 						
 						//create the turf and slot it into the tilemap
-						Turf* pNewTurf = CreateTurf(i,j,k, turfType);
+						Turf* pNewTurf = GetTurfAtCoordsOrCreate(i,j,k, turfType, INSTANTIATE_IMMEDIATELY);
 						//MapCell* pLocMapCell = CreateNewMapCell(i,j,k);
 						//pGirder = (Girder*)AtomManager::GetSingleton().CreateTurf(Turf::GIRDER, pLocMapCell, INSTANTIATE_IMMEDIATELY);
 
@@ -149,7 +151,6 @@ bool MapSuite::LoadMapFile(std::string a_FileName)
 						//loop through cell nodes
 						for(tinyxml2::XMLNode* pGirderAttributeNode = pToplevelNode->FirstChild(); pGirderAttributeNode; pGirderAttributeNode = pGirderAttributeNode->NextSibling())
 						{
-							break;
 							if(pNewTurf && !std::string("overlay").compare(pGirderAttributeNode->Value()))
 							{
 								//overlay plating
@@ -163,7 +164,7 @@ bool MapSuite::LoadMapFile(std::string a_FileName)
 									if(plating)
 									{
 										//pGirder->AddUnderlay(dir, plating);
-										//Structure* pUnusedBuildPoint = AtomManager::GetSingleton().CreateStructure(Structure::OVERLAYPLATING, pLocMapCell, NULL, dir|INSTANTIATE_IMMEDIATELY);
+										Structure* pUnusedBuildPoint = AtomManager::GetSingleton().CreateStructure(Structure::OVERLAYPLATING, pNewTurf, dir|INSTANTIATE_IMMEDIATELY);
 										//pGirder->CreateBuildpointInDir(Structure::OVERLAYPLATING, dir);
 									}
 								}
@@ -181,7 +182,7 @@ bool MapSuite::LoadMapFile(std::string a_FileName)
 									if(plating)
 									{
 										//pGirder->AddUnderlay(dir, plating);
-										//Structure* pUnusedBuildPoint = AtomManager::GetSingleton().CreateStructure(Structure::UNDERLAYPLATING, pLocMapCell, NULL, dir|INSTANTIATE_IMMEDIATELY);
+										Structure* pUnusedBuildPoint = AtomManager::GetSingleton().CreateStructure(Structure::UNDERLAYPLATING, pNewTurf, dir|INSTANTIATE_IMMEDIATELY);
 										//pGirder->CreateBuildpointInDir(Structure::UNDERLAYPLATING, dir);
 									}
 								}
@@ -237,7 +238,17 @@ bool MapSuite::LoadMapFile(std::string a_FileName)
 				m_MapStations.push_back(pStation);*/
 			}
 		}
-		std::cout << "MAP: Successfully loaded file \"" << full_file_path << "\"" << std::endl;
+
+		//loop over created turfs and create adjacent buildpoints
+		for(auto it = m_TurfGrid.begin(); it != m_TurfGrid.end(); ++it)
+		{
+			if(it->second->GetTurfType() == Turf::GIRDER)
+			{
+				CreateAdjacentGirderBuildpoints(it->second);
+			}
+		}
+
+		std::cout << "MAP: Successfully loaded mapfile." << std::endl;
 		return true;
 	}
 
@@ -245,4 +256,3 @@ bool MapSuite::LoadMapFile(std::string a_FileName)
 	std::cout << "MAP: Error code " << result << " while loading file \"" << full_file_path << "\"" << std::endl;
 	return false;
 }
-

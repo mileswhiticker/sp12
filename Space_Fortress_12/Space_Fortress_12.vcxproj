@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -18,9 +18,9 @@
     <ClCompile Include="Application_Update.cpp" />
     <ClCompile Include="Atom.cpp" />
     <ClCompile Include="AtomManager.cpp" />
+    <ClCompile Include="Box.cpp" />
     <ClCompile Include="BulletHelper.cpp" />
     <ClCompile Include="Button.cpp" />
-    <ClCompile Include="Component_old.cpp" />
     <ClCompile Include="Context.cpp" />
     <ClCompile Include="Events.cpp" />
     <ClCompile Include="Client.cpp" />
@@ -28,14 +28,15 @@
     <ClCompile Include="EffectManager.cpp" />
     <ClCompile Include="GravitySource.cpp" />
     <ClCompile Include="GravPlates.cpp" />
-    <ClCompile Include="Human.cpp" />
+    <ClCompile Include="Humanoid.cpp" />
     <ClCompile Include="Interact.cpp" />
+    <ClCompile Include="Inventory.cpp" />
     <ClCompile Include="PlayerGeneric.cpp" />
     <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="GlueScreen.cpp" />
     <ClCompile Include="guicon.cpp" />
-    <ClCompile Include="Component.cpp" />
-    <ClCompile Include="GhostMob.cpp" />
+    <ClCompile Include="InputModule.cpp" />
+    <ClCompile Include="MobGhost.cpp" />
     <ClCompile Include="MobLook.cpp" />
     <ClCompile Include="MobWalk.cpp" />
     <ClCompile Include="ObserverLook.cpp" />
@@ -58,13 +59,17 @@
     <ClCompile Include="OgreHelper.cpp" />
     <ClCompile Include="OverlayPlating.cpp" />
     <ClCompile Include="RandHelper.cpp" />
+    <ClCompile Include="RCD.cpp" />
     <ClCompile Include="Server.cpp" />
     <ClCompile Include="Station.cpp" />
-    <ClCompile Include="ObserverBuild.cpp" />
+    <ClCompile Include="RCD_InputModule.cpp" />
     <ClCompile Include="Structure.cpp" />
     <ClCompile Include="tinyxml2.cpp" />
     <ClCompile Include="Turf.cpp" />
     <ClCompile Include="GirderBuild.cpp" />
+    <ClCompile Include="Turf_Helpers.cpp" />
+    <ClCompile Include="Turf_Instantiate.cpp" />
+    <ClCompile Include="Turf_Interact.cpp" />
     <ClCompile Include="UID.cpp" />
     <ClCompile Include="UnderlayPlating.cpp" />
   </ItemGroup>
@@ -72,12 +77,12 @@
     <ClInclude Include="Application.hpp" />
     <ClInclude Include="Atom.hpp" />
     <ClInclude Include="AtomManager.hpp" />
+    <ClInclude Include="Box.hpp" />
     <ClInclude Include="BtOgreHelper.hpp" />
     <ClInclude Include="Buildpoint.hpp" />
     <ClInclude Include="BulletHelper.hpp" />
     <ClInclude Include="Button.hpp" />
     <ClInclude Include="Cached.hpp" />
-    <ClInclude Include="Component_old.hpp" />
     <ClInclude Include="Context.hpp" />
     <ClInclude Include="Events.hpp" />
     <ClInclude Include="Client.hpp" />
@@ -85,11 +90,13 @@
     <ClInclude Include="DebugDrawer.h" />
     <ClInclude Include="Direction.h" />
     <ClInclude Include="EffectManager.hpp" />
+    <ClInclude Include="BuildFlags.hpp" />
     <ClInclude Include="GravitySource.hpp" />
     <ClInclude Include="GravPlates.hpp" />
-    <ClInclude Include="Human.hpp" />
-    <ClInclude Include="Component.hpp" />
+    <ClInclude Include="Humanoid.hpp" />
+    <ClInclude Include="InputModule.hpp" />
     <ClInclude Include="Interact.hpp" />
+    <ClInclude Include="Inventory.hpp" />
     <ClInclude Include="PlayerGeneric.hpp" />
     <ClInclude Include="Files.hpp" />
     <ClInclude Include="GameManager.hpp" />
@@ -118,9 +125,10 @@
     <ClInclude Include="OverlayPlating.hpp" />
     <ClInclude Include="PlayerSpawn.hpp" />
     <ClInclude Include="RandHelper.h" />
+    <ClInclude Include="RCD.hpp" />
     <ClInclude Include="Server.hpp" />
     <ClInclude Include="Station.hpp" />
-    <ClInclude Include="ObserverBuild.hpp" />
+    <ClInclude Include="RCD_InputModule.hpp" />
     <ClInclude Include="Structure.hpp" />
     <ClInclude Include="tinyxml2.h" />
     <ClInclude Include="Turf.hpp" />
@@ -141,12 +149,14 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v100</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v120</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -180,12 +190,15 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>OgreMain_d.lib;OIS_d.lib;CEGUIOgreRenderer_d.lib;CEGUIBase_d.lib;BulletDynamics_vs2010_debug.lib;BulletCollision_vs2010_debug.lib;LinearMath_vs2010_debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>OgreMain_d.lib;OIS_d.lib;CEGUIOgreRenderer_d.lib;CEGUIBase_d.lib;BulletDynamics_vs2010_debug.lib;BulletCollision_vs2010_debug.lib;LinearMath_vs2010_debug.lib;libboost_thread-vc100-mt-sgd-1_49.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ShowProgress>LinkVerbose</ShowProgress>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>libboost_thread-vc100-mt-sgd-1_48.lib;libboost_date_time-vc100-mt-sgd-1_48.lib</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

@@ -1,16 +1,24 @@
 #include "Structure.hpp"
 #include "MapCell.hpp"
 #include "Turf.hpp"
+
+#include "CollisionDefines.h"
 #include "Events.hpp"
 
 #include <OGRE\OgreSceneNode.h>
 #include <OGRE\OgreVector3.h>
 #include <OGRE\OgreEntity.h>
 
+/*const std::vector<std::string> Structure::QuadrantNames;
+const std::vector<std::string> Structure::LevelNames;*/
+
 Structure::Structure(Turf* a_pLocTurf, int a_Dir)
 :	Atom(a_pLocTurf->m_pAtomRootSceneNode->getPosition(), a_Dir)
-,	m_MyStructureType(UNKNOWN)
+,	m_MyStructureType(UNKNOWNTYPE)
 ,	m_IsBuildPoint(false)
+,	m_IsBlocking(true)
+,	m_FaceQuadrant(UNKNOWNQUADRANT)
+,	m_StructureLevel(0)
 //,	m_pMountedOnStructure(NULL)
 //,	m_pMountedGirder(NULL)
 {
@@ -18,6 +26,10 @@ Structure::Structure(Turf* a_pLocTurf, int a_Dir)
 	m_MyAtomType = Atom::STRUCTURE;
 	m_UseRigidbodyPosition = false;
 	m_UsesGravity = false;
+	m_DefaultPhysicsGroup = COLLISION_STRUCTURE;
+	m_DefaultPhysicsMask = COLLISION_OBJ|COLLISION_MOB|COLLISION_STRUCTURE;
+
+	m_pMyContext = new Context(a_Dir, m_FaceQuadrant, this);
 }
 
 void Structure::InstantiateAtom()
@@ -87,9 +99,9 @@ bool Structure::IsBuildPoint()
 	return m_IsBuildPoint;
 }
 
-void Structure::Select(Component* a_pSourceComponent)
+void Structure::Select(InputModule* a_pSourceInputModule)
 {
-	Atom::Select(a_pSourceComponent);
+	Atom::Select(a_pSourceInputModule);
 	if(m_pAtomEntity)
 	{
 		if(m_IsBuildPoint)
@@ -99,9 +111,9 @@ void Structure::Select(Component* a_pSourceComponent)
 	}
 }
 
-void Structure::DeSelect(Component* a_pSourceComponent)
+void Structure::DeSelect(InputModule* a_pSourceInputModule)
 {
-	Atom::DeSelect(a_pSourceComponent);
+	Atom::DeSelect(a_pSourceInputModule);
 	if(m_pAtomEntity)
 	{
 		m_pAtomEntity->setMaterialName(m_MaterialName);
@@ -110,4 +122,14 @@ void Structure::DeSelect(Component* a_pSourceComponent)
 	{
 		SetEntityVisible(false);
 	}
+}
+
+int Structure::GetStructureLevel()
+{
+	return m_StructureLevel;
+}
+
+int Structure::GetStructureQuadrant()
+{
+	return m_FaceQuadrant;
 }
