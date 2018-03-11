@@ -1,0 +1,3 @@
+redo structure construction to be moooore modular
+lighting
+atmosphere
